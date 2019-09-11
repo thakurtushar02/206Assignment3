@@ -1,5 +1,5 @@
 # 206Assignment3
 
-Hello,
-This is out 206 Assignment 3 project.
+Hello,\n
+This is our 206 Assignment 3 project.\n
 Enjoy!
