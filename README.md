@@ -2,5 +2,5 @@
 
 Hello,  
 This is our 206 Assignment 3 project.  
-I edit :).  
+B edit :).  
 Enjoy!
