@@ -2,7 +2,7 @@
 
 Hello,  
 This is our 206 Assignment 3 project.  
-I edit :).  
+A edit :).  
 Enjoy!
 
 Tushar branch edit!
