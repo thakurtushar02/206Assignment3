@@ -26,6 +26,7 @@ public class VideoPlayer {
 		File fileURL = new File(name + ".mp4");
 		
 		Stage vidStage = new Stage();
+		vidStage.setTitle(name + ".mp4");
 		BorderPane vidPane = new BorderPane();
 		Scene scene = new Scene(vidPane, 340, 300);
 		
@@ -46,10 +47,11 @@ public class VideoPlayer {
 		});
 		
 		vidStage.setOnCloseRequest(e -> {
-			player.pause();
+			player.pause();	//Stop sound playing when window has been closed
 		});
 		
 		vidPane.setBottom(buttonBox);
+		
 		btnPlayPause.setPrefWidth(scene.getWidth()/1.5);
 		btnPlayPause.setOnAction(e -> {
 			if(player.getStatus() == Status.PLAYING) {
@@ -72,7 +74,7 @@ public class VideoPlayer {
 		});
 		
 		player.setOnEndOfMedia(() -> {
-			vidStage.close();
+			vidStage.close();	//Auto close window when video finishes playing
 		});
 		
 		buttonBox.setSpacing(3);
