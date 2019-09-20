@@ -95,7 +95,7 @@ public class View {
 	}
 
 	public void playCreation(String name) {
-		Video vid = new Video();
+		VideoPlayer vid = new VideoPlayer();
 		vid.playVideo(name);
 	}
 }
