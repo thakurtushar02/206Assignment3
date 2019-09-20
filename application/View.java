@@ -95,12 +95,7 @@ public class View {
 	}
 
 	public void playCreation(String name) {
-		String cmd = "ffplay -autoexit -i " + name + ".mp4 &>/dev/null";
-		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-		try {
-			builder.start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
+		Video vid = new Video();
+		vid.playVideo(name);
 	}
 }
