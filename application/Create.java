@@ -35,7 +35,36 @@ public class Create {
 	private View _view;
 	private String _name;
 	private Popup _popup;
+	private Stage _computeStage = new Stage();
+	private TextField _numberTextField = new TextField();
+    private TextField _wordTextField = new TextField();
+	
+    {
+        // Allow only numbers to be entered into the text field.
+        _numberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                _numberTextField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
 
+        // Disallow / and \0 characters which Ubuntu doesn't use for file names.
+        _wordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if ((newValue.contains("/")) || (newValue.contains("\0"))) {
+                _wordTextField.setText(oldValue);
+            }
+        });
+
+        // Generic computation scene when background thread is working. This is how I do my GUI throughout this
+        // assignment.
+        VBox vbox = new VBox(10);
+        Label searchText = new Label("Computing. Please wait...");
+        ProgressBar pb = new ProgressBar();
+        pb.prefWidthProperty().bind(vbox.widthProperty());
+        vbox.getChildren().addAll(searchText, pb);
+        _computeStage.setTitle("Computing Task");
+        _computeStage.setScene(new Scene(vbox, 275, 75));
+    }
+    
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
 		_popup = popup;
@@ -74,9 +103,11 @@ public class Create {
 			@Override public Void call() {
 				String cmd = "$(wikit " + term + " > temp.txt) sed 's/\\./\\.\\n/g' temp.txt > temp2.txt";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+				_computeStage.show();
 				try {
 					Process process = builder.start();
 					process.waitFor();
+					_computeStage.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
@@ -117,9 +148,8 @@ public class Create {
 
 		Label prompt = new Label("How many lines do you want in your creation:");
 		prompt.setFont(new Font("Arial", 14));
-
-		TextField ans = new TextField();
-		ans.setMaxWidth(100);
+		
+		_numberTextField.setMaxWidth(100);
 
 		ListView<String> list = new ListView<String>();
 		ObservableList<String> listLines = FXCollections.observableArrayList();
@@ -144,7 +174,7 @@ public class Create {
 
 		Button butNum = new Button("Submit");
 		butNum.setOnAction(e -> {
-			String inNum = ans.getText();
+			String inNum = _numberTextField.getText();
 			try {
 				int num = Integer.parseInt(inNum);
 				if(getLines(num, reply)) {
@@ -154,7 +184,7 @@ public class Create {
 				_popup.showStage("", "Please enter an integer number. Would you like to continue?", "Yes", "No", false);
 			}
 		});
-		HBox lineOptions = new HBox(prompt, ans, butNum);
+		HBox lineOptions = new HBox(prompt, _numberTextField, butNum);
 		lineOptions.setSpacing(15);
 		lineContents.setBottom(lineOptions);
 
@@ -186,9 +216,8 @@ public class Create {
 
 		Label cre = new Label("Enter name for your creation: ");
 		cre.setFont(new Font("Arial", 16));
-		TextField ans = new TextField();
 
-		HBox nameBar = new HBox(cre, ans, butNam);
+		HBox nameBar = new HBox(cre, _wordTextField, butNam);
 		nameBar.setSpacing(15);
 
 		Label mes = new Label();
@@ -197,7 +226,7 @@ public class Create {
 		butNam.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				String reply = ans.getText();
+				String reply = _wordTextField.getText();
 				String validity = checkName(reply);
 				_name = reply;
 				if(validity=="Valid") {
@@ -237,9 +266,11 @@ public class Create {
 			@Override public Void call() {
 				String cmd = "cat text.txt | text2wave -o temp.wav";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+				_computeStage.show();
 				try {
 					Process process = builder.start();
 					process.waitFor();
+					_computeStage.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
