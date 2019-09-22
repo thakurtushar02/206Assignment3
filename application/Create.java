@@ -131,7 +131,7 @@ public class Create {
 
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
-						try(BufferedReader fileReader = new BufferedReader(new FileReader("temp2.txt"))){
+						try(BufferedReader fileReader = new BufferedReader(new FileReader(_file.toString()))){
 							String line = fileReader.readLine();
 							if(line.contains("not found :^(")) {
 								message.setText("Search term is invalid, please try again with another search term.");
@@ -186,7 +186,7 @@ public class Create {
 				i++;
 			}
 			//listLines.remove(i-2);
-			lineCount = i-1;
+			lineCount = i;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
