@@ -2,6 +2,8 @@ package application;
 
 import java.io.File;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -21,14 +23,16 @@ public class VideoPlayer {
 	private Button btnForward = new Button(">>");
 	private Button btnBackward = new Button("<<");
 	private HBox buttonBox = new HBox(btnBackward, btnPlayPause, btnForward);
+		
 	
 	public void playVideo(String name) {
 		File fileURL = new File(name + ".mp4");
 		
 		Stage vidStage = new Stage();
+		
 		vidStage.setTitle(name + ".mp4");
 		BorderPane vidPane = new BorderPane();
-		Scene scene = new Scene(vidPane, 340, 300);
+		Scene scene = new Scene(vidPane, 330, 300);
 		
 		Media video = new Media(fileURL.toURI().toString());
 		MediaPlayer player = new MediaPlayer(video);
@@ -36,7 +40,7 @@ public class VideoPlayer {
 		MediaView mediaView = new MediaView(player);
 		
 		vidPane.setTop(btnMute);
-		btnMute.setPrefWidth(scene.getWidth());
+		btnMute.prefWidthProperty().bind(scene.widthProperty());
 		btnMute.setOnAction(e -> {
 			player.setMute(!player.isMute());
 			if(player.isMute()) {
@@ -52,7 +56,7 @@ public class VideoPlayer {
 		
 		vidPane.setBottom(buttonBox);
 		
-		btnPlayPause.setPrefWidth(scene.getWidth()/1.5);
+		btnPlayPause.prefWidthProperty().bind(scene.widthProperty().divide(1.5));
 		btnPlayPause.setOnAction(e -> {
 			if(player.getStatus() == Status.PLAYING) {
 				player.pause();
@@ -63,12 +67,12 @@ public class VideoPlayer {
 			}
 		});
 		
-		btnForward.setPrefWidth(scene.getWidth()/6);
+		btnForward.prefWidthProperty().bind(scene.widthProperty().divide(6));
 		btnForward.setOnAction(e -> {
 			player.seek(player.getCurrentTime().add(Duration.seconds(2)));
 		});
 		
-		btnBackward.setPrefWidth(scene.getWidth()/6);
+		btnBackward.prefWidthProperty().bind(scene.widthProperty().divide(6));
 		btnBackward.setOnAction(e -> {
 			player.seek(player.getCurrentTime().add(Duration.seconds(-2)));
 		});
@@ -80,6 +84,12 @@ public class VideoPlayer {
 		buttonBox.setSpacing(3);
 		
 		vidPane.setCenter(mediaView);
+		DoubleProperty mvw = mediaView.fitWidthProperty();
+		DoubleProperty mvh = mediaView.fitHeightProperty();
+		mvw.bind(Bindings.selectDouble(mediaView.sceneProperty(), "width"));
+		mvh.bind(Bindings.selectDouble(mediaView.sceneProperty(), "height").subtract(50));
+		mediaView.setPreserveRatio(true);
+		
 		vidStage.setScene(scene);
 		vidStage.show();
 	}
