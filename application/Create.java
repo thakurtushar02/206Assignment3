@@ -75,9 +75,11 @@ public class Create {
 			@Override public Void call() {
 				String cmd = "$(wikit " + term + " > temp.txt) sed 's/\\./\\.\\n/g' temp.txt > temp2.txt";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+				_computeStage.show();
 				try {
 					Process process = builder.start();
 					process.waitFor();
+					_computeStage.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
@@ -121,11 +123,11 @@ public class Create {
 		prompt.setFont(new Font("Arial", 14));
 		TextField numberTextField = new TextField();
 		 // Allow only numbers to be entered into the text field.
-        numberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                numberTextField.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-        });
+        	numberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            	if (!newValue.matches("\\d*")) {
+                	numberTextField.setText(newValue.replaceAll("[^\\d]", ""));
+            	}
+        	});
 		numberTextField.setMaxWidth(100);
 
 		ListView<String> list = new ListView<String>();
@@ -193,7 +195,6 @@ public class Create {
 
 		Label cre = new Label("Enter name for your creation: ");
 		cre.setFont(new Font("Arial", 16));
-		
 		TextField wordTextField = new TextField();
 		// Disallow / and \0 characters which Ubuntu doesn't use for file names.
         wordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -256,7 +257,6 @@ public class Create {
 				try {
 					Process process = builder.start();
 					process.waitFor();
-				
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
