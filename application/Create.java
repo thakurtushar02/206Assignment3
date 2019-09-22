@@ -15,6 +15,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -123,6 +124,7 @@ public class Create {
 
 		ListView<String> list = new ListView<String>();
 		ObservableList<String> listLines = FXCollections.observableArrayList();
+		list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		BufferedReader reader;
 
 		try {
