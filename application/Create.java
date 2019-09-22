@@ -75,11 +75,9 @@ public class Create {
 			@Override public Void call() {
 				String cmd = "$(wikit " + term + " > temp.txt) sed 's/\\./\\.\\n/g' temp.txt > temp2.txt";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-				_computeStage.show();
 				try {
 					Process process = builder.start();
 					process.waitFor();
-					_computeStage.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
