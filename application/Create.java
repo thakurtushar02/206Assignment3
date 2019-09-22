@@ -3,7 +3,10 @@ package application;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -36,7 +39,8 @@ public class Create {
 	private View _view;
 	private String _name;
 	private Popup _popup;
-
+	private File _file;
+  
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
 		_popup = popup;
@@ -71,13 +75,55 @@ public class Create {
 	}
 
 	public void searchTerm(String term) {
+		_popup.computeStagePopup();
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
-				String cmd = "$(wikit " + term + " > temp.txt) sed 's/\\./\\.\\n/g' temp.txt > temp2.txt";
-				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+				_file = new File ("text.txt");
+				ProcessBuilder builder = new ProcessBuilder("wikit", term);
 				try {
 					Process process = builder.start();
-					process.waitFor();
+					BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
+					BufferedReader stderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+					PrintWriter out = new PrintWriter(new FileWriter(_file));
+
+					int exitStatus = process.waitFor();
+
+					if (exitStatus == 0) {
+						String line;
+						while ((line = stdout.readLine()) != null) {
+							out.println(line);
+						}
+						
+						out.close();
+						
+						String[] cmd = {"sed", "-i", "s/[.] /&\\n/g", _file.toString()};
+						ProcessBuilder editFile = new ProcessBuilder(cmd);
+						Process edit = editFile.start();
+
+						BufferedReader stdout2 = new BufferedReader(new InputStreamReader(edit.getInputStream()));
+						BufferedReader stderr2 = new BufferedReader(new InputStreamReader(edit.getErrorStream()));
+
+						int exitStatus2 = edit.waitFor();
+
+						if (exitStatus2 == 0) {
+							String line2;
+							while ((line2 = stdout2.readLine()) != null) {
+								System.out.println(line2);
+							}
+						} else {
+							String line2;
+							while ((line2 = stderr2.readLine()) != null) {
+								System.err.println(line2);
+							}
+						}
+						
+					} else {
+						String line;
+						while ((line = stderr.readLine()) != null) {
+							System.err.println(line);
+						}
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
@@ -86,7 +132,7 @@ public class Create {
 
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
-						try(BufferedReader fileReader = new BufferedReader(new FileReader("temp2.txt"))){
+						try(BufferedReader fileReader = new BufferedReader(new FileReader(_file.toString()))){
 							String line = fileReader.readLine();
 							if(line.contains("not found :^(")) {
 								message.setText("Search term is invalid, please try again with another search term.");
@@ -95,6 +141,7 @@ public class Create {
 								message.setText("");
 								_term = term;
 								displayLines(term);
+								_popup.closeComputeStagePopup();
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -118,9 +165,14 @@ public class Create {
 
 		Label prompt = new Label("How many lines do you want in your creation:");
 		prompt.setFont(new Font("Arial", 14));
-
-		TextField ans = new TextField();
-		ans.setMaxWidth(100);
+		TextField numberTextField = new TextField();
+		 // Allow only numbers to be entered into the text field.
+        	numberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            	if (!newValue.matches("\\d*")) {
+                	numberTextField.setText(newValue.replaceAll("[^\\d]", ""));
+            	}
+        	});
+		numberTextField.setMaxWidth(100);
 
 		ListView<String> list = new ListView<String>();
 		ObservableList<String> listLines = FXCollections.observableArrayList();
@@ -128,15 +180,15 @@ public class Create {
 		BufferedReader reader;
 
 		try {
-			reader = new BufferedReader(new FileReader("temp2.txt"));
+			reader = new BufferedReader(new FileReader(_file.toString()));
 			String line = null;
 			int i = 1;
 			while((line = reader.readLine()) != null) {
 				listLines.add(i + ". " + line);
 				i++;
 			}
-			listLines.remove(i-2);
-			lineCount = i-1;
+			//listLines.remove(i-2);
+			lineCount = i;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -146,7 +198,7 @@ public class Create {
 
 		Button butNum = new Button("Submit");
 		butNum.setOnAction(e -> {
-			String inNum = ans.getText();
+			String inNum = numberTextField.getText();
 			try {
 				int num = Integer.parseInt(inNum);
 				if(getLines(num, reply)) {
@@ -156,7 +208,7 @@ public class Create {
 				_popup.showStage("", "Please enter an integer number. Would you like to continue?", "Yes", "No", false);
 			}
 		});
-		HBox lineOptions = new HBox(prompt, ans, butNum);
+		HBox lineOptions = new HBox(prompt, numberTextField, butNum);
 		lineOptions.setSpacing(15);
 		lineContents.setBottom(lineOptions);
 
@@ -168,15 +220,27 @@ public class Create {
 			_popup.showStage("", "Please enter a number between 1 and " + (lineCount-1), "OK", "Cancel", false);
 			return false;
 		} else {
-			String cmd = "head -n " + input + " temp2.txt > text.txt";
-			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-			try {
-				Process process = builder.start();
-				process.waitFor();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			input++;
+			if (input < lineCount && input > 1) {
+				String[] cmd = {"sed", "-i",  input + ","+ lineCount + "d", _file.toString()};
+				ProcessBuilder builder = new ProcessBuilder(cmd);
+				try {
+					Process process = builder.start();
+					process.waitFor();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} else if (input == lineCount) {
+				String[] cmd= {"sed", "-i", "$d", _file.toString()};
+				ProcessBuilder builder = new ProcessBuilder(cmd);
+				try {
+					Process process = builder.start();
+					process.waitFor();
+				} catch (IOException | InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			return true;
 		}
@@ -188,9 +252,15 @@ public class Create {
 
 		Label cre = new Label("Enter name for your creation: ");
 		cre.setFont(new Font("Arial", 16));
-		TextField ans = new TextField();
+		TextField wordTextField = new TextField();
+		// Disallow / and \0 characters which Ubuntu doesn't use for file names.
+        wordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if ((newValue.contains("/")) || (newValue.contains("\0"))) {
+                wordTextField.setText(oldValue);
+            }
+        });
 
-		HBox nameBar = new HBox(cre, ans, butNam);
+		HBox nameBar = new HBox(cre, wordTextField, butNam);
 		nameBar.setSpacing(15);
 
 		Label mes = new Label();
@@ -199,7 +269,7 @@ public class Create {
 		butNam.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				String reply = ans.getText();
+				String reply = wordTextField.getText();
 				String validity = checkName(reply);
 				_name = reply;
 				if(validity=="Valid") {
@@ -235,10 +305,12 @@ public class Create {
 	}
 
 	public void addCreation() {
+		_popup.computeStagePopup();
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
-				String cmd = "cat text.txt | text2wave -o temp.wav";
+				String cmd = "cat " + _file.toString() + " | text2wave -o temp.wav";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+				
 				try {
 					Process process = builder.start();
 					process.waitFor();
@@ -262,6 +334,7 @@ public class Create {
 						_view.setContents();
 						_popup.showFeedback(_name, false);
 						setContents();
+						_popup.closeComputeStagePopup();
 					}
 				});
 				return null;
