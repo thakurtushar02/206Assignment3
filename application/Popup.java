@@ -5,8 +5,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -14,8 +16,9 @@ import javafx.stage.Stage;
 public class Popup {
 	private Create _create;
 	private View _view;
-	private Stage _popup;
-	private Stage _popup2;
+	private Stage _popup = new Stage();
+	private Stage _confirmPopup = new Stage();
+	private Stage _computing = new Stage();
 	
 	public void setViewCreate(View view, Create create) {
 		_create = create;
@@ -23,7 +26,6 @@ public class Popup {
 	}
 	
 	public void showStage(String name, String output, String button1, String button2, boolean isView){
-		_popup = new Stage();
 		if(isView) {
 			_popup.setTitle("Delete Creation");
 		}else {
@@ -87,12 +89,11 @@ public class Popup {
 	}
 	
 	public void showFeedback(String name, boolean isView) {
-		_popup2 = new Stage();
 		Label confirmation = new Label();
 		if(isView) {
-			_popup2.setTitle("Creation Deleted");
+			_confirmPopup.setTitle("Creation Deleted");
 		}else {
-			_popup2.setTitle("Creation Created");
+			_confirmPopup.setTitle("Creation Created");
 		}
 		BorderPane comp;
 
@@ -101,7 +102,7 @@ public class Popup {
 		cont.setPadding(new Insets(5,10,5,10));
 		
 		cont.setOnAction(e -> {
-			_popup2.close();
+			_confirmPopup.close();
 		});
 		
 		confirmation.setFont(new Font("Arial", 14));
@@ -122,7 +123,22 @@ public class Popup {
 		comp.setPadding(new Insets(10,10,10,10));
 
 		Scene stageScene = new Scene(comp, 500, 100);
-		_popup2.setScene(stageScene);
-		_popup2.show();
+		_confirmPopup.setScene(stageScene);
+		_confirmPopup.show();
+	}
+	
+	public void computeStagePopup() {
+		VBox vbox = new VBox(10);
+        Label searchText = new Label("Computing... Please wait...");
+        ProgressBar pb = new ProgressBar();
+        pb.prefWidthProperty().bind(vbox.widthProperty());
+        vbox.getChildren().addAll(searchText, pb);
+        _computing.setTitle("Computing Task");
+        _computing.setScene(new Scene(vbox, 275, 75));
+		_computing.show();
+	}
+	
+	public void closeComputeStagePopup() {
+		_computing.close();
 	}
 }

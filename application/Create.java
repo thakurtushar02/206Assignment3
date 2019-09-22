@@ -39,7 +39,7 @@ public class Create {
 	private String _name;
 	private Popup _popup;
 	private File _file;
-
+  
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
 		_popup = popup;
@@ -74,6 +74,7 @@ public class Create {
 	}
 
 	public void searchTerm(String term) {
+		_popup.computeStagePopup();
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
 				_file = new File ("text.txt");
@@ -139,6 +140,7 @@ public class Create {
 								message.setText("");
 								_term = term;
 								displayLines(term);
+								_popup.closeComputeStagePopup();
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -162,9 +164,14 @@ public class Create {
 
 		Label prompt = new Label("How many lines do you want in your creation:");
 		prompt.setFont(new Font("Arial", 14));
-
-		TextField ans = new TextField();
-		ans.setMaxWidth(100);
+		TextField numberTextField = new TextField();
+		 // Allow only numbers to be entered into the text field.
+        	numberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            	if (!newValue.matches("\\d*")) {
+                	numberTextField.setText(newValue.replaceAll("[^\\d]", ""));
+            	}
+        	});
+		numberTextField.setMaxWidth(100);
 
 		ListView<String> list = new ListView<String>();
 		ObservableList<String> listLines = FXCollections.observableArrayList();
@@ -189,7 +196,7 @@ public class Create {
 
 		Button butNum = new Button("Submit");
 		butNum.setOnAction(e -> {
-			String inNum = ans.getText();
+			String inNum = numberTextField.getText();
 			try {
 				int num = Integer.parseInt(inNum);
 				if(getLines(num, reply)) {
@@ -199,7 +206,7 @@ public class Create {
 				_popup.showStage("", "Please enter an integer number. Would you like to continue?", "Yes", "No", false);
 			}
 		});
-		HBox lineOptions = new HBox(prompt, ans, butNum);
+		HBox lineOptions = new HBox(prompt, numberTextField, butNum);
 		lineOptions.setSpacing(15);
 		lineContents.setBottom(lineOptions);
 
@@ -243,9 +250,15 @@ public class Create {
 
 		Label cre = new Label("Enter name for your creation: ");
 		cre.setFont(new Font("Arial", 16));
-		TextField ans = new TextField();
+		TextField wordTextField = new TextField();
+		// Disallow / and \0 characters which Ubuntu doesn't use for file names.
+        wordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if ((newValue.contains("/")) || (newValue.contains("\0"))) {
+                wordTextField.setText(oldValue);
+            }
+        });
 
-		HBox nameBar = new HBox(cre, ans, butNam);
+		HBox nameBar = new HBox(cre, wordTextField, butNam);
 		nameBar.setSpacing(15);
 
 		Label mes = new Label();
@@ -254,7 +267,7 @@ public class Create {
 		butNam.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				String reply = ans.getText();
+				String reply = wordTextField.getText();
 				String validity = checkName(reply);
 				_name = reply;
 				if(validity=="Valid") {
@@ -290,10 +303,12 @@ public class Create {
 	}
 
 	public void addCreation() {
+		_popup.computeStagePopup();
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
 				String cmd = "cat " + _file.toString() + " | text2wave -o temp.wav";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+				
 				try {
 					Process process = builder.start();
 					process.waitFor();
@@ -317,6 +332,7 @@ public class Create {
 						_view.setContents();
 						_popup.showFeedback(_name, false);
 						setContents();
+						_popup.closeComputeStagePopup();
 					}
 				});
 				return null;
