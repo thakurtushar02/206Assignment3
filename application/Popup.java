@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -256,10 +257,39 @@ public class Popup {
 			Task<Void> task = new Task<Void>() {
 				@Override
 				protected Void call() throws Exception {
-					String cmd = "echo \"" + textArea.getSelectedText() + "\" | festival --tts";
+					String cmd = "echo \"" + textArea.getSelectedText() + "\" > preview.txt";
 					ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 					Process process = builder.start();
 					process.waitFor();
+					
+					String voice;
+					String selection = combobox.getSelectionModel().getSelectedItem();
+					if ( selection.equals("Default")) {
+						voice = "(voice_kal_diphone)";
+					} else if (selection.equals("NZ Female")) {
+						voice = "(voice_akl_nz_cw_cg_cg)";
+					} else {
+						voice = "(voice_akl_nz_jdt_diphone)";
+					}
+					
+					String command = "festival '" + voice + "' '(tts \"preview.txt\" nil)'";
+					ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
+					
+					try {
+						Process p = pb.start();
+						BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+						int exitStatus = p.waitFor();
+						
+						if (exitStatus != 0) {
+							String line2;
+							while ((line2 = stderr.readLine()) != null) {
+								System.err.println(line2);
+							}
+						}
+						
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					return null;
 				}
 			};
