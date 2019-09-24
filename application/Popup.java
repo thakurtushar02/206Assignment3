@@ -6,12 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
@@ -219,7 +221,13 @@ public class Popup {
 		Button butPreview = new Button("Play");
 		Button butDone = new Button("Done Previewing");
 		Label label = new Label("Highlight the text you want to preview using speech synthesiser, then click \"Play\"");
+		Label lblVoice = new Label("Voice: ");
 		label.setWrapText(true);
+		
+		ObservableList<String> voices = FXCollections.observableArrayList("Default", "NZ Female", "NZ Male");
+		final ComboBox<String> combobox = new ComboBox<String>(voices);
+		combobox.setValue("Default");
+		
 
 		VBox vbox = new VBox(10);
 		vbox.setPadding(new Insets(10,10,10,10));
@@ -227,7 +235,7 @@ public class Popup {
 		textArea.prefWidthProperty().bind(vbox.widthProperty().subtract(20));
 
 		HBox hbox = new HBox(10);
-		hbox.getChildren().addAll(butPreview, butDone);
+		hbox.getChildren().addAll(butPreview, butDone, lblVoice, combobox);
 
 		vbox.getChildren().addAll(label, textArea, hbox);
 		_previewStage.setTitle("Preview highlighted text");
