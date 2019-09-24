@@ -146,21 +146,31 @@ public class Popup {
 	public void editText() {
 		
 		VBox vbox = new VBox(10);
-		Label label = new Label("Double click on the line(s) you want to edit. \n"
-				+ "Then, press enter to confirm edit.");
+		vbox.setPadding(new Insets(10,10,10,10));
+		Label label = new Label("Double click on the line in the list you want to edit. "
+				+ "Then, press enter to confirm edit.\n"
+				+ "Repeat until desired lines are edited.\n"
+				+ "Finally, press \"Done Edit\" to finalise editing.\n"
+				+ "Also, please do not remove the line counts eg. 1. 3. etc "
+				+ "as they will not show in the final creation :)");
+		label.setWrapText(true);
 		Button butOK = new Button("OK");
-		label.prefWidthProperty().bind(vbox.widthProperty());
 		label.prefHeightProperty().bind(vbox.heightProperty().subtract(20));
 		butOK.prefWidthProperty().bind(vbox.widthProperty());
 		
 		vbox.getChildren().addAll(label, butOK);
 		_textStage.setTitle("Editing text");
-		_textStage.setScene(new Scene(vbox, 300, 100));
+		_textStage.setScene(new Scene(vbox, 400, 200));
 		_textStage.show();
 		
 		butOK.setOnAction(e -> {
 			_textStage.close();
 		});
 
+	}
+
+	public void previewText() {
+		// TODO Auto-generated method stub
+		
 	}
 }

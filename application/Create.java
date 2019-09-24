@@ -1,6 +1,7 @@
 package application;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -211,19 +212,51 @@ public class Create {
 		});
 		
 		Button butText = new Button("Edit Text");
+		Button butDone = new Button("Done Edit");
+		Button butPreview = new Button("Preview Text");
+		
+		HBox lineOptions = new HBox(prompt, numberTextField, butNum, butPreview, butText);
+		lineOptions.setSpacing(15);
+		lineContents.setBottom(lineOptions);
+		_tab.setContent(lineContents);
 		
 		butText.setOnAction(e -> {
 			_popup.editText();
 			list.setEditable(true);
 			list.setCellFactory(TextFieldListCell.forListView());
+			lineOptions.getChildren().remove(butText);
+			lineOptions.getChildren().add(butDone);
 		});
 		
+		butDone.setOnAction(e -> {
+			list.setEditable(false);
+			lineOptions.getChildren().remove(butDone);
+			lineOptions.getChildren().add(butText);
+			try {
+				String fileName = _file.getName();
+				FileWriter fw = new FileWriter(fileName, false);
+				fw.write("");
+				fw.close();
+				fw = new FileWriter(fileName, true);
+				int count = 1;
+				for (String s: listLines) {
+					String newString;
+					if (count < 10) {
+						newString = s.substring(3) + "\n";
+					} else {
+						newString = s.substring(5) + "\n";
+					}
+					fw.write(newString);
+				}
+				fw.close();
+			} catch (IOException ioe){
+				ioe.getMessage();
+			}
+		});
 		
-		HBox lineOptions = new HBox(prompt, numberTextField, butNum, butText);
-		lineOptions.setSpacing(15);
-		lineContents.setBottom(lineOptions);
-
-		_tab.setContent(lineContents);
+		butPreview.setOnAction(e -> {
+			_popup.previewText();
+		});
 	}
 
 	public boolean getLines(int input, String reply) {
