@@ -81,7 +81,6 @@ public class Popup {
 				_create.removeCreation(name);
 				_create.addCreation();
 				_create.setContents();
-				showFeedback(name, false);
 			}else {
 				_create.setContents();
 			}

@@ -173,6 +173,17 @@ public class Create {
             	}
         	});
 		numberTextField.setMaxWidth(100);
+		
+		Label promptPic = new Label("How many pictures do you want in your creation:");
+		prompt.setFont(new Font("Arial", 14));
+		TextField numberTextFieldPic = new TextField();
+		 // Allow only numbers to be entered into the text field.
+        	numberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            	if (!newValue.matches("\\d*")) {
+                	numberTextField.setText(newValue.replaceAll("[^\\d]", ""));
+            	}
+        	});
+		numberTextFieldPic.setMaxWidth(100);
 
 		ListView<String> list = new ListView<String>();
 		ObservableList<String> listLines = FXCollections.observableArrayList();
@@ -187,7 +198,6 @@ public class Create {
 				listLines.add(i + ". " + line);
 				i++;
 			}
-			//listLines.remove(i-2);
 			lineCount = i;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -199,25 +209,43 @@ public class Create {
 		Button butNum = new Button("Submit");
 		butNum.setOnAction(e -> {
 			String inNum = numberTextField.getText();
+			String inNumPic = numberTextFieldPic.getText();
 			try {
 				int num = Integer.parseInt(inNum);
-				if(getLines(num, reply)) {
-					getName();
+				int numPic = Integer.parseInt(inNumPic);
+				if(getPics(numPic, reply)) {
+					if(getLines(num, reply)) {
+						getName();
+					}
 				}
 			}catch(NumberFormatException | NullPointerException nfe) {
 				_popup.showStage("", "Please enter an integer number. Would you like to continue?", "Yes", "No", false);
 			}
 		});
+		HBox picOptions = new HBox(promptPic, numberTextFieldPic);
 		HBox lineOptions = new HBox(prompt, numberTextField, butNum);
+		VBox options = new VBox(picOptions, lineOptions);
+		picOptions.setSpacing(15);
 		lineOptions.setSpacing(15);
-		lineContents.setBottom(lineOptions);
+		lineContents.setBottom(options);
 
 		_tab.setContent(lineContents);
 	}
 
+	public boolean getPics(int input, String reply) {
+		if(input>10 || input<=0) {
+			_popup.showStage("", "For amount of images, please enter a number between 1 and 10", "OK", "Cancel", false);
+			return false;
+		} else {
+			ImageManager imMan = new ImageManager();
+			imMan.getImages(input, reply);
+			return true;
+		}
+	}
+	
 	public boolean getLines(int input, String reply) {
 		if(input>=lineCount || input<=0) {
-			_popup.showStage("", "Please enter a number between 1 and " + (lineCount-1), "OK", "Cancel", false);
+			_popup.showStage("", "For line number, please enter a number between 1 and " + (lineCount-1), "OK", "Cancel", false);
 			return false;
 		} else {
 			input++;
