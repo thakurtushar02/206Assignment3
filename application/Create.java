@@ -42,7 +42,7 @@ public class Create {
 	private String _name;
 	private Popup _popup;
 	private File _file;
-  
+
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
 		_popup = popup;
@@ -96,9 +96,9 @@ public class Create {
 						while ((line = stdout.readLine()) != null) {
 							out.println(line);
 						}
-						
+
 						out.close();
-						
+
 						String[] cmd = {"sed", "-i", "s/[.] /&\\n/g", _file.toString()};
 						ProcessBuilder editFile = new ProcessBuilder(cmd);
 						Process edit = editFile.start();
@@ -119,7 +119,7 @@ public class Create {
 								System.err.println(line2);
 							}
 						}
-						
+
 					} else {
 						String line;
 						while ((line = stderr.readLine()) != null) {
@@ -168,12 +168,12 @@ public class Create {
 		Label prompt = new Label("How many lines do you want in your creation:");
 		prompt.setFont(new Font("Arial", 14));
 		TextField numberTextField = new TextField();
-		 // Allow only numbers to be entered into the text field.
-        	numberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            	if (!newValue.matches("\\d*")) {
-                	numberTextField.setText(newValue.replaceAll("[^\\d]", ""));
-            	}
-        	});
+		// Allow only numbers to be entered into the text field.
+		numberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.matches("\\d*")) {
+				numberTextField.setText(newValue.replaceAll("[^\\d]", ""));
+			}
+		});
 		numberTextField.setMaxWidth(100);
 
 		ListView<String> list = new ListView<String>();
@@ -210,16 +210,16 @@ public class Create {
 				_popup.showStage("", "Please enter an integer number. Would you like to continue?", "Yes", "No", false);
 			}
 		});
-		
+
 		Button butText = new Button("Edit Text");
 		Button butDone = new Button("Done Edit");
 		Button butPreview = new Button("Preview Text");
-		
+
 		HBox lineOptions = new HBox(prompt, numberTextField, butNum, butPreview, butText);
 		lineOptions.setSpacing(15);
 		lineContents.setBottom(lineOptions);
 		_tab.setContent(lineContents);
-		
+
 		butText.setOnAction(e -> {
 			_popup.editText();
 			list.setEditable(true);
@@ -227,7 +227,7 @@ public class Create {
 			lineOptions.getChildren().remove(butText);
 			lineOptions.getChildren().add(butDone);
 		});
-		
+
 		butDone.setOnAction(e -> {
 			list.setEditable(false);
 			lineOptions.getChildren().remove(butDone);
@@ -240,22 +240,41 @@ public class Create {
 				fw = new FileWriter(fileName, true);
 				int count = 1;
 				for (String s: listLines) {
-					String newString;
+					if (s.length() < 4) {
+						continue;
+					}
+					String newString= "";
 					if (count < 10) {
-						newString = s.substring(3) + "\n";
+						String[] sArray = s.substring(3).split("\\. ");
+						for (String st: sArray) {
+							if (st.endsWith(".")) {
+								newString += st + "\n";
+							} else {
+								newString += st + ".\n";
+							}
+						}
 					} else {
-						newString = s.substring(5) + "\n";
+						String[] sArray = s.substring(4).split("\\. ");
+						for (String st: sArray) {
+							if (st.endsWith(".")) {
+								newString += st + "\n";
+							} else {
+								newString += st + ".\n";
+							}
+						}
 					}
 					fw.write(newString);
+					count++;
 				}
 				fw.close();
 			} catch (IOException ioe){
 				ioe.getMessage();
 			}
+			displayLines(reply);
 		});
-		
+
 		butPreview.setOnAction(e -> {
-			_popup.previewText();
+			_popup.previewText(listLines);
 		});
 	}
 
@@ -298,11 +317,11 @@ public class Create {
 		cre.setFont(new Font("Arial", 16));
 		TextField wordTextField = new TextField();
 		// Disallow / and \0 characters which Ubuntu doesn't use for file names.
-        wordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if ((newValue.contains("/")) || (newValue.contains("\0"))) {
-                wordTextField.setText(oldValue);
-            }
-        });
+		wordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if ((newValue.contains("/")) || (newValue.contains("\0"))) {
+				wordTextField.setText(oldValue);
+			}
+		});
 
 		HBox nameBar = new HBox(cre, wordTextField, butNam);
 		nameBar.setSpacing(15);
@@ -354,7 +373,7 @@ public class Create {
 			@Override public Void call() {
 				String cmd = "cat " + _file.toString() + " | text2wave -o temp.wav";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-				
+
 				try {
 					Process process = builder.start();
 					process.waitFor();
