@@ -21,6 +21,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -208,7 +209,17 @@ public class Create {
 				_popup.showStage("", "Please enter an integer number. Would you like to continue?", "Yes", "No", false);
 			}
 		});
-		HBox lineOptions = new HBox(prompt, numberTextField, butNum);
+		
+		Button butText = new Button("Edit Text");
+		
+		butText.setOnAction(e -> {
+			_popup.editText();
+			list.setEditable(true);
+			list.setCellFactory(TextFieldListCell.forListView());
+		});
+		
+		
+		HBox lineOptions = new HBox(prompt, numberTextField, butNum, butText);
 		lineOptions.setSpacing(15);
 		lineContents.setBottom(lineOptions);
 

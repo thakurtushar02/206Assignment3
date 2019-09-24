@@ -19,6 +19,7 @@ public class Popup {
 	private Stage _popup = new Stage();
 	private Stage _confirmPopup = new Stage();
 	private Stage _computing = new Stage();
+	private Stage _textStage = new Stage();
 	
 	public void setViewCreate(View view, Create create) {
 		_create = create;
@@ -140,5 +141,26 @@ public class Popup {
 	
 	public void closeComputeStagePopup() {
 		_computing.close();
+	}
+
+	public void editText() {
+		
+		VBox vbox = new VBox(10);
+		Label label = new Label("Double click on the line(s) you want to edit. \n"
+				+ "Then, press enter to confirm edit.");
+		Button butOK = new Button("OK");
+		label.prefWidthProperty().bind(vbox.widthProperty());
+		label.prefHeightProperty().bind(vbox.heightProperty().subtract(20));
+		butOK.prefWidthProperty().bind(vbox.widthProperty());
+		
+		vbox.getChildren().addAll(label, butOK);
+		_textStage.setTitle("Editing text");
+		_textStage.setScene(new Scene(vbox, 300, 100));
+		_textStage.show();
+		
+		butOK.setOnAction(e -> {
+			_textStage.close();
+		});
+
 	}
 }
