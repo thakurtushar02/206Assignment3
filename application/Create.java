@@ -1,7 +1,6 @@
 package application;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -42,6 +41,10 @@ public class Create {
 	private String _name;
 	private Popup _popup;
 	private File _file;
+	private final String EMPTY = "Empty";
+	private final String VALID = "Valid";
+	private final String DUPLICATE = "Duplicate";
+	private final String INVALID = "Invalid";
 
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
@@ -224,14 +227,14 @@ public class Create {
 			_popup.editText();
 			list.setEditable(true);
 			list.setCellFactory(TextFieldListCell.forListView());
-			lineOptions.getChildren().remove(butText);
+			lineOptions.getChildren().removeAll(prompt, numberTextField, butNum, butPreview, butText);
 			lineOptions.getChildren().add(butDone);
 		});
 
 		butDone.setOnAction(e -> {
 			list.setEditable(false);
 			lineOptions.getChildren().remove(butDone);
-			lineOptions.getChildren().add(butText);
+			lineOptions.getChildren().addAll(prompt, numberTextField, butNum, butPreview, butText);
 			try {
 				String fileName = _file.getName();
 				FileWriter fw = new FileWriter(fileName, false);
@@ -335,14 +338,16 @@ public class Create {
 				String reply = wordTextField.getText();
 				String validity = checkName(reply);
 				_name = reply;
-				if(validity=="Valid") {
+				if (validity.equals(EMPTY)) {
+					mes.setText("You haven't entered a creation name! Please try again.");
+				} else if (validity.equals(VALID)) {
 					mes.setText("");
 					_name = reply;
 					addCreation();
-				} else if(validity=="Duplicate"){
+				} else if (validity.equals(DUPLICATE)) {
 					_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
 				}
-				else {
+				else if (validity.equals(INVALID)){
 					mes.setText("Creation name contains invalid characters, please try again.");
 				}
 			}
@@ -356,13 +361,17 @@ public class Create {
 	public String checkName(String reply) {
 		File file = new File(reply + ".mp4");
 		if(file.exists()) {
-			return "Duplicate";
+			return DUPLICATE;
 		} else {
 			String newName = reply.replaceAll("[^a-zA-Z0-9_\\-\\.]", "_");
 			if(newName == reply) {
-				return "Valid";
+				if (reply.isEmpty() == false) {
+					return VALID;
+				} else {
+					return EMPTY;
+				}	
 			}else {
-				return "Invalid";
+				return INVALID;
 			}
 		}
 	}
