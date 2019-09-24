@@ -277,7 +277,7 @@ public class Create {
 		});
 
 		butPreview.setOnAction(e -> {
-			_popup.previewText(listLines);
+			_popup.previewText(_file);
 		});
 	}
 

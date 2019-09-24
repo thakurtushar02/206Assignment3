@@ -1,5 +1,11 @@
 package application;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
@@ -180,19 +186,36 @@ public class Popup {
 
 	}
 
-	public void previewText(ObservableList<String> listLines) {
-		String textString = "";
-		int count = 1;
-		for (String s: listLines) {
-			if (count < 10) {
-				textString += s.substring(3) + "\n";
-			} else {
-				textString += s.substring(5) + "\n";
-			}
-			count++;
-		}
-		TextArea textArea = new TextArea(textString);
+	public void previewText(File file) {
+//		String textString = "";
+//		int count = 1;
+//		for (String s: listLines) {
+//			if (count < 10) {
+//				textString += s.substring(3) + "\n";
+//			} else {
+//				textString += s.substring(5) + "\n";
+//			}
+//			count++;
+//		}
+		
+		TextArea textArea = new TextArea();
 		textArea.setEditable(false);
+		
+		BufferedReader fileContent;
+		try {
+			fileContent = new BufferedReader(new FileReader(file));
+			String line;
+			int i = 1;
+			while ((line = fileContent.readLine()) != null) {
+					textArea.appendText(line + "\n");
+					i++;
+				}
+			fileContent.close();
+			} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			}
+		
 		Button butPreview = new Button("Play");
 		Button butDone = new Button("Done Previewing");
 		Label label = new Label("Highlight the text you want to preview using speech synthesiser, then click \"Play\"");
