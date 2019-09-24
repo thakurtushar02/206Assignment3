@@ -19,6 +19,8 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -228,6 +230,8 @@ public class Popup {
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
 		combobox.setValue("Default");
 		
+		final Pane spacer = new Pane();
+		spacer.setMinSize(10, 1);
 
 		VBox vbox = new VBox(10);
 		vbox.setPadding(new Insets(10,10,10,10));
@@ -235,7 +239,9 @@ public class Popup {
 		textArea.prefWidthProperty().bind(vbox.widthProperty().subtract(20));
 
 		HBox hbox = new HBox(10);
-		hbox.getChildren().addAll(butPreview, butDone, lblVoice, combobox);
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+		hbox.getChildren().addAll(lblVoice, combobox,butPreview,spacer,butDone);
+		hbox.setAlignment(Pos.CENTER);
 
 		vbox.getChildren().addAll(label, textArea, hbox);
 		_previewStage.setTitle("Preview highlighted text");
