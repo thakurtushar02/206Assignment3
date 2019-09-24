@@ -137,6 +137,7 @@ public class Create {
 
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
+						_popup.closeComputeStagePopup();
 						try(BufferedReader fileReader = new BufferedReader(new FileReader(_file.toString()))){
 							String line = fileReader.readLine();
 							if(line.contains("not found :^(")) {
@@ -146,7 +147,6 @@ public class Create {
 								message.setText("");
 								_term = term;
 								displayLines(term);
-								_popup.closeComputeStagePopup();
 							}
 						} catch (IOException e) {
 							e.printStackTrace();

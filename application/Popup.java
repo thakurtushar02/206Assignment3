@@ -1,6 +1,7 @@
 package application;
 
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -23,12 +24,12 @@ public class Popup {
 	private Stage _computing = new Stage();
 	private Stage _textStage = new Stage();
 	private Stage _previewStage = new Stage();
-	
+
 	public void setViewCreate(View view, Create create) {
 		_create = create;
 		_view = view;
 	}
-	
+
 	public void showStage(String name, String output, String button1, String button2, boolean isView){
 		if(isView) {
 			_popup.setTitle("Delete Creation");
@@ -74,7 +75,7 @@ public class Popup {
 		_popup.setScene(stageScene);
 		_popup.show();
 	}
-	
+
 	public void action(String name, String nxtAction, boolean isView) {
 		if(isView) {
 			_create.removeCreation(name);
@@ -91,7 +92,7 @@ public class Popup {
 			}
 		}
 	}
-	
+
 	public void showFeedback(String name, boolean isView) {
 		Label confirmation = new Label();
 		if(isView) {
@@ -104,16 +105,16 @@ public class Popup {
 		Button cont = new Button("OK");
 		cont.setMinWidth(100);
 		cont.setPadding(new Insets(5,10,5,10));
-		
+
 		cont.setOnAction(e -> {
 			_confirmPopup.close();
 		});
-		
+
 		confirmation.setFont(new Font("Arial", 14));
 		confirmation.setTextAlignment(TextAlignment.CENTER);
 		confirmation.setLineSpacing(5);
 		confirmation.setPrefHeight(100);
-		
+
 		if(isView) {
 			confirmation.setText("Creation " + name + " successfully deleted");
 		}else {
@@ -130,24 +131,24 @@ public class Popup {
 		_confirmPopup.setScene(stageScene);
 		_confirmPopup.show();
 	}
-	
+
 	public void computeStagePopup() {
 		VBox vbox = new VBox(10);
-        Label searchText = new Label("Computing... Please wait...");
-        ProgressBar pb = new ProgressBar();
-        pb.prefWidthProperty().bind(vbox.widthProperty());
-        vbox.getChildren().addAll(searchText, pb);
-        _computing.setTitle("Computing Task");
-        _computing.setScene(new Scene(vbox, 275, 75));
+		Label searchText = new Label("Computing... Please wait...");
+		ProgressBar pb = new ProgressBar();
+		pb.prefWidthProperty().bind(vbox.widthProperty());
+		vbox.getChildren().addAll(searchText, pb);
+		_computing.setTitle("Computing Task");
+		_computing.setScene(new Scene(vbox, 275, 75));
 		_computing.show();
 	}
-	
+
 	public void closeComputeStagePopup() {
 		_computing.close();
 	}
 
 	public void editText() {
-		
+
 		VBox vbox = new VBox(10);
 		vbox.setPadding(new Insets(10,10,0,10));
 		Label label = new Label("Double click on the line in the list you want to edit. "
@@ -167,12 +168,12 @@ public class Popup {
 		label.setWrapText(true);
 		Button butOK = new Button("I understand. Now let me edit!");
 		butOK.prefWidthProperty().bind(vbox.widthProperty());
-		
+
 		vbox.getChildren().addAll(label, butOK);
 		_textStage.setTitle("Editing text: Some Things You Should Know");
 		_textStage.setScene(new Scene(vbox, 800, 400));
 		_textStage.show();
-		
+
 		butOK.setOnAction(e -> {
 			_textStage.close();
 		});
@@ -196,23 +197,36 @@ public class Popup {
 		Button butDone = new Button("Done Previewing");
 		Label label = new Label("Highlight the text you want to preview using speech synthesiser, then click \"Play\"");
 		label.setWrapText(true);
-		
+
 		VBox vbox = new VBox(10);
 		vbox.setPadding(new Insets(10,10,10,10));
 		textArea.prefHeightProperty().bind(vbox.heightProperty().subtract(20));
 		textArea.prefWidthProperty().bind(vbox.widthProperty().subtract(20));
-		
+
 		HBox hbox = new HBox(10);
 		hbox.getChildren().addAll(butPreview, butDone);
-		
+
 		vbox.getChildren().addAll(label, textArea, hbox);
 		_previewStage.setTitle("Preview highlighted text");
 		_previewStage.setScene(new Scene(vbox, 800, 400));
 		_previewStage.show();
-		textArea.getSelectedText();
-		
+
 		butDone.setOnAction(e -> {
 			_previewStage.close();
+		});
+
+		butPreview.setOnAction(e -> {
+			Task<Void> task = new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {
+					String cmd = "echo \"" + textArea.getSelectedText() + "\" | festival --tts";
+					ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+					Process process = builder.start();
+					process.waitFor();
+					return null;
+				}
+			};
+			new Thread(task).start();
 		});
 	}
 }
