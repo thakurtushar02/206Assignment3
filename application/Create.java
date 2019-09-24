@@ -21,6 +21,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -40,7 +41,11 @@ public class Create {
 	private String _name;
 	private Popup _popup;
 	private File _file;
-  
+	private final String EMPTY = "Empty";
+	private final String VALID = "Valid";
+	private final String DUPLICATE = "Duplicate";
+	private final String INVALID = "Invalid";
+
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
 		_popup = popup;
@@ -94,9 +99,9 @@ public class Create {
 						while ((line = stdout.readLine()) != null) {
 							out.println(line);
 						}
-						
+
 						out.close();
-						
+
 						String[] cmd = {"sed", "-i", "s/[.] /&\\n/g", _file.toString()};
 						ProcessBuilder editFile = new ProcessBuilder(cmd);
 						Process edit = editFile.start();
@@ -117,7 +122,7 @@ public class Create {
 								System.err.println(line2);
 							}
 						}
-						
+
 					} else {
 						String line;
 						while ((line = stderr.readLine()) != null) {
@@ -132,6 +137,7 @@ public class Create {
 
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
+						_popup.closeComputeStagePopup();
 						try(BufferedReader fileReader = new BufferedReader(new FileReader(_file.toString()))){
 							String line = fileReader.readLine();
 							if(line.contains("not found :^(")) {
@@ -141,7 +147,6 @@ public class Create {
 								message.setText("");
 								_term = term;
 								displayLines(term);
-								_popup.closeComputeStagePopup();
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -166,12 +171,12 @@ public class Create {
 		Label prompt = new Label("How many lines do you want in your creation:");
 		prompt.setFont(new Font("Arial", 14));
 		TextField numberTextField = new TextField();
-		 // Allow only numbers to be entered into the text field.
-        	numberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            	if (!newValue.matches("\\d*")) {
-                	numberTextField.setText(newValue.replaceAll("[^\\d]", ""));
-            	}
-        	});
+		// Allow only numbers to be entered into the text field.
+		numberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.matches("\\d*")) {
+				numberTextField.setText(newValue.replaceAll("[^\\d]", ""));
+			}
+		});
 		numberTextField.setMaxWidth(100);
 
 		ListView<String> list = new ListView<String>();
@@ -208,11 +213,72 @@ public class Create {
 				_popup.showStage("", "Please enter an integer number. Would you like to continue?", "Yes", "No", false);
 			}
 		});
-		HBox lineOptions = new HBox(prompt, numberTextField, butNum);
+
+		Button butText = new Button("Edit Text");
+		Button butDone = new Button("Done Edit");
+		Button butPreview = new Button("Preview Text");
+
+		HBox lineOptions = new HBox(prompt, numberTextField, butNum, butPreview, butText);
 		lineOptions.setSpacing(15);
 		lineContents.setBottom(lineOptions);
-
 		_tab.setContent(lineContents);
+
+		butText.setOnAction(e -> {
+			_popup.editText();
+			list.setEditable(true);
+			list.setCellFactory(TextFieldListCell.forListView());
+			lineOptions.getChildren().removeAll(prompt, numberTextField, butNum, butPreview, butText);
+			lineOptions.getChildren().add(butDone);
+		});
+
+		butDone.setOnAction(e -> {
+			list.setEditable(false);
+			lineOptions.getChildren().remove(butDone);
+			lineOptions.getChildren().addAll(prompt, numberTextField, butNum, butPreview, butText);
+			try {
+				String fileName = _file.getName();
+				FileWriter fw = new FileWriter(fileName, false);
+				fw.write("");
+				fw.close();
+				fw = new FileWriter(fileName, true);
+				int count = 1;
+				for (String s: listLines) {
+					if (s.length() < 4) {
+						continue;
+					}
+					String newString= "";
+					if (count < 10) {
+						String[] sArray = s.substring(3).split("\\. ");
+						for (String st: sArray) {
+							if (st.endsWith(".")) {
+								newString += st + "\n";
+							} else {
+								newString += st + ".\n";
+							}
+						}
+					} else {
+						String[] sArray = s.substring(4).split("\\. ");
+						for (String st: sArray) {
+							if (st.endsWith(".")) {
+								newString += st + "\n";
+							} else {
+								newString += st + ".\n";
+							}
+						}
+					}
+					fw.write(newString);
+					count++;
+				}
+				fw.close();
+			} catch (IOException ioe){
+				ioe.getMessage();
+			}
+			displayLines(reply);
+		});
+
+		butPreview.setOnAction(e -> {
+			_popup.previewText(listLines);
+		});
 	}
 
 	public boolean getLines(int input, String reply) {
@@ -254,11 +320,11 @@ public class Create {
 		cre.setFont(new Font("Arial", 16));
 		TextField wordTextField = new TextField();
 		// Disallow / and \0 characters which Ubuntu doesn't use for file names.
-        wordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if ((newValue.contains("/")) || (newValue.contains("\0"))) {
-                wordTextField.setText(oldValue);
-            }
-        });
+		wordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if ((newValue.contains("/")) || (newValue.contains("\0"))) {
+				wordTextField.setText(oldValue);
+			}
+		});
 
 		HBox nameBar = new HBox(cre, wordTextField, butNam);
 		nameBar.setSpacing(15);
@@ -272,14 +338,16 @@ public class Create {
 				String reply = wordTextField.getText();
 				String validity = checkName(reply);
 				_name = reply;
-				if(validity=="Valid") {
+				if (validity.equals(EMPTY)) {
+					mes.setText("You haven't entered a creation name! Please try again.");
+				} else if (validity.equals(VALID)) {
 					mes.setText("");
 					_name = reply;
 					addCreation();
-				} else if(validity=="Duplicate"){
+				} else if (validity.equals(DUPLICATE)) {
 					_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
 				}
-				else {
+				else if (validity.equals(INVALID)){
 					mes.setText("Creation name contains invalid characters, please try again.");
 				}
 			}
@@ -293,13 +361,17 @@ public class Create {
 	public String checkName(String reply) {
 		File file = new File(reply + ".mp4");
 		if(file.exists()) {
-			return "Duplicate";
+			return DUPLICATE;
 		} else {
 			String newName = reply.replaceAll("[^a-zA-Z0-9_\\-\\.]", "_");
 			if(newName == reply) {
-				return "Valid";
+				if (reply.isEmpty() == false) {
+					return VALID;
+				} else {
+					return EMPTY;
+				}	
 			}else {
-				return "Invalid";
+				return INVALID;
 			}
 		}
 	}
@@ -310,7 +382,7 @@ public class Create {
 			@Override public Void call() {
 				String cmd = "cat " + _file.toString() + " | text2wave -o temp.wav";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-				
+
 				try {
 					Process process = builder.start();
 					process.waitFor();

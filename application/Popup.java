@@ -1,11 +1,14 @@
 package application;
 
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -19,12 +22,14 @@ public class Popup {
 	private Stage _popup = new Stage();
 	private Stage _confirmPopup = new Stage();
 	private Stage _computing = new Stage();
-	
+	private Stage _textStage = new Stage();
+	private Stage _previewStage = new Stage();
+
 	public void setViewCreate(View view, Create create) {
 		_create = create;
 		_view = view;
 	}
-	
+
 	public void showStage(String name, String output, String button1, String button2, boolean isView){
 		if(isView) {
 			_popup.setTitle("Delete Creation");
@@ -70,7 +75,7 @@ public class Popup {
 		_popup.setScene(stageScene);
 		_popup.show();
 	}
-	
+
 	public void action(String name, String nxtAction, boolean isView) {
 		if(isView) {
 			_create.removeCreation(name);
@@ -87,7 +92,7 @@ public class Popup {
 			}
 		}
 	}
-	
+
 	public void showFeedback(String name, boolean isView) {
 		Label confirmation = new Label();
 		if(isView) {
@@ -100,16 +105,16 @@ public class Popup {
 		Button cont = new Button("OK");
 		cont.setMinWidth(100);
 		cont.setPadding(new Insets(5,10,5,10));
-		
+
 		cont.setOnAction(e -> {
 			_confirmPopup.close();
 		});
-		
+
 		confirmation.setFont(new Font("Arial", 14));
 		confirmation.setTextAlignment(TextAlignment.CENTER);
 		confirmation.setLineSpacing(5);
 		confirmation.setPrefHeight(100);
-		
+
 		if(isView) {
 			confirmation.setText("Creation " + name + " successfully deleted");
 		}else {
@@ -126,19 +131,102 @@ public class Popup {
 		_confirmPopup.setScene(stageScene);
 		_confirmPopup.show();
 	}
-	
+
 	public void computeStagePopup() {
 		VBox vbox = new VBox(10);
-        Label searchText = new Label("Computing... Please wait...");
-        ProgressBar pb = new ProgressBar();
-        pb.prefWidthProperty().bind(vbox.widthProperty());
-        vbox.getChildren().addAll(searchText, pb);
-        _computing.setTitle("Computing Task");
-        _computing.setScene(new Scene(vbox, 275, 75));
+		Label searchText = new Label("Computing... Please wait...");
+		ProgressBar pb = new ProgressBar();
+		pb.prefWidthProperty().bind(vbox.widthProperty());
+		vbox.getChildren().addAll(searchText, pb);
+		_computing.setTitle("Computing Task");
+		_computing.setScene(new Scene(vbox, 275, 75));
 		_computing.show();
 	}
-	
+
 	public void closeComputeStagePopup() {
 		_computing.close();
+	}
+
+	public void editText() {
+
+		VBox vbox = new VBox(10);
+		vbox.setPadding(new Insets(10,10,0,10));
+		Label label = new Label("Double click on the line in the list you want to edit. "
+				+ "After finishing editing, press enter to confirm edit for that line.\n"
+				+ "Repeat until all desired lines are edited.\n"
+				+ "Finally, press \"Done Edit\" to finalise editing.\n\n"
+				+ "Note: To add a line, simply add the line to the line before where you want it. "
+				+ "If you want to add a line between 4 and 5, simply write the line on line 4 and end with full stop.\n\n"
+				+ "For example:\n\t"
+				+ "4. Fourth Sentence. Added sentence. \n\t5. Fifth sentence.\n"
+				+ "After pressing \"Done Edit\", the above will become \n\t"
+				+ "4. Fourth Setence.\n\t5. Added sentence.\n\t6. Fifth sentence.\n\n"
+				+ "To delete a line, simply remove all text from that line.\n\n"
+				+ "Please do not remove line counts otherwise eg. Keep \"1. \" \"3. \" etc, (with space after dot)\n"
+				+ "Don't worry, they won't show up in the final creation :)\n\n"
+				+ "Have fun editing!");
+		label.setWrapText(true);
+		Button butOK = new Button("I understand. Now let me edit!");
+		butOK.prefWidthProperty().bind(vbox.widthProperty());
+
+		vbox.getChildren().addAll(label, butOK);
+		_textStage.setTitle("Editing text: Some Things You Should Know");
+		_textStage.setScene(new Scene(vbox, 800, 400));
+		_textStage.show();
+
+		butOK.setOnAction(e -> {
+			_textStage.close();
+		});
+
+	}
+
+	public void previewText(ObservableList<String> listLines) {
+		String textString = "";
+		int count = 1;
+		for (String s: listLines) {
+			if (count < 10) {
+				textString += s.substring(3) + "\n";
+			} else {
+				textString += s.substring(5) + "\n";
+			}
+			count++;
+		}
+		TextArea textArea = new TextArea(textString);
+		textArea.setEditable(false);
+		Button butPreview = new Button("Play");
+		Button butDone = new Button("Done Previewing");
+		Label label = new Label("Highlight the text you want to preview using speech synthesiser, then click \"Play\"");
+		label.setWrapText(true);
+
+		VBox vbox = new VBox(10);
+		vbox.setPadding(new Insets(10,10,10,10));
+		textArea.prefHeightProperty().bind(vbox.heightProperty().subtract(20));
+		textArea.prefWidthProperty().bind(vbox.widthProperty().subtract(20));
+
+		HBox hbox = new HBox(10);
+		hbox.getChildren().addAll(butPreview, butDone);
+
+		vbox.getChildren().addAll(label, textArea, hbox);
+		_previewStage.setTitle("Preview highlighted text");
+		_previewStage.setScene(new Scene(vbox, 800, 400));
+		_previewStage.show();
+
+		butDone.setOnAction(e -> {
+			_previewStage.close();
+		});
+
+		butPreview.setOnAction(e -> {
+			Task<Void> task = new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {
+					String cmd = "echo \"" + textArea.getSelectedText() + "\" | festival --tts";
+					ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+					Process process = builder.start();
+					process.waitFor();
+					return null;
+				}
+			};
+			new Thread(task).start();
+		});
 	}
 }
