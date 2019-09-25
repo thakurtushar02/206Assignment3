@@ -15,15 +15,20 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
@@ -164,9 +169,9 @@ public class Create {
 		lineContents.setPadding(new Insets(15,10,10,15));
 		lineContents.setMaxHeight(360);
 
-		Label title = new Label(reply);
+		Label title = new Label("Results for \"" + reply + "\"");
 		title.setFont(new Font("Arial", 16));
-		lineContents.setTop(title);
+		//lineContents.setTop(title);
 
 		Label prompt = new Label("How many lines do you want in your creation:");
 		prompt.setFont(new Font("Arial", 14));
@@ -180,26 +185,63 @@ public class Create {
 		numberTextField.setMaxWidth(100);
 
 		ListView<String> list = new ListView<String>();
-		ObservableList<String> listLines = FXCollections.observableArrayList();
+		ObservableList<String> listLines = FXCollections.observableArrayList("");
 		list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		BufferedReader reader;
 
-		try {
-			reader = new BufferedReader(new FileReader(_file.toString()));
-			String line = null;
-			int i = 1;
-			while((line = reader.readLine()) != null) {
-				listLines.add(i + ". " + line);
-				i++;
-			}
-			//listLines.remove(i-2);
-			lineCount = i;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			reader = new BufferedReader(new FileReader(_file.toString()));
+//			String line = null;
+//			int i = 1;
+//			while((line = reader.readLine()) != null) {
+//				listLines.add(i + ". " + line);
+//				i++;
+//			}
+//			//listLines.remove(i-2);
+//			lineCount = i;
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		list.setItems(listLines);
-		lineContents.setCenter(list);
+		//lineContents.setCenter(list);
 		BorderPane.setMargin(list, new Insets(10,0,10,0));
+		
+		//text area
+		HBox views= new HBox();
+		
+		TextArea textArea = new TextArea();
+		textArea.setEditable(true);
+		textArea.prefHeightProperty().bind(views.heightProperty());
+		textArea.prefWidthProperty().bind(views.widthProperty().subtract(200));
+		
+		BufferedReader fileContent;
+		try {
+			fileContent = new BufferedReader(new FileReader(_file));
+			String line;
+			int i = 1;
+			while ((line = fileContent.readLine()) != null) {
+					textArea.appendText(line + "\n");
+					i++;
+				}
+			fileContent.close();
+			} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			}
+		
+		Label lblList = new Label("Saved audio");
+		lblList.setFont(new Font("Arial", 16));
+		
+		VBox text = new VBox(title, textArea);
+		VBox listView = new VBox(lblList, list);
+		
+		listView.setSpacing(10);
+		text.setSpacing(10);
+		
+		views.getChildren().addAll(text, listView);
+		//views.setPadding(new Insets(10));
+		views.setSpacing(10);
+		HBox.setHgrow(views, Priority.ALWAYS);
 
 		Button butNum = new Button("Submit");
 		butNum.setOnAction(e -> {
@@ -213,73 +255,121 @@ public class Create {
 				_popup.showStage("", "Please enter an integer number. Would you like to continue?", "Yes", "No", false);
 			}
 		});
+		
+		ObservableList<String> voices = FXCollections.observableArrayList("Default", "Espeak");
+		final ComboBox<String> combobox = new ComboBox<String>(voices);
+		combobox.setValue("Default");
+		Label lblVoice = new Label("Voice: ");
+		Button butPlay = new Button("Play");
+		Button butSave = new Button("Save");
 
-		Button butText = new Button("Edit Text");
-		Button butDone = new Button("Done Edit");
-		Button butPreview = new Button("Preview Text");
+		final Pane spacer = new Pane();
+		spacer.setMinSize(10, 1);
 
-		HBox lineOptions = new HBox(prompt, numberTextField, butNum, butPreview, butText);
+		HBox lineOptions = new HBox(lblVoice, combobox,  butPlay, butSave, spacer);
 		lineOptions.setSpacing(15);
-		lineContents.setBottom(lineOptions);
-		_tab.setContent(lineContents);
-
-		butText.setOnAction(e -> {
-			_popup.editText();
-			list.setEditable(true);
-			list.setCellFactory(TextFieldListCell.forListView());
-			lineOptions.getChildren().removeAll(prompt, numberTextField, butNum, butPreview, butText);
-			lineOptions.getChildren().add(butDone);
-		});
-
-		butDone.setOnAction(e -> {
-			list.setEditable(false);
-			lineOptions.getChildren().remove(butDone);
-			lineOptions.getChildren().addAll(prompt, numberTextField, butNum, butPreview, butText);
-			try {
-				String fileName = _file.getName();
-				FileWriter fw = new FileWriter(fileName, false);
-				fw.write("");
-				fw.close();
-				fw = new FileWriter(fileName, true);
-				int count = 1;
-				for (String s: listLines) {
-					if (s.length() < 4) {
-						continue;
-					}
-					String newString= "";
-					if (count < 10) {
-						String[] sArray = s.substring(3).split("\\. ");
-						for (String st: sArray) {
-							if (st.endsWith(".")) {
-								newString += st + "\n";
-							} else {
-								newString += st + ".\n";
-							}
-						}
+		
+		VBox layout = new VBox(views, lineOptions);
+		layout.setPadding(new Insets(10));
+		layout.setSpacing(10);
+		//lineContents.setBottom(lineOptions);
+		_tab.setContent(layout);
+		
+		butPlay.setOnAction(e -> {
+			Task<Void> task = new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {				
+					String voice;
+					String selection = combobox.getSelectionModel().getSelectedItem();
+					if ( selection.equals("Default")) {
+						voice = "festival --tts";
 					} else {
-						String[] sArray = s.substring(4).split("\\. ");
-						for (String st: sArray) {
-							if (st.endsWith(".")) {
-								newString += st + "\n";
-							} else {
-								newString += st + ".\n";
+						voice = "espeak";
+					}
+					
+					
+					String command = "echo \"" + textArea.getSelectedText() + " \" | " + voice ;
+					ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
+					
+					try {
+						Process p = pb.start();
+						BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+						int exitStatus = p.waitFor();
+						
+						if (exitStatus != 0) {
+							String line2;
+							while ((line2 = stderr.readLine()) != null) {
+								System.err.println(line2);
 							}
 						}
+						
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-					fw.write(newString);
-					count++;
+					return null;
 				}
-				fw.close();
-			} catch (IOException ioe){
-				ioe.getMessage();
-			}
-			displayLines(reply);
-		});
-
-		butPreview.setOnAction(e -> {
-			_popup.previewText(_file);
+			};
+			new Thread(task).start();
 		});
 	}
+
+//		butText.setOnAction(e -> {
+//			_popup.editText();
+//			list.setEditable(true);
+//			list.setCellFactory(TextFieldListCell.forListView());
+//			lineOptions.getChildren().removeAll(prompt, numberTextField, butNum, butPreview, butText);
+//			lineOptions.getChildren().add(butDone);
+//		});
+
+//		butDone.setOnAction(e -> {
+//			list.setEditable(false);
+//			lineOptions.getChildren().remove(butDone);
+//			lineOptions.getChildren().addAll(prompt, numberTextField, butNum, butPreview, butText);
+//			try {
+//				String fileName = _file.getName();
+//				FileWriter fw = new FileWriter(fileName, false);
+//				fw.write("");
+//				fw.close();
+//				fw = new FileWriter(fileName, true);
+//				int count = 1;
+//				for (String s: listLines) {
+//					if (s.length() < 4) {
+//						continue;
+//					}
+//					String newString= "";
+//					if (count < 10) {
+//						String[] sArray = s.substring(3).split("\\. ");
+//						for (String st: sArray) {
+//							if (st.endsWith(".")) {
+//								newString += st + "\n";
+//							} else {
+//								newString += st + ".\n";
+//							}
+//						}
+//					} else {
+//						String[] sArray = s.substring(4).split("\\. ");
+//						for (String st: sArray) {
+//							if (st.endsWith(".")) {
+//								newString += st + "\n";
+//							} else {
+//								newString += st + ".\n";
+//							}
+//						}
+//					}
+//					fw.write(newString);
+//					count++;
+//				}
+//				fw.close();
+//			} catch (IOException ioe){
+//				ioe.getMessage();
+//			}
+//			displayLines(reply);
+//		});
+//
+//		butPreview.setOnAction(e -> {
+//			_popup.previewText(_file);
+//		});
+//	}
 
 	public boolean getLines(int input, String reply) {
 		if(input>=lineCount || input<=0) {
