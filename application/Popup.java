@@ -227,7 +227,7 @@ public class Popup {
 		Label lblVoice = new Label("Voice: ");
 		label.setWrapText(true);
 		
-		ObservableList<String> voices = FXCollections.observableArrayList("Default", "NZ Female", "NZ Male");
+		ObservableList<String> voices = FXCollections.observableArrayList("Default", "Espeak");
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
 		combobox.setValue("Default");
 		
@@ -257,22 +257,20 @@ public class Popup {
 			Task<Void> task = new Task<Void>() {
 				@Override
 				protected Void call() throws Exception {
-					String cmd = "echo \"" + textArea.getSelectedText() + "\" > preview.txt";
-					ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-					Process process = builder.start();
-					process.waitFor();
+					String cmd;
+//					ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+//					Process process = builder.start();
+//					process.waitFor();
 					
 					String voice;
 					String selection = combobox.getSelectionModel().getSelectedItem();
 					if ( selection.equals("Default")) {
-						voice = "(voice_kal_diphone)";
-					} else if (selection.equals("NZ Female")) {
-						voice = "(voice_akl_nz_cw_cg_cg)";
+						voice = "tts";
 					} else {
-						voice = "(voice_akl_nz_jdt_diphone)";
+						voice = "espeak";
 					}
 					
-					String command = "festival '" + voice + "' '(tts \"preview.txt\" nil)'";
+					String command = "echo \"" + textArea.getText() + " \" | " + voice ;
 					ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
 					
 					try {
