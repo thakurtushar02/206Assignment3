@@ -21,6 +21,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -187,8 +188,6 @@ public class Create {
 		ListView<String> list = new ListView<String>();
 		ObservableList<String> listLines = FXCollections.observableArrayList("");
 		list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		BufferedReader reader;
-
 //		try {
 //			reader = new BufferedReader(new FileReader(_file.toString()));
 //			String line = null;
@@ -263,13 +262,25 @@ public class Create {
 		Button butPlay = new Button("Play");
 		Button butSave = new Button("Save");
 
-		final Pane spacer = new Pane();
-		spacer.setMinSize(10, 1);
-
-		HBox lineOptions = new HBox(lblVoice, combobox,  butPlay, butSave, spacer);
+		Slider slider = new Slider();
+		slider.setMin(1);
+		slider.setMax(10);
+		slider.setValue(1);
+		slider.setMajorTickUnit(1f);
+		slider.isSnapToTicks();
+		slider.setShowTickLabels(true);
+		slider.setShowTickMarks(true);
+		
+		Label photos = new Label("Number of pictures");
+		
+		slider.valueProperty().addListener((obs, oldval, newVal) -> 
+				slider.setValue(newVal.intValue()));
+		
+	
+		HBox lineOptions = new HBox(lblVoice, combobox,  butPlay, butSave);
 		lineOptions.setSpacing(15);
 		
-		VBox layout = new VBox(views, lineOptions);
+		VBox layout = new VBox(views, lineOptions,photos,slider);
 		layout.setPadding(new Insets(10));
 		layout.setSpacing(10);
 		//lineContents.setBottom(lineOptions);
@@ -286,7 +297,6 @@ public class Create {
 					} else {
 						voice = "espeak";
 					}
-					
 					
 					String command = "echo \"" + textArea.getSelectedText() + " \" | " + voice ;
 					ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
