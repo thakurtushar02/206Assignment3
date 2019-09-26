@@ -26,6 +26,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
@@ -54,6 +55,7 @@ public class Create {
 	private String _name;
 	private Popup _popup;
 	private File _file;
+	private TabPane _tabPane;
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
@@ -79,13 +81,7 @@ public class Create {
 
 		message.setFont(new Font("Arial", 14));
 
-		searchButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				String reply = search.getText();
-				searchTerm(reply);
-			}
-		});
+		searchButton.setOnAction(e -> searchTerm(search.getText()));
 
 		contents = new VBox(searchBar, message);
 		contents.setPadding(new Insets(15,10,10,15));
@@ -173,53 +169,27 @@ public class Create {
 	}
 
 	public void displayLines(String reply) {
-
+		_tabPane.getTabs().remove(0);
+		_tabPane.getTabs().remove(0);
+		
 		Label title = new Label("Results for \"" + reply + "\"");
 		title.setFont(new Font("Arial", 16));
-		//lineContents.setTop(title);
+		
 
 		ListView<String> list = new ListView<String>();
 		ObservableList<String> listLines = FXCollections.observableArrayList();
-		//list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
 		list.setEditable(true);
 		list.setCellFactory(TextFieldListCell.forListView());
-		listLines.add("A");
-		listLines.add("B");
-		listLines.add("C");
-		listLines.add("D");
-		listLines.add("E");
-		listLines.add("F");
-		listLines.add("G");
-		listLines.add("H");
+		listLines.addAll("A","B","C","D","E","F","G","H","A","B","C","D","E","F","G","H",
+				"A","B","C","D","E","F","G","H","A","B","C","D","E","F","G","H");
 		
-		//		try {
-		//			reader = new BufferedReader(new FileReader(_file.toString()));
-		//			String line = null;
-		//			int i = 1;
-		//			while((line = reader.readLine()) != null) {
-		//				listLines.add(i + ". " + line);
-		//				i++;
-		//			}
-		//			//listLines.remove(i-2);
-		//			lineCount = i;
-		//		} catch (IOException e) {
-		//			e.printStackTrace();
-		//		}
 		list.setItems(listLines);
-		
-		BorderPane.setMargin(list, new Insets(10,0,10,0));
-		
 
-		//text area
 		HBox views= new HBox();
-
 		TextArea textArea = new TextArea();
 		textArea.setEditable(true);
-		textArea.prefHeightProperty().bind(views.heightProperty());
-		textArea.prefWidthProperty().bind(views.widthProperty().subtract(200));
 		textArea.setWrapText(true);
-		
-		list.prefHeightProperty().bind(views.heightProperty());
 
 		BufferedReader fileContent;
 		try {
@@ -233,24 +203,24 @@ public class Create {
 			e.printStackTrace();
 		}
 		textArea.setText(textArea.getText().substring(2));
+		
+		
 		Label lblList = new Label("Saved audio");
 		lblList.setFont(new Font("Arial", 16));
-		
-		
 		Label info = new Label("Move up/down to get desired order");
 		info.setFont(new Font("Arial", 12));
 
 		VBox text = new VBox(title, textArea);
-		VBox listView = new VBox(lblList, info, list);
-		listView.setAlignment(Pos.CENTER_RIGHT);
-
-		listView.setSpacing(10);
 		text.setSpacing(10);
 
+		VBox.setVgrow(textArea, Priority.ALWAYS);
+		
+		VBox listView = new VBox(lblList, info, list);
+		listView.setAlignment(Pos.CENTER_RIGHT);
+		listView.setSpacing(10);
+		
 		views.getChildren().addAll(text, listView);
-		//views.setPadding(new Insets(10));
 		views.setSpacing(10);
-		HBox.setHgrow(views, Priority.ALWAYS);
 
 		ObservableList<String> voices = FXCollections.observableArrayList("Default", "Espeak");
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
@@ -264,8 +234,6 @@ public class Create {
 		Button butCombine = new Button("Combine");
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
-		HBox.setHgrow(spacer, Priority.ALWAYS);
-
 
 		Slider slider = new Slider();
 		slider.setMin(1);
@@ -279,13 +247,12 @@ public class Create {
 		Label photos = new Label("Choose Number of Pictures");
 		photos.setFont(new Font("Arial", 16));
 
-		slider.valueProperty().addListener((obs, oldval, newVal) -> 
-		slider.setValue(newVal.intValue()));
+		slider.valueProperty().addListener((obs, oldval, newVal) -> slider.setValue(newVal.intValue()));
 
 
 		HBox lineOptions = new HBox(lblVoice, combobox, butPlay, butSave, spacer, butUp, butDown, butDelete);
 		lineOptions.setSpacing(15);
-		
+		lineOptions.setAlignment(Pos.BOTTOM_CENTER);
 
 		TextField nameField = new TextField();
 		nameField.setPromptText("Enter name of creation");
@@ -297,15 +264,20 @@ public class Create {
 		
 		final Pane spacer2 = new Pane();
 		spacer2.setMinSize(10, 1);
+		
+		HBox.setHgrow(text, Priority.ALWAYS);
+		HBox.setHgrow(spacer, Priority.ALWAYS);
 		HBox.setHgrow(spacer2, Priority.ALWAYS);
+		VBox.setVgrow(textArea, Priority.ALWAYS);
+
 		
 		HBox nameLayout = new HBox(photos, spacer2, nameField, butCombine);
+		nameLayout.setAlignment(Pos.BOTTOM_CENTER);
+		
 		VBox layout = new VBox(views, lineOptions, nameLayout, slider);
 		layout.setPadding(new Insets(10));
 		layout.setSpacing(10);
-		views.prefHeightProperty().bind(layout.heightProperty().subtract(150));
 
-		//lineContents.setBottom(lineOptions);
 		_tab.setContent(layout);
 
 		butPlay.setOnAction(e -> {
@@ -578,5 +550,9 @@ public class Create {
 	public void removeCreation(String name) {
 		File file = new File(name + ".mp4");
 		file.delete();
+	}
+
+	public void storeTabs(TabPane tabPane) {
+		_tabPane = tabPane;
 	}
 }

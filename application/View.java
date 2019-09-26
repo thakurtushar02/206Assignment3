@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
@@ -33,6 +34,7 @@ public class View {
 	public View(Tab tab, Popup popup) {
 		_tab = tab;
 		_popup = popup;
+		
 	}
 
 	public void setContents() {
@@ -74,11 +76,13 @@ public class View {
 		sideOptions.setSpacing(15);
 
 		optionBox = new HBox(creations, sideOptions);
-
+		HBox.setHgrow(creations, Priority.ALWAYS);
+		HBox.setHgrow(sideOptions, Priority.ALWAYS);
 		contents = new VBox(title, optionBox);
 		contents.setPadding(new Insets(10,10,10,10));
 		contents.setSpacing(10);
 		_tab.setContent(contents);
+		
 	}
 
 	public void findCreations() throws IOException {

@@ -40,10 +40,11 @@ public class Main extends Application {
 		
 		tabPane.getTabs().addAll(homeTab, viewTab, createTab);
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+		create.storeTabs(tabPane);
 		
 		root.setTop(tabPane);
 		
-		Scene scene = new Scene(root,800,400);
+		Scene scene = new Scene(root,800, 650);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.show();
