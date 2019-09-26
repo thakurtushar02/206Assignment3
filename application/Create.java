@@ -208,6 +208,7 @@ public class Create {
 		list.setItems(listLines);
 		
 		BorderPane.setMargin(list, new Insets(10,0,10,0));
+		
 
 		//text area
 		HBox views= new HBox();
@@ -217,6 +218,8 @@ public class Create {
 		textArea.prefHeightProperty().bind(views.heightProperty());
 		textArea.prefWidthProperty().bind(views.widthProperty().subtract(200));
 		textArea.setWrapText(true);
+		
+		list.prefHeightProperty().bind(views.heightProperty());
 
 		BufferedReader fileContent;
 		try {
@@ -282,6 +285,7 @@ public class Create {
 
 		HBox lineOptions = new HBox(lblVoice, combobox, butPlay, butSave, spacer, butUp, butDown, butDelete);
 		lineOptions.setSpacing(15);
+		
 
 		TextField nameField = new TextField();
 		nameField.setPromptText("Enter name of creation");
@@ -299,7 +303,7 @@ public class Create {
 		VBox layout = new VBox(views, lineOptions, nameLayout, slider);
 		layout.setPadding(new Insets(10));
 		layout.setSpacing(10);
-		views.prefHeightProperty().bind(layout.heightProperty());
+		views.prefHeightProperty().bind(layout.heightProperty().subtract(150));
 
 		//lineContents.setBottom(lineOptions);
 		_tab.setContent(layout);
