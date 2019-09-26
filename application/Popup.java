@@ -1,16 +1,27 @@
 package application;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -180,23 +191,48 @@ public class Popup {
 
 	}
 
-	public void previewText(ObservableList<String> listLines) {
-		String textString = "";
-		int count = 1;
-		for (String s: listLines) {
-			if (count < 10) {
-				textString += s.substring(3) + "\n";
-			} else {
-				textString += s.substring(5) + "\n";
-			}
-			count++;
-		}
-		TextArea textArea = new TextArea(textString);
+	public void previewText(File file) {
+//		String textString = "";
+//		int count = 1;
+//		for (String s: listLines) {
+//			if (count < 10) {
+//				textString += s.substring(3) + "\n";
+//			} else {
+//				textString += s.substring(5) + "\n";
+//			}
+//			count++;
+//		}
+		
+		TextArea textArea = new TextArea();
 		textArea.setEditable(false);
+		
+		BufferedReader fileContent;
+		try {
+			fileContent = new BufferedReader(new FileReader(file));
+			String line;
+			int i = 1;
+			while ((line = fileContent.readLine()) != null) {
+					textArea.appendText(line + "\n");
+					i++;
+				}
+			fileContent.close();
+			} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			}
+		
 		Button butPreview = new Button("Play");
 		Button butDone = new Button("Done Previewing");
 		Label label = new Label("Highlight the text you want to preview using speech synthesiser, then click \"Play\"");
+		Label lblVoice = new Label("Voice: ");
 		label.setWrapText(true);
+		
+		ObservableList<String> voices = FXCollections.observableArrayList("Default", "Espeak");
+		final ComboBox<String> combobox = new ComboBox<String>(voices);
+		combobox.setValue("Default");
+		
+		final Pane spacer = new Pane();
+		spacer.setMinSize(10, 1);
 
 		VBox vbox = new VBox(10);
 		vbox.setPadding(new Insets(10,10,10,10));
@@ -204,7 +240,9 @@ public class Popup {
 		textArea.prefWidthProperty().bind(vbox.widthProperty().subtract(20));
 
 		HBox hbox = new HBox(10);
-		hbox.getChildren().addAll(butPreview, butDone);
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+		hbox.getChildren().addAll(lblVoice, combobox,butPreview,spacer,butDone);
+		hbox.setAlignment(Pos.CENTER);
 
 		vbox.getChildren().addAll(label, textArea, hbox);
 		_previewStage.setTitle("Preview highlighted text");
@@ -219,10 +257,37 @@ public class Popup {
 			Task<Void> task = new Task<Void>() {
 				@Override
 				protected Void call() throws Exception {
-					String cmd = "echo \"" + textArea.getSelectedText() + "\" | festival --tts";
-					ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-					Process process = builder.start();
-					process.waitFor();
+					String cmd;
+//					ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+//					Process process = builder.start();
+//					process.waitFor();
+					
+					String voice;
+					String selection = combobox.getSelectionModel().getSelectedItem();
+					if ( selection.equals("Default")) {
+						voice = "tts";
+					} else {
+						voice = "espeak";
+					}
+					
+					String command = "echo \"" + textArea.getText() + " \" | " + voice ;
+					ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
+					
+					try {
+						Process p = pb.start();
+						BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+						int exitStatus = p.waitFor();
+						
+						if (exitStatus != 0) {
+							String line2;
+							while ((line2 = stderr.readLine()) != null) {
+								System.err.println(line2);
+							}
+						}
+						
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					return null;
 				}
 			};
