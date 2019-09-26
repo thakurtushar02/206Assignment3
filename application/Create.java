@@ -320,9 +320,8 @@ public class Create {
 				new Thread(task).start();
 			}
 		});
-		
 		butSave.setOnAction(e -> {
-			String Selectedtext = textArea.getSelectedText();
+			String selectedText = textArea.getSelectedText();
 			//TODO Make audio file from String;
 		});
 		
@@ -351,9 +350,11 @@ public class Create {
 		});
 		
 		butCombine.setOnAction(e -> {
+			//TODO Check if name is valid
 			//TODO Combine audio files into 1 audio file
 			//TODO Then make a video file with correct length and number of pictures.
 			//TODO Then combine audio file with video file
+			//TODO Then add Home and List tabs, and refresh Create tab.
 		});
 		
 		
@@ -507,7 +508,7 @@ public class Create {
 			}
 		}
 	}
-
+	
 	public void addCreation() {
 		_popup.computeStagePopup();
 		Task<Void> task = new Task<Void>() {
