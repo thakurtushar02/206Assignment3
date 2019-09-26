@@ -180,11 +180,17 @@ public class Create {
 
 		ListView<String> list = new ListView<String>();
 		ObservableList<String> listLines = FXCollections.observableArrayList();
-		list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		//list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		list.setEditable(true);
 		list.setCellFactory(TextFieldListCell.forListView());
 		listLines.add("A");
 		listLines.add("B");
+		listLines.add("C");
+		listLines.add("D");
+		listLines.add("E");
+		listLines.add("F");
+		listLines.add("G");
+		listLines.add("H");
 		
 		//		try {
 		//			reader = new BufferedReader(new FileReader(_file.toString()));
@@ -228,8 +234,8 @@ public class Create {
 		lblList.setFont(new Font("Arial", 16));
 		
 		
-		Label info = new Label("Rearrange to get desired order");
-		info.setFont(new Font("Arial", 11));
+		Label info = new Label("Move up/down to get desired order");
+		info.setFont(new Font("Arial", 12));
 
 		VBox text = new VBox(title, textArea);
 		VBox listView = new VBox(lblList, info, list);
@@ -247,8 +253,11 @@ public class Create {
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
 		combobox.setValue("Default");
 		Label lblVoice = new Label("Voice: ");
-		Button butPlay = new Button("Play");
-		Button butSave = new Button("Save");
+		Button butPlay = new Button(" Play ");
+		Button butSave = new Button(" Save ");
+		Button butUp = new Button("  Up  ");
+		Button butDown = new Button(" Down ");
+		Button butDelete = new Button("Delete");
 		Button butCombine = new Button("Combine");
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
@@ -264,17 +273,30 @@ public class Create {
 		slider.setShowTickLabels(true);
 		slider.setShowTickMarks(true);
 
-		Label photos = new Label("Number of pictures");
+		Label photos = new Label("Choose Number of Pictures");
 		photos.setFont(new Font("Arial", 16));
 
 		slider.valueProperty().addListener((obs, oldval, newVal) -> 
 		slider.setValue(newVal.intValue()));
 
 
-		HBox lineOptions = new HBox(lblVoice, combobox, butPlay, butSave, spacer, butCombine);
+		HBox lineOptions = new HBox(lblVoice, combobox, butPlay, butSave, spacer, butUp, butDown, butDelete);
 		lineOptions.setSpacing(15);
 
-		VBox layout = new VBox(views, lineOptions,photos,slider);
+		TextField nameField = new TextField();
+		nameField.setPromptText("Enter name of creation");
+		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if ((newValue.contains("/")) || (newValue.contains("\0"))) {
+				nameField.setText(oldValue);
+			}
+		});
+		
+		final Pane spacer2 = new Pane();
+		spacer2.setMinSize(10, 1);
+		HBox.setHgrow(spacer2, Priority.ALWAYS);
+		
+		HBox nameLayout = new HBox(photos, spacer2, nameField, butCombine);
+		VBox layout = new VBox(views, lineOptions, nameLayout, slider);
 		layout.setPadding(new Insets(10));
 		layout.setSpacing(10);
 		views.prefHeightProperty().bind(layout.heightProperty());
@@ -322,6 +344,43 @@ public class Create {
 				new Thread(task).start();
 			}
 		});
+		
+		butSave.setOnAction(e -> {
+			String Selectedtext = textArea.getSelectedText();
+			//TODO Make audio file from String;
+		});
+		
+		butUp.setOnAction(e -> {
+			int i = list.getSelectionModel().getSelectedIndex();
+			if (i > 0) {
+				String temp = list.getSelectionModel().getSelectedItem();
+				list.getItems().remove(i);
+				list.getItems().add(i-1, temp);
+				list.getSelectionModel().select(i-1);
+			}
+		});
+		
+		butDown.setOnAction(e -> {
+			int i = list.getSelectionModel().getSelectedIndex();
+			if (i < list.getItems().size()-1) {
+				String temp = list.getSelectionModel().getSelectedItem();
+				list.getItems().remove(i);
+				list.getItems().add(i+1, temp);
+				list.getSelectionModel().select(i+1);
+			}
+		});
+		
+		butDelete.setOnAction(e -> {
+			list.getItems().remove(list.getSelectionModel().getSelectedIndex());
+		});
+		
+		butCombine.setOnAction(e -> {
+			//TODO Combine audio files into 1 audio file
+			//TODO Then make a video file with correct length and number of pictures.
+			//TODO Then combine audio file with video file
+		});
+		
+		
 	}
 
 	//		butText.setOnAction(e -> {
@@ -421,11 +480,7 @@ public class Create {
 		cre.setFont(new Font("Arial", 16));
 		TextField wordTextField = new TextField();
 		// Disallow / and \0 characters which Ubuntu doesn't use for file names.
-		wordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if ((newValue.contains("/")) || (newValue.contains("\0"))) {
-				wordTextField.setText(oldValue);
-			}
-		});
+		
 
 		HBox nameBar = new HBox(cre, wordTextField, butNam);
 		nameBar.setSpacing(15);
