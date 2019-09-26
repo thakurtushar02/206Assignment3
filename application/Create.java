@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -19,6 +21,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
@@ -26,6 +29,10 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -166,28 +173,19 @@ public class Create {
 	}
 
 	public void displayLines(String reply) {
-		BorderPane lineContents = new BorderPane();
-		lineContents.setPadding(new Insets(15,10,10,15));
-		lineContents.setMaxHeight(360);
 
 		Label title = new Label("Results for \"" + reply + "\"");
 		title.setFont(new Font("Arial", 16));
 		//lineContents.setTop(title);
 
-		Label prompt = new Label("How many lines do you want in your creation:");
-		prompt.setFont(new Font("Arial", 14));
-		TextField numberTextField = new TextField();
-		// Allow only numbers to be entered into the text field.
-		numberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (!newValue.matches("\\d*")) {
-				numberTextField.setText(newValue.replaceAll("[^\\d]", ""));
-			}
-		});
-		numberTextField.setMaxWidth(100);
-
 		ListView<String> list = new ListView<String>();
-		ObservableList<String> listLines = FXCollections.observableArrayList("");
+		ObservableList<String> listLines = FXCollections.observableArrayList();
 		list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		list.setEditable(true);
+		list.setCellFactory(TextFieldListCell.forListView());
+		listLines.add("A");
+		listLines.add("B");
+		
 		//		try {
 		//			reader = new BufferedReader(new FileReader(_file.toString()));
 		//			String line = null;
@@ -202,7 +200,7 @@ public class Create {
 		//			e.printStackTrace();
 		//		}
 		list.setItems(listLines);
-		//lineContents.setCenter(list);
+		
 		BorderPane.setMargin(list, new Insets(10,0,10,0));
 
 		//text area
@@ -223,15 +221,19 @@ public class Create {
 			}
 			fileContent.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		textArea.setText(textArea.getText().substring(2));
 		Label lblList = new Label("Saved audio");
 		lblList.setFont(new Font("Arial", 16));
+		
+		
+		Label info = new Label("Rearrange to get desired order");
+		info.setFont(new Font("Arial", 11));
 
 		VBox text = new VBox(title, textArea);
-		VBox listView = new VBox(lblList, list);
+		VBox listView = new VBox(lblList, info, list);
+		listView.setAlignment(Pos.CENTER_RIGHT);
 
 		listView.setSpacing(10);
 		text.setSpacing(10);
@@ -240,19 +242,6 @@ public class Create {
 		//views.setPadding(new Insets(10));
 		views.setSpacing(10);
 		HBox.setHgrow(views, Priority.ALWAYS);
-
-		Button butNum = new Button("Submit");
-		butNum.setOnAction(e -> {
-			String inNum = numberTextField.getText();
-			try {
-				int num = Integer.parseInt(inNum);
-				if(getLines(num, reply)) {
-					getName();
-				}
-			}catch(NumberFormatException | NullPointerException nfe) {
-				_popup.showStage("", "Please enter an integer number. Would you like to continue?", "Yes", "No", false);
-			}
-		});
 
 		ObservableList<String> voices = FXCollections.observableArrayList("Default", "Espeak");
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
@@ -296,7 +285,7 @@ public class Create {
 		butPlay.setOnAction(e -> {
 			String selectedText = textArea.getSelectedText();
 			if (selectedText.split(" ").length > 30) {
-				// Add popup 
+				_popup.tooManyWordsHighlighted();
 			} else {
 				Task<Void> task = new Task<Void>() {
 					@Override
@@ -392,7 +381,7 @@ public class Create {
 	//			_popup.previewText(_file);
 	//		});
 	//	}
-
+	
 	public boolean getLines(int input, String reply) {
 		if(input>=lineCount || input<=0) {
 			_popup.showStage("", "Please enter a number between 1 and " + (lineCount-1), "OK", "Cancel", false);
