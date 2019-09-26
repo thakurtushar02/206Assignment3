@@ -56,6 +56,7 @@ public class Create {
 	private Popup _popup;
 	private File _file;
 	private TabPane _tabPane;
+	private Main _main;
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
@@ -70,7 +71,10 @@ public class Create {
 		_view = view;
 	}
 
-	public void setContents() {
+	public void setContents(Main main) {
+		if (_main == null) {
+			_main = main;
+		}
 		create.setText("Enter term to search for: ");
 		create.setFont(new Font("Arial", 16));
 
@@ -151,7 +155,7 @@ public class Create {
 							String line = fileReader.readLine();
 							if(line.contains("not found :^(")) {
 								message.setText("Search term is invalid, please try again with another search term.");
-								setContents();
+								setContents(_main);
 							} else {
 								message.setText("");
 								_term = term;
@@ -207,16 +211,26 @@ public class Create {
 		
 		Label lblList = new Label("Saved audio");
 		lblList.setFont(new Font("Arial", 16));
-		Label info = new Label("Move up/down to get desired order");
+		
+		Label info = new Label("Move up/down to get desired order.");
 		info.setFont(new Font("Arial", 12));
+		info.setWrapText(true);
+		
+		Label info2 = new Label("Creation will be created with audio");
+		info2.setFont(new Font("Arial", 12));
+		info2.setWrapText(true);
+		
+		Label info3 = new Label("files in the order they are below.");
+		info3.setFont(new Font("Arial", 12));
+		info3.setWrapText(true);
 
 		VBox text = new VBox(title, textArea);
 		text.setSpacing(10);
 
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 		
-		VBox listView = new VBox(lblList, info, list);
-		listView.setAlignment(Pos.CENTER_RIGHT);
+		VBox listView = new VBox(lblList, info, info2, info3, list);
+		listView.setAlignment(Pos.CENTER);
 		listView.setSpacing(10);
 		
 		views.getChildren().addAll(text, listView);
@@ -351,10 +365,25 @@ public class Create {
 		
 		butCombine.setOnAction(e -> {
 			//TODO Check if name is valid
-			//TODO Combine audio files into 1 audio file
-			//TODO Then make a video file with correct length and number of pictures.
-			//TODO Then combine audio file with video file
-			//TODO Then add Home and List tabs, and refresh Create tab.
+			String name = nameField.getText();
+			String validity = checkName(name);
+			_name = name;
+			if (validity.equals(EMPTY)) {
+				nameField.setPromptText("Nothing entered.");
+			} else if (validity.equals(VALID)) {
+				nameField.setPromptText("");
+				_name = name;
+				//TODO Combine audio files into 1 audio file
+				//TODO Then make a video file with correct length and number of pictures.
+				//TODO Then combine audio file with video file
+				_main.refreshGUI(null);
+			} else if (validity.equals(DUPLICATE)) {
+				_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
+			}
+			else if (validity.equals(INVALID)){
+				nameField.clear();
+				nameField.setPromptText("Invalid Characters");
+			}
 		});
 		
 		
@@ -456,7 +485,6 @@ public class Create {
 		Label cre = new Label("Enter name for your creation: ");
 		cre.setFont(new Font("Arial", 16));
 		TextField wordTextField = new TextField();
-		// Disallow / and \0 characters which Ubuntu doesn't use for file names.
 		
 
 		HBox nameBar = new HBox(cre, wordTextField, butNam);
@@ -538,7 +566,7 @@ public class Create {
 					@Override public void run() {
 						_view.setContents();
 						_popup.showFeedback(_name, false);
-						setContents();
+						setContents(_main);
 						_popup.closeComputeStagePopup();
 					}
 				});

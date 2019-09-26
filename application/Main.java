@@ -12,9 +12,11 @@ public class Main extends Application {
 	private Home home;
 	private View view;
 	private Create create;
+	private Stage currentStage;
 	
 	@Override
 	public void start(Stage primaryStage) {
+		currentStage = primaryStage;
 		primaryStage.setTitle("Wiki Speak");
 		
 		BorderPane root = new BorderPane();
@@ -29,7 +31,7 @@ public class Main extends Application {
 		
 		Tab createTab = new Tab("Create Creations");
 		create = new Create(createTab, popup);
-		create.setContents();
+		create.setContents(this);
 		
 		Tab viewTab = new Tab("View Creations");
 		view = new View(viewTab, popup);
@@ -44,7 +46,7 @@ public class Main extends Application {
 		
 		root.setTop(tabPane);
 		
-		Scene scene = new Scene(root,800, 650);
+		Scene scene = new Scene(root,800, 700);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.show();
@@ -52,5 +54,9 @@ public class Main extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+	
+	public void refreshGUI(String[] args) {
+		start(currentStage);
 	}
 }
