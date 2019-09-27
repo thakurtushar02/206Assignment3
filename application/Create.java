@@ -187,8 +187,8 @@ public class Create {
 	}
 
 	public void displayLines(String reply) {
-		_tabPane.getTabs().remove(0);
-		_tabPane.getTabs().remove(0);
+//		_tabPane.getTabs().remove(0);
+//		_tabPane.getTabs().remove(0);
 
 		Label title = new Label("Results for \"" + reply + "\"");
 		title.setFont(new Font("Arial", 16));
@@ -220,21 +220,23 @@ public class Create {
 		Label lblList = new Label("Saved audio");
 		lblList.setFont(new Font("Arial", 16));
 
-		Text info = new Text("Move up/down to get desired order.");
+		Text info = new Text("Move up/down to get desired order.\n"
+				+ "The creation will be created with audio\nfiles in the order "
+				+ "they are below");
 		info.setFont(new Font("Arial", 12));
 
-		Text info2 = new Text("The creation will be created with audio");
-		info2.setFont(new Font("Arial", 12));
-
-		Text info3 = new Text("files in the order they are below.");
-		info3.setFont(new Font("Arial", 12));
+//		Text info2 = new Text("The creation will be created with audio");
+//		info2.setFont(new Font("Arial", 12));
+//
+//		Text info3 = new Text("files in the order they are below.");
+//		info3.setFont(new Font("Arial", 12));
 
 		VBox text = new VBox(title, textArea);
 		text.setSpacing(10);
 
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 
-		VBox listView = new VBox(lblList, info, info2, info3, list);
+		VBox listView = new VBox(lblList, info, list);
 
 		listView.setAlignment(Pos.CENTER_LEFT);
 		listView.setSpacing(10);
@@ -298,6 +300,7 @@ public class Create {
 		layout.setSpacing(10);
 
 		_tab.setContent(layout);
+		_tabPane.requestLayout();
 
 		butPlay.setOnAction(e -> {
 			String selectedText = textArea.getSelectedText();
@@ -399,10 +402,57 @@ public class Create {
 			} else if (validity.equals(VALID)) {
 				nameField.setPromptText("");
 				combineAudioFiles();
-				//TODO Then make a video file with correct length and number of pictures.
-				//TODO Then combine audio file with video file.
-				//TODO Then give notification to user.
-				_main.refreshGUI(null);
+				_popup.computeStagePopup();
+				Task<Void> task = new Task<Void>() {
+
+					@Override
+					protected Void call() throws Exception {
+						
+						String cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D "+ _name +".wav) "
+								+ "-vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" 
+								+ _term + "\'\" visual.mp4 &>/dev/null ;";
+						
+						//combining
+						
+//						"ffmpeg -i visual.mp4 -i temp.wav -c:v copy -c:a "
+//						+ "aac -strict experimental -y \"./AudioFiles/" + _name + ".mp4\" &>/dev/null ; "
+//								+ "rm visual.mp4;"
+						
+						ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
+						try {
+							Process vidProcess = builderr.start();
+							vidProcess.waitFor();
+						} catch (IOException e) {
+							e.printStackTrace();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						
+						Platform.runLater(new Runnable() {
+
+							@Override
+							public void run() {
+								_popup.closeComputeStagePopup();
+								_popup.showFeedback(_name, false);
+								try {
+									_view.findCreations();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+								_main.refreshGUI(null);
+							}
+							
+						});
+						return null;
+					}
+					
+					
+					//TODO Then make a video file with correct length and number of pictures.
+					//TODO Then combine audio file with video file.
+					//TODO Then give notification to user.
+				};
+				new Thread(task).start();
+	
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
 				nameField.setPromptText("");
@@ -417,7 +467,6 @@ public class Create {
 		});
 		
 		list.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
 			@Override
 			public void handle(MouseEvent click) {
 				if (click.getClickCount() == 2) {
@@ -428,7 +477,6 @@ public class Create {
 					try {
 						pb.start();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -625,22 +673,7 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
-
-
-
-				//				String cMD = "";
-
-				//				cMD = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D temp.wav) -vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" + _term + "\'\" visual.mp4 &>/dev/null ; ffmpeg -i visual.mp4 -i temp.wav -c:v copy -c:a aac -strict experimental -y \"./AudioFiles/" + nameOfFile + ".mp4\" &>/dev/null ; rm visual.mp4;";
-				//				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cMD);
-				//				try {
-				//					Process vidProcess = builderr.start();
-				//					vidProcess.waitFor();
-				//				} catch (IOException e) {
-				//					e.printStackTrace();
-				//				} catch (InterruptedException e) {
-				//					e.printStackTrace();
-				//				}
+				
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
 						_view.setContents();
@@ -679,7 +712,7 @@ public class Create {
 				for (int i = 0; i < listLines.size(); i++) {
 					cmd += "[" + i + ":0]";
 				}
-				cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" " + _name + ".wav";
+				cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" " + _name + ".wav &>/dev/null";
 				System.out.println(cmd);
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
