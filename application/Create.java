@@ -397,10 +397,10 @@ public class Create {
 				butCombine.requestFocus();
 			} else if (validity.equals(VALID)) {
 				nameField.setPromptText("");
-				combineFiles();
-				//TODO Combine audio files into 1 audio file
+				combineAudioFiles();
 				//TODO Then make a video file with correct length and number of pictures.
-				//TODO Then combine audio file with video file
+				//TODO Then combine audio file with video file.
+				//TODO Then give notification to user.
 				_main.refreshGUI(null);
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
@@ -476,77 +476,77 @@ public class Create {
 	//		});
 	//	}
 
-	public boolean getLines(int input, String reply) {
-		if(input>=lineCount || input<=0) {
-			_popup.showStage("", "Please enter a number between 1 and " + (lineCount-1), "OK", "Cancel", false);
-			return false;
-		} else {
-			input++;
-			if (input < lineCount && input > 1) {
-				String[] cmd = {"sed", "-i",  input + ","+ lineCount + "d", _file.toString()};
-				ProcessBuilder builder = new ProcessBuilder(cmd);
-				try {
-					Process process = builder.start();
-					process.waitFor();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			} else if (input == lineCount) {
-				String[] cmd= {"sed", "-i", "$d", _file.toString()};
-				ProcessBuilder builder = new ProcessBuilder(cmd);
-				try {
-					Process process = builder.start();
-					process.waitFor();
-				} catch (IOException | InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			return true;
-		}
-	}
+//	public boolean getLines(int input, String reply) {
+//		if(input>=lineCount || input<=0) {
+//			_popup.showStage("", "Please enter a number between 1 and " + (lineCount-1), "OK", "Cancel", false);
+//			return false;
+//		} else {
+//			input++;
+//			if (input < lineCount && input > 1) {
+//				String[] cmd = {"sed", "-i",  input + ","+ lineCount + "d", _file.toString()};
+//				ProcessBuilder builder = new ProcessBuilder(cmd);
+//				try {
+//					Process process = builder.start();
+//					process.waitFor();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			} else if (input == lineCount) {
+//				String[] cmd= {"sed", "-i", "$d", _file.toString()};
+//				ProcessBuilder builder = new ProcessBuilder(cmd);
+//				try {
+//					Process process = builder.start();
+//					process.waitFor();
+//				} catch (IOException | InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//			return true;
+//		}
+//	}
 
-	public void getName() {
-		VBox cont;
-		Button butNam = new Button("Create");
-
-		Label cre = new Label("Enter name for your creation: ");
-		cre.setFont(new Font("Arial", 16));
-		TextField wordTextField = new TextField();
-
-
-		HBox nameBar = new HBox(cre, wordTextField, butNam);
-		nameBar.setSpacing(15);
-
-		Label mes = new Label();
-		mes.setFont(new Font("Arial", 14));
-
-		butNam.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				String reply = wordTextField.getText();
-				String validity = checkName(reply);
-				_name = reply;
-				if (validity.equals(EMPTY)) {
-					mes.setText("You haven't entered a creation name! Please try again.");
-				} else if (validity.equals(VALID)) {
-					mes.setText("");
-					_name = reply;
-					//addCreation();
-				} else if (validity.equals(DUPLICATE)) {
-					_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
-				}
-				else if (validity.equals(INVALID)){
-					mes.setText("Creation name contains invalid characters, please try again.");
-				}
-			}
-		});
-
-		cont = new VBox(nameBar, mes);
-		cont.setPadding(new Insets(15,10,10,15));
-		_tab.setContent(cont);
-	}
+//	public void getName() {
+//		VBox cont;
+//		Button butNam = new Button("Create");
+//
+//		Label cre = new Label("Enter name for your creation: ");
+//		cre.setFont(new Font("Arial", 16));
+//		TextField wordTextField = new TextField();
+//
+//
+//		HBox nameBar = new HBox(cre, wordTextField, butNam);
+//		nameBar.setSpacing(15);
+//
+//		Label mes = new Label();
+//		mes.setFont(new Font("Arial", 14));
+//
+//		butNam.setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent e) {
+//				String reply = wordTextField.getText();
+//				String validity = checkName(reply);
+//				_name = reply;
+//				if (validity.equals(EMPTY)) {
+//					mes.setText("You haven't entered a creation name! Please try again.");
+//				} else if (validity.equals(VALID)) {
+//					mes.setText("");
+//					_name = reply;
+//					//addCreation();
+//				} else if (validity.equals(DUPLICATE)) {
+//					_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
+//				}
+//				else if (validity.equals(INVALID)){
+//					mes.setText("Creation name contains invalid characters, please try again.");
+//				}
+//			}
+//		});
+//
+//		cont = new VBox(nameBar, mes);
+//		cont.setPadding(new Insets(15,10,10,15));
+//		_tab.setContent(cont);
+//	}
 
 	public String checkName(String reply) {
 		File file = new File(reply + ".mp4");
@@ -640,7 +640,7 @@ public class Create {
 		_tabPane = tabPane;
 	}
 
-	public void combineFiles() {
+	public void combineAudioFiles() {
 		Task<Void> task = new Task<Void>() {
 
 			@Override
@@ -666,7 +666,17 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
+				
+				cmd = "rm -r AudioFiles";
+				builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+				try {
+					Process process = builder.start();
+					process.waitFor();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 
 				return null;
 			}
