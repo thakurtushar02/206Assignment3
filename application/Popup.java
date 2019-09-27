@@ -17,6 +17,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -34,6 +35,7 @@ public class Popup {
 	private Stage _computing = new Stage();
 	private Stage _previewStage = new Stage();
 	private Stage _textStage = new Stage();
+	private Stage _audioSave = new Stage();
 
 
 	public void setViewCreate(View view, Create create) {
@@ -334,5 +336,16 @@ public class Popup {
 
 	}
 
+	public void audioSave () {
+		_audioSave.setTitle("Save");
+		Label save = new Label("Please enter a name to save the audio as");
+		TextField name = new TextField();
+		Button butSave = new Button("Save");
+		Button butCancel = new Button("Cancel");
+		
+		butCancel.setOnAction(e -> {
+			_audioSave.close();
+		});
+	}
 
 }
