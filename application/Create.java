@@ -33,6 +33,8 @@ import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -40,6 +42,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class Create {
 	private Button searchButton;
@@ -84,7 +87,15 @@ public class Create {
 		searchBar.setSpacing(15);
 
 		message.setFont(new Font("Arial", 14));
-
+		search.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent arg0) {
+				if (arg0.getCode().equals(KeyCode.ENTER)) {
+					searchButton.fire();
+				}
+			}
+		});
+		
 		searchButton.setOnAction(e -> searchTerm(search.getText()));
 
 		contents = new VBox(searchBar, message);
@@ -212,17 +223,14 @@ public class Create {
 		Label lblList = new Label("Saved audio");
 		lblList.setFont(new Font("Arial", 16));
 		
-		Label info = new Label("Move up/down to get desired order.");
+		Text info = new Text("Move up/down to get desired order.");
 		info.setFont(new Font("Arial", 12));
-		info.setWrapText(true);
 		
-		Label info2 = new Label("Creation will be created with audio");
+		Text info2 = new Text("The creation will be created with audio");
 		info2.setFont(new Font("Arial", 12));
-		info2.setWrapText(true);
 		
-		Label info3 = new Label("files in the order they are below.");
+		Text info3 = new Text("files in the order they are below.");
 		info3.setFont(new Font("Arial", 12));
-		info3.setWrapText(true);
 
 		VBox text = new VBox(title, textArea);
 		text.setSpacing(10);
@@ -230,7 +238,8 @@ public class Create {
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 		
 		VBox listView = new VBox(lblList, info, info2, info3, list);
-		listView.setAlignment(Pos.CENTER);
+
+		listView.setAlignment(Pos.CENTER_LEFT);
 		listView.setSpacing(10);
 		
 		views.getChildren().addAll(text, listView);
@@ -245,7 +254,7 @@ public class Create {
 		Button butUp = new Button("  Up  ");
 		Button butDown = new Button(" Down ");
 		Button butDelete = new Button("Delete");
-		Button butCombine = new Button("Combine");
+		Button butCombine = new Button("Combine!");
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
@@ -284,7 +293,7 @@ public class Create {
 		HBox.setHgrow(spacer2, Priority.ALWAYS);
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 
-		HBox nameLayout = new HBox(photos, spacer2, nameField, butCombine);
+		HBox nameLayout = new HBox(10, photos, spacer2, nameField, butCombine);
 		nameLayout.setAlignment(Pos.BOTTOM_CENTER);
 		
 		VBox layout = new VBox(views, lineOptions, nameLayout, slider);
@@ -362,12 +371,22 @@ public class Create {
 			list.getItems().remove(list.getSelectionModel().getSelectedIndex());
 		});
 		
+		nameField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent arg0) {
+				if (arg0.getCode().equals(KeyCode.ENTER)) {
+					butCombine.fire();
+				}
+			}
+		});
+		
 		butCombine.setOnAction(e -> {
 			String name = nameField.getText();
 			String validity = checkName(name);
 			_name = name;
 			if (validity.equals(EMPTY)) {
 				nameField.setPromptText("Nothing entered.");
+				butCombine.requestFocus();
 			} else if (validity.equals(VALID)) {
 				nameField.setPromptText("");
 				_name = name;
@@ -376,11 +395,15 @@ public class Create {
 				//TODO Then combine audio file with video file
 				_main.refreshGUI(null);
 			} else if (validity.equals(DUPLICATE)) {
+				nameField.clear();
+				nameField.setPromptText("");
+				butCombine.requestFocus();
 				_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
 			}
 			else if (validity.equals(INVALID)){
 				nameField.clear();
 				nameField.setPromptText("Invalid Characters");
+				butCombine.requestFocus();
 			}
 		});
 		

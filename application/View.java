@@ -31,6 +31,8 @@ public class View {
 	private VBox contents;
 	private Tab _tab;
 	private Popup _popup;
+	public final static int ROW_HEIGHT = 24;
+	public final static int SPACING = 2;
 
 	public View(Tab tab, Popup popup) {
 		_tab = tab;
@@ -69,7 +71,8 @@ public class View {
 			e.printStackTrace();
 		}
 		creations.setItems(list);
-		creations.setPrefSize(1000, list.size()*24+2);
+		
+		creations.setPrefSize(1000, list.size()* ROW_HEIGHT + SPACING);
 		creations.setMaxHeight(550);
 
 		sideOptions = new VBox(delete, play);
