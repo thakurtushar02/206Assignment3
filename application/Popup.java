@@ -33,6 +33,8 @@ public class Popup {
 	private Stage _confirmPopup = new Stage();
 	private Stage _computing = new Stage();
 	private Stage _previewStage = new Stage();
+	private Stage _textStage = new Stage();
+
 
 	public void setViewCreate(View view, Create create) {
 		_create = create;
@@ -80,7 +82,7 @@ public class Popup {
 		comp.setBottom(buttonBox);
 		comp.setPadding(new Insets(10,10,10,10));
 
-		Scene stageScene = new Scene(comp, 500, 100);
+		Scene stageScene = new Scene(comp, 400, 100);
 		_popup.setScene(stageScene);
 		_popup.show();
 	}
@@ -136,7 +138,7 @@ public class Popup {
 		BorderPane.setAlignment(cont, Pos.BOTTOM_CENTER);
 		comp.setPadding(new Insets(10,10,10,10));
 
-		Scene stageScene = new Scene(comp, 500, 100);
+		Scene stageScene = new Scene(comp, 400, 100);
 		_confirmPopup.setScene(stageScene);
 		_confirmPopup.show();
 	}
@@ -155,6 +157,7 @@ public class Popup {
 	public void closeComputeStagePopup() {
 		_computing.close();
 	}
+
 
 //	public void editText() {
 //
@@ -297,4 +300,39 @@ public class Popup {
 			new Thread(task).start();
 		});
 	}
+
+	public void editText() {
+
+		VBox vbox = new VBox(10);
+		vbox.setPadding(new Insets(10,10,0,10));
+		Label label = new Label("Double click on the line in the list you want to edit. "
+				+ "After finishing editing, press enter to confirm edit for that line.\n"
+				+ "Repeat until all desired lines are edited.\n"
+				+ "Finally, press \"Done Edit\" to finalise editing.\n\n"
+				+ "Note: To add a line, simply add the line to the line before where you want it. "
+				+ "If you want to add a line between 4 and 5, simply write the line on line 4 and end with full stop.\n\n"
+				+ "For example:\n\t"
+				+ "4. Fourth Sentence. Added sentence. \n\t5. Fifth sentence.\n"
+				+ "After pressing \"Done Edit\", the above will become \n\t"
+				+ "4. Fourth Setence.\n\t5. Added sentence.\n\t6. Fifth sentence.\n\n"
+				+ "To delete a line, simply remove all text from that line.\n\n"
+				+ "Please do not remove line counts otherwise eg. Keep \"1. \" \"3. \" etc, (with space after dot)\n"
+				+ "Don't worry, they won't show up in the final creation :)\n\n"
+				+ "Have fun editing!");
+		label.setWrapText(true);
+		Button butOK = new Button("I understand. Now let me edit!");
+		butOK.prefWidthProperty().bind(vbox.widthProperty());
+
+		vbox.getChildren().addAll(label, butOK);
+		_textStage.setTitle("Editing text: Some Things You Should Know");
+		_textStage.setScene(new Scene(vbox, 1000, 400));
+		_textStage.show();
+
+		butOK.setOnAction(e -> {
+			_textStage.close();
+		});
+
+	}
+
+
 }
