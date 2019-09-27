@@ -93,7 +93,7 @@ public class Popup {
 		}else {
 			if(nxtAction.equals("Overwrite")) {
 				_create.removeCreation(name);
-				_create.addCreation();
+				//_create.addCreation();
 				_create.setContents(null);
 				showFeedback(name, false);
 			}else {
