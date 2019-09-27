@@ -187,8 +187,6 @@ public class Create {
 	}
 
 	public void displayLines(String reply) {
-//		_tabPane.getTabs().remove(0);
-//		_tabPane.getTabs().remove(0);
 
 		Label title = new Label("Results for \"" + reply + "\"");
 		title.setFont(new Font("Arial", 16));
@@ -224,12 +222,6 @@ public class Create {
 				+ "The creation will be created with audio\nfiles in the order "
 				+ "they are below");
 		info.setFont(new Font("Arial", 12));
-
-//		Text info2 = new Text("The creation will be created with audio");
-//		info2.setFont(new Font("Arial", 12));
-//
-//		Text info3 = new Text("files in the order they are below.");
-//		info3.setFont(new Font("Arial", 12));
 
 		VBox text = new VBox(title, textArea);
 		text.setSpacing(10);
@@ -401,57 +393,8 @@ public class Create {
 				butCombine.requestFocus();
 			} else if (validity.equals(VALID)) {
 				nameField.setPromptText("");
-				combineAudioFiles();
 				_popup.computeStagePopup();
-				Task<Void> task = new Task<Void>() {
-
-					@Override
-					protected Void call() throws Exception {
-						
-						String cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D "+ _name +".wav) "
-								+ "-vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" 
-								+ _term + "\'\" visual.mp4 &>/dev/null ;";
-						
-						//combining
-						
-//						"ffmpeg -i visual.mp4 -i temp.wav -c:v copy -c:a "
-//						+ "aac -strict experimental -y \"./AudioFiles/" + _name + ".mp4\" &>/dev/null ; "
-//								+ "rm visual.mp4;"
-						
-						ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
-						try {
-							Process vidProcess = builderr.start();
-							vidProcess.waitFor();
-						} catch (IOException e) {
-							e.printStackTrace();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-						
-						Platform.runLater(new Runnable() {
-
-							@Override
-							public void run() {
-								_popup.closeComputeStagePopup();
-								_popup.showFeedback(_name, false);
-								try {
-									_view.findCreations();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-								_main.refreshGUI(null);
-							}
-							
-						});
-						return null;
-					}
-					
-					
-					//TODO Then make a video file with correct length and number of pictures.
-					//TODO Then combine audio file with video file.
-					//TODO Then give notification to user.
-				};
-				new Thread(task).start();
+				combineAudioFiles();
 	
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
@@ -713,7 +656,7 @@ public class Create {
 					cmd += "[" + i + ":0]";
 				}
 				cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" " + _name + ".wav &>/dev/null";
-				System.out.println(cmd);
+//				System.out.println(cmd);
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();
@@ -734,10 +677,67 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				
+				cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D "+ _name +".wav) "
+						+ "-vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" 
+						+ _term + "\'\" visual.mp4 &>/dev/null ; "; 
+				//combining
+				
+				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
+				try {
+					Process vidProcess = builderr.start();
+					vidProcess.waitFor();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				cmd = "ffmpeg -i visual.mp4 -i "+_name+".wav -c:v copy -c:a "
+				+ "aac -strict experimental -y \"" + _name + ".mp4\" &>/dev/null ; "
+						+ "rm visual.mp4;";
+				
+				builderr = new ProcessBuilder("bash", "-c", cmd);
+				builderr.start().waitFor();
+				
+				Platform.runLater(new Runnable() {
+
+					@Override
+					public void run() {
+						_view.setContents();
+						_main.refreshGUI(null);
+						_popup.showFeedback(_name, false);
+						_popup.closeComputeStagePopup();
+
+					}
+				});
 
 				return null;
 			}
 		};
 		new Thread(task).start();
 	}
+	
+//	public void makeVideo() {
+//		Task<Void> task = new Task<Void>() {
+//
+//			@Override
+//			protected Void call() throws Exception {
+//				
+//				
+//					}
+//					
+//				});
+//				return null;
+//			}
+//			
+//			
+//			//TODO Then make a video file with correct length and number of pictures.
+//			//TODO Then combine audio file with video file.
+//			//TODO Then give notification to user.
+//		};
+//		new Thread(task).start();
+//	}
 }
+
+
