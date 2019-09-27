@@ -60,6 +60,8 @@ public class Create {
 	private File _file;
 	private TabPane _tabPane;
 	private Main _main;
+	ObservableList<String> listLines = FXCollections.observableArrayList();
+	private int numberOfAudioFiles = 0;
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
@@ -192,12 +194,9 @@ public class Create {
 		
 
 		ListView<String> list = new ListView<String>();
-		ObservableList<String> listLines = FXCollections.observableArrayList();
 		
 		list.setEditable(true);
 		list.setCellFactory(TextFieldListCell.forListView());
-		listLines.addAll("A","B","C","D","E","F","G","H","A","B","C","D","E","F","G","H",
-				"A","B","C","D","E","F","G","H","A","B","C","D","E","F","G","H");
 		
 		list.setItems(listLines);
 
@@ -231,6 +230,9 @@ public class Create {
 		
 		Text info3 = new Text("files in the order they are below.");
 		info3.setFont(new Font("Arial", 12));
+		
+		Text info4 = new Text("Double click to rename.");
+		info4.setFont(new Font("Arial", 12));
 
 		VBox text = new VBox(title, textArea);
 		text.setSpacing(10);
@@ -344,7 +346,18 @@ public class Create {
 		});
 		butSave.setOnAction(e -> {
 			String selectedText = textArea.getSelectedText();
-			//TODO Make audio file from String;
+			try {
+				String fileName = _file.getName();
+				FileWriter fw = new FileWriter(fileName, false);
+				fw.write("");
+				fw.close();
+				fw = new FileWriter(fileName, true);
+				fw.write(selectedText);
+				addCreation();
+				fw.close();
+			} catch (IOException ioex) {
+				ioex.getMessage();
+			}
 		});
 		
 		butUp.setOnAction(e -> {
@@ -422,12 +435,12 @@ public class Create {
 	//			list.setEditable(false);
 	//			lineOptions.getChildren().remove(butDone);
 	//			lineOptions.getChildren().addAll(prompt, numberTextField, butNum, butPreview, butText);
-	//			try {
-	//				String fileName = _file.getName();
-	//				FileWriter fw = new FileWriter(fileName, false);
-	//				fw.write("");
-	//				fw.close();
-	//				fw = new FileWriter(fileName, true);
+//				try {
+//					String fileName = _file.getName();
+//					FileWriter fw = new FileWriter(fileName, false);
+//					fw.write("");
+//					fw.close();
+//					fw = new FileWriter(fileName, true);
 	//				int count = 1;
 	//				for (String s: listLines) {
 	//					if (s.length() < 4) {
@@ -573,7 +586,8 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				String cMD = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D temp.wav) -vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" + _term + "\'\" visual.mp4 &>/dev/null ; ffmpeg -i visual.mp4 -i temp.wav -c:v copy -c:a aac -strict experimental -y " + _name + ".mp4 &>/dev/null ; rm visual.mp4";
+				numberOfAudioFiles++;
+				String cMD = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D temp.wav) -vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" + _term + "\'\" visual.mp4 &>/dev/null ; ffmpeg -i visual.mp4 -i temp.wav -c:v copy -c:a aac -strict experimental -y AudioFile" + numberOfAudioFiles + ".mp4 &>/dev/null ; rm visual.mp4";
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cMD);
 				try {
 					Process vidProcess = builderr.start();
@@ -586,8 +600,8 @@ public class Create {
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
 						_view.setContents();
-						_popup.showFeedback(_name, false);
-						setContents(_main);
+						_popup.showFeedback("AudioFile"+numberOfAudioFiles, false);
+						updateList();
 						_popup.closeComputeStagePopup();
 					}
 				});
@@ -604,5 +618,9 @@ public class Create {
 
 	public void storeTabs(TabPane tabPane) {
 		_tabPane = tabPane;
+	}
+	
+	public void updateList() {
+		
 	}
 }
