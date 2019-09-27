@@ -284,7 +284,6 @@ public class Create {
 		HBox.setHgrow(spacer2, Priority.ALWAYS);
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 
-		
 		HBox nameLayout = new HBox(photos, spacer2, nameField, butCombine);
 		nameLayout.setAlignment(Pos.BOTTOM_CENTER);
 		
@@ -364,7 +363,6 @@ public class Create {
 		});
 		
 		butCombine.setOnAction(e -> {
-			//TODO Check if name is valid
 			String name = nameField.getText();
 			String validity = checkName(name);
 			_name = name;
