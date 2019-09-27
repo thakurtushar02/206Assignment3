@@ -17,28 +17,27 @@ import javafx.util.Duration;
 
 public class VideoPlayer {
 	//Might also want to make video using this...
-	
+
 	private Button btnMute = new Button("Mute");
 	private Button btnPlayPause = new Button("Pause");
 	private Button btnForward = new Button(">>");
 	private Button btnBackward = new Button("<<");
 	private HBox buttonBox = new HBox(btnBackward, btnPlayPause, btnForward);
-		
-	
+
 	public void playVideo(String name) {
 		File fileURL = new File(name + ".mp4");
-		
+
 		Stage vidStage = new Stage();
-		
+
 		vidStage.setTitle(name + ".mp4");
 		BorderPane vidPane = new BorderPane();
-		Scene scene = new Scene(vidPane, 330, 300);
-		
+		Scene scene = new Scene(vidPane, 500, 330);
+
 		Media video = new Media(fileURL.toURI().toString());
 		MediaPlayer player = new MediaPlayer(video);
 		player.setAutoPlay(true);
-		MediaView mediaView = new MediaView(player);
-		
+		MediaView mediaView = new MediaView(player);;
+
 		vidPane.setTop(btnMute);
 		btnMute.prefWidthProperty().bind(scene.widthProperty());
 		btnMute.setOnAction(e -> {
@@ -49,13 +48,13 @@ public class VideoPlayer {
 				btnMute.setText("Mute");
 			}
 		});
-		
+
 		vidStage.setOnCloseRequest(e -> {
 			player.pause();	//Stop sound playing when window has been closed
 		});
-		
+
 		vidPane.setBottom(buttonBox);
-		
+
 		btnPlayPause.prefWidthProperty().bind(scene.widthProperty().divide(1.5));
 		btnPlayPause.setOnAction(e -> {
 			if(player.getStatus() == Status.PLAYING) {
@@ -66,30 +65,30 @@ public class VideoPlayer {
 				btnPlayPause.setText("Pause");
 			}
 		});
-		
+
 		btnForward.prefWidthProperty().bind(scene.widthProperty().divide(6));
 		btnForward.setOnAction(e -> {
 			player.seek(player.getCurrentTime().add(Duration.seconds(2)));
 		});
-		
+
 		btnBackward.prefWidthProperty().bind(scene.widthProperty().divide(6));
 		btnBackward.setOnAction(e -> {
 			player.seek(player.getCurrentTime().add(Duration.seconds(-2)));
 		});
-		
+
 		player.setOnEndOfMedia(() -> {
 			vidStage.close();	//Auto close window when video finishes playing
 		});
-		
+
 		buttonBox.setSpacing(3);
-		
+
 		vidPane.setCenter(mediaView);
 		DoubleProperty mvw = mediaView.fitWidthProperty();
 		DoubleProperty mvh = mediaView.fitHeightProperty();
 		mvw.bind(Bindings.selectDouble(mediaView.sceneProperty(), "width"));
 		mvh.bind(Bindings.selectDouble(mediaView.sceneProperty(), "height").subtract(50));
 		mediaView.setPreserveRatio(true);
-		
+
 		vidStage.setScene(scene);
 		vidStage.show();
 	}

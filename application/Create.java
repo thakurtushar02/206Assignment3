@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
@@ -40,10 +41,13 @@ public class Create {
 	private String _name;
 	private Popup _popup;
 	private File _file;
+	private SlideMaker _imMan;
+	private int _numPics;
   
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
 		_popup = popup;
+		_imMan = new SlideMaker();
 	}
 
 	public void setView(View view) {
@@ -237,8 +241,8 @@ public class Create {
 			_popup.showStage("", "For amount of images, please enter a number between 1 and 10", "OK", "Cancel", false);
 			return false;
 		} else {
-			ImageManager imMan = new ImageManager();
-			imMan.getImages(input, reply);
+			_numPics = input;
+			_imMan.getImages(input, reply);
 			return true;
 		}
 	}
@@ -347,16 +351,24 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				String cMD = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D temp.wav) -vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" + _term + "\'\" visual.mp4 &>/dev/null ; ffmpeg -i visual.mp4 -i temp.wav -c:v copy -c:a aac -strict experimental -y " + _name + ".mp4 &>/dev/null ; rm visual.mp4";
+				String cMD = "ffmpeg -framerate $((" + _numPics + "))/$(soxi -D temp.wav) -i " + _term + "%02d.jpg -vf \"scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\" -r 25 visual.mp4 ; rm " + _term + "??.jpg ; ffmpeg -i visual.mp4 -vf \"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i temp.wav -c:v copy -c:a aac -strict experimental -y " + _name + ".mp4 &>/dev/null ; rm visual.mp4 ; rm out.mp4";
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cMD);
 				try {
 					Process vidProcess = builderr.start();
 					vidProcess.waitFor();
+					InputStream error = vidProcess.getErrorStream();
+					InputStreamReader isrerror = new InputStreamReader(error);
+					BufferedReader bre = new BufferedReader(isrerror);
+					String line = null;
+					while ((line = bre.readLine()) != null) {
+					        System.out.println(line);
+					    }
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
 						_view.setContents();
