@@ -15,6 +15,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
@@ -29,10 +31,13 @@ public class View {
 	private VBox contents;
 	private Tab _tab;
 	private Popup _popup;
+	public final static int ROW_HEIGHT = 24;
+	public final static int SPACING = 2;
 
 	public View(Tab tab, Popup popup) {
 		_tab = tab;
 		_popup = popup;
+		
 	}
 
 	public void setContents() {
@@ -66,19 +71,26 @@ public class View {
 			e.printStackTrace();
 		}
 		creations.setItems(list);
-		creations.setPrefWidth(600);
-		creations.setPrefHeight(300);
+		
+		creations.setPrefSize(1000, list.size()* ROW_HEIGHT + SPACING);
+		creations.setMaxHeight(550);
 
 		sideOptions = new VBox(delete, play);
 		sideOptions.setPadding(new Insets(10,10,10,10));
 		sideOptions.setSpacing(15);
 
 		optionBox = new HBox(creations, sideOptions);
-
-		contents = new VBox(title, optionBox);
+		HBox.setHgrow(creations, Priority.ALWAYS);
+		HBox.setHgrow(sideOptions, Priority.ALWAYS);
+		
+		final Pane spacer = new Pane();
+		spacer.setMinSize(10, 1);
+		VBox.setVgrow(spacer, Priority.ALWAYS);
+		contents = new VBox(title, optionBox, spacer);
 		contents.setPadding(new Insets(10,10,10,10));
 		contents.setSpacing(10);
 		_tab.setContent(contents);
+		
 	}
 
 	public void findCreations() throws IOException {
