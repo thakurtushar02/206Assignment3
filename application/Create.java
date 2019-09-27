@@ -195,9 +195,6 @@ public class Create {
 
 		ListView<String> list = new ListView<String>();
 
-		list.setEditable(true);
-		list.setCellFactory(TextFieldListCell.forListView());
-
 		list.setItems(listLines);
 
 		HBox views= new HBox();
@@ -231,15 +228,12 @@ public class Create {
 		Text info3 = new Text("files in the order they are below.");
 		info3.setFont(new Font("Arial", 12));
 
-		Text info4 = new Text("Double click in list to rename.");
-		info4.setFont(new Font("Arial", 12));
-
 		VBox text = new VBox(title, textArea);
 		text.setSpacing(10);
 
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 
-		VBox listView = new VBox(lblList, info, info2, info3, info4, list);
+		VBox listView = new VBox(lblList, info, info2, info3, list);
 
 		listView.setAlignment(Pos.CENTER_LEFT);
 		listView.setSpacing(10);
