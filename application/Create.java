@@ -570,25 +570,9 @@ public class Create {
 		_popup.computeStagePopup();
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
-				String cmd;
-				if (voice.equals("Default")) {
-					cmd = "cat " + _file.toString() + " | text2wave -o temp.wav";
-				} else {
-					cmd = "espeak -f " + _file.toString() + " --stdout > temp.wav";
-				}
-				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-
-				try {
-					Process process = builder.start();
-					process.waitFor();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 				
-				cmd = "mkdir -p AudioFiles";
-				builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+				String cmd = "mkdir -p AudioFiles";
+				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 
 				try {
 					Process process = builder.start();
@@ -601,18 +585,38 @@ public class Create {
 				
 				numberOfAudioFiles++;
 				String nameOfFile = "AudioFile" + numberOfAudioFiles;
-				String cMD = "";
 				
-				cMD = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D temp.wav) -vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" + _term + "\'\" visual.mp4 &>/dev/null ; ffmpeg -i visual.mp4 -i temp.wav -c:v copy -c:a aac -strict experimental -y \"./AudioFiles/" + nameOfFile + ".mp4\" &>/dev/null ; rm visual.mp4;";
-				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cMD);
+				if (voice.equals("Default")) {
+					cmd = "cat " + _file.toString() + " | text2wave -o \"./AudioFiles/" + nameOfFile + ".wav\"";
+				} else {
+					cmd = "espeak -f " + _file.toString() + " --stdout > \"./AudioFiles/" + nameOfFile + ".wav\"";
+				}
+				builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+
 				try {
-					Process vidProcess = builderr.start();
-					vidProcess.waitFor();
+					Process process = builder.start();
+					process.waitFor();
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				
+				
+				
+
+//				String cMD = "";
+				
+//				cMD = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D temp.wav) -vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" + _term + "\'\" visual.mp4 &>/dev/null ; ffmpeg -i visual.mp4 -i temp.wav -c:v copy -c:a aac -strict experimental -y \"./AudioFiles/" + nameOfFile + ".mp4\" &>/dev/null ; rm visual.mp4;";
+//				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cMD);
+//				try {
+//					Process vidProcess = builderr.start();
+//					vidProcess.waitFor();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
 						_view.setContents();
@@ -644,14 +648,14 @@ public class Create {
 		
 				String cmd = "ffmpeg";
 				for (String s: listLines) {
-					cmd += " -i \"./AudioFiles/" + s + ".mp4\"";
+					cmd += " -i \"./AudioFiles/" + s + ".wav\"";
 				}
 				
 				cmd += " -filter_complex \"";
 				for (int i = 0; i < listLines.size(); i++) {
-					cmd += "[" + i + ":v:0][" + i + ":a:0]";
+					cmd += "[" + i + ":0]";
 				}
-				cmd += "concat=n=" + listLines.size() + ":v=1:a=1[outv][outa]\" -map \"[outv]\" -map \"[outa]\" " + _name + ".mp4";
+				cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" " + _name + ".wav";
 				System.out.println(cmd);
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
