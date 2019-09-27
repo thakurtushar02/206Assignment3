@@ -231,7 +231,7 @@ public class Create {
 		Text info3 = new Text("files in the order they are below.");
 		info3.setFont(new Font("Arial", 12));
 		
-		Text info4 = new Text("Double click to rename.");
+		Text info4 = new Text("Double click in list to rename.");
 		info4.setFont(new Font("Arial", 12));
 
 		VBox text = new VBox(title, textArea);
@@ -239,7 +239,7 @@ public class Create {
 
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 		
-		VBox listView = new VBox(lblList, info, info2, info3, list);
+		VBox listView = new VBox(lblList, info, info2, info3, info4, list);
 
 		listView.setAlignment(Pos.CENTER_LEFT);
 		listView.setSpacing(10);
@@ -382,6 +382,7 @@ public class Create {
 		
 		butDelete.setOnAction(e -> {
 			list.getItems().remove(list.getSelectionModel().getSelectedIndex());
+			//TODO Delete mp4 file
 		});
 		
 		nameField.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -587,7 +588,8 @@ public class Create {
 					e.printStackTrace();
 				}
 				numberOfAudioFiles++;
-				String cMD = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D temp.wav) -vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" + _term + "\'\" visual.mp4 &>/dev/null ; ffmpeg -i visual.mp4 -i temp.wav -c:v copy -c:a aac -strict experimental -y AudioFile" + numberOfAudioFiles + ".mp4 &>/dev/null ; rm visual.mp4";
+				String nameOfFile = "AudioFile" + numberOfAudioFiles;
+				String cMD = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D temp.wav) -vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" + _term + "\'\" visual.mp4 &>/dev/null ; ffmpeg -i visual.mp4 -i temp.wav -c:v copy -c:a aac -strict experimental -y " + nameOfFile + ".mp4 &>/dev/null ; rm visual.mp4";
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cMD);
 				try {
 					Process vidProcess = builderr.start();
@@ -600,8 +602,8 @@ public class Create {
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
 						_view.setContents();
-						_popup.showFeedback("AudioFile"+numberOfAudioFiles, false);
-						updateList();
+						_popup.showFeedback(nameOfFile, false);
+						listLines.add(nameOfFile);
 						_popup.closeComputeStagePopup();
 					}
 				});
@@ -620,7 +622,36 @@ public class Create {
 		_tabPane = tabPane;
 	}
 	
-	public void updateList() {
-		
-	}
+//	public void updateList() {
+//		Task<String[]> task = new Task<String[]>() {
+//
+//			@Override
+//			protected String[] call() throws Exception {
+//				String cmd = "for i in \"AudioFile*.mp4\"; do echo $i; done > list.txt";
+//				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+//				try {
+//					Process process = builder.start();
+//					process.waitFor();
+//					File listFile = new File("./list.txt");
+//					BufferedReader br = new BufferedReader(new FileReader(listFile));
+//					String listName = br.readLine();
+//					br.close();
+//					if (listName.equals(null) == false) {
+//						String[] nameOfAudioFiles = listName.split(" ");
+//						for (String s: nameOfAudioFiles) {
+//							listLines.add(s);
+//						}
+//					}
+//					
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//				
+//				return null;
+//			}
+//		};
+//		new Thread(task).start();
+//	}
 }
