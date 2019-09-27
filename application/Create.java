@@ -7,37 +7,26 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -53,7 +42,6 @@ public class Create {
 	private VBox contents;
 	private Label message = new Label();
 	private Tab _tab;
-	private int lineCount = 0;
 	private String _term;
 	private View _view;
 	private String _name;
@@ -84,7 +72,7 @@ public class Create {
 		create.setText("Enter term to search for: ");
 		create.setFont(new Font("Arial", 16));
 
-		searchButton = new Button("Search");
+		searchButton = new Button("Search ↳");
 
 		searchBar = new HBox(create, search, searchButton);
 		searchBar.setSpacing(15);
@@ -173,6 +161,7 @@ public class Create {
 							} else {
 								message.setText("");
 								_term = term;
+								deleteAudioFiles();
 								displayLines(term);
 							}
 						} catch (IOException e) {
@@ -190,8 +179,8 @@ public class Create {
 //		_tabPane.getTabs().remove(0);
 //		_tabPane.getTabs().remove(0);
 
-		Label title = new Label("Results for \"" + reply + "\"");
-		title.setFont(new Font("Arial", 16));
+//		Label title = new Label("Results for \"" + reply + "\"");
+//		title.setFont(new Font("Arial", 16));
 
 
 		ListView<String> list = new ListView<String>();
@@ -220,9 +209,9 @@ public class Create {
 		Label lblList = new Label("Saved audio");
 		lblList.setFont(new Font("Arial", 16));
 
-		Text info = new Text("Move up/down to get desired order.\n"
+		Text info = new Text("Move audio files ↑ or ↓ to get desired order.\n\n"
 				+ "The creation will be created with audio\nfiles in the order "
-				+ "they are below");
+				+ "they are below.\n\nDouble click to play audio file.");
 		info.setFont(new Font("Arial", 12));
 
 //		Text info2 = new Text("The creation will be created with audio");
@@ -231,7 +220,7 @@ public class Create {
 //		Text info3 = new Text("files in the order they are below.");
 //		info3.setFont(new Font("Arial", 12));
 
-		VBox text = new VBox(title, textArea);
+		VBox text = new VBox(searchBar, textArea);
 		text.setSpacing(10);
 
 		VBox.setVgrow(textArea, Priority.ALWAYS);
@@ -248,12 +237,12 @@ public class Create {
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
 		combobox.setValue("Default");
 		Label lblVoice = new Label("Voice: ");
-		Button butPlay = new Button(" Play ");
-		Button butSave = new Button(" Save ");
-		Button butUp = new Button("  Up  ");
-		Button butDown = new Button(" Down ");
-		Button butDelete = new Button("Delete");
-		Button butCombine = new Button("Combine!");
+		Button butPlay = new Button(" Play ►");
+		Button butSave = new Button(" Save ✔");
+		Button butUp = new Button("Move ↑");
+		Button butDown = new Button("Move ↓");
+		Button butDelete = new Button("Delete ✘");
+		Button butCombine = new Button("Combine ↳");
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
@@ -432,6 +421,7 @@ public class Create {
 
 							@Override
 							public void run() {
+								_main.refreshGUI(null);
 								_popup.closeComputeStagePopup();
 								_popup.showFeedback(_name, false);
 								try {
@@ -439,7 +429,7 @@ public class Create {
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
-								_main.refreshGUI(null);
+								
 							}
 							
 						});
@@ -724,8 +714,23 @@ public class Create {
 					e.printStackTrace();
 				}
 
-				cmd = "rm -r AudioFiles";
-				builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+				deleteAudioFiles();
+
+				return null;
+			}
+		};
+		new Thread(task).start();
+	}
+	
+	public void deleteAudioFiles() {
+		listLines = FXCollections.observableArrayList();
+		numberOfAudioFiles = 0;
+		Task<Void> task = new Task<Void>() {
+
+			@Override
+			protected Void call() throws Exception {
+				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi";
+				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();
 					process.waitFor();
@@ -734,9 +739,9 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
 				return null;
 			}
+			
 		};
 		new Thread(task).start();
 	}

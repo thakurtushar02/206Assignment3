@@ -24,8 +24,8 @@ public class View {
 	private ListView<String> creations = new ListView<>();
 	private ObservableList<String> list = FXCollections.observableArrayList();
 	private Label title = new Label();
-	private Button delete = new Button("Delete");
-	private Button play = new Button("Play");
+	private Button delete = new Button("Delete ✘");
+	private Button play = new Button("Play ►");
 	private VBox sideOptions;
 	private HBox optionBox;
 	private VBox contents;
