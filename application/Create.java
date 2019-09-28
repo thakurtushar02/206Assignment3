@@ -382,7 +382,7 @@ public class Create {
 				nameField.setPromptText("");
 				_popup.computeStagePopup();
 				numberOfPictures = (int)slider.getValue();
-				getPics(numberOfPictures, _term);
+				
 				combineAudioFiles();
 				
 			} else if (validity.equals(DUPLICATE)) {
@@ -442,7 +442,7 @@ public class Create {
 		_popup.computeStagePopup();
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
-
+				
 				String cmd = "mkdir -p AudioFiles";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 
@@ -501,6 +501,7 @@ public class Create {
 
 			@Override
 			protected Void call() throws Exception {
+				getPics(numberOfPictures, _term);
 				String cmd;
 				if (listLines.size() == 1) {
 					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/"+ _name + ".wav";
@@ -531,11 +532,23 @@ public class Create {
 				//		+ _term + "\'\" visual.mp4 &>/dev/null ; "; 
 				//combining
         
-        cmd = "ffmpeg -framerate $((" + numberOfPictures + "))/$(soxi -D ./AudioFiles/"+ _name +".wav) -i " + _term + "%02d.jpg -vf \"scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\" -r 25 visual.mp4 ; rm " + _term + "??.jpg ; ffmpeg -i visual.mp4 -vf \"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i ./AudioFiles/"+ _name +".wav -c:v copy -c:a aac -strict experimental -y ./Creations/" + _name + ".mp4 &>/dev/null ; rm visual.mp4 ; rm out.mp4";
+        cmd = "ffmpeg -framerate $((" + numberOfPictures + "))/$(soxi -D \"./AudioFiles/"+ _name +".wav\") -i \"" 
+        + _term + "\"%02d.jpg -vf \"scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:"
+        		+ "(oh-ih)/2\" -r 25 visual.mp4 ; rm \"" + _term + "\"??.jpg ; ffmpeg -i visual.mp4 -vf"
+        				+ " \"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:borderw=5:text=\'" 
+        		+ _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i \"./AudioFiles/"+ _name +".wav\" -c:v copy -c:a aac -strict "
+        				+ "experimental -y \"./Creations/" + _name + ".mp4\" &>/dev/null ; rm visual.mp4 ; rm out.mp4";
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process vidProcess = builderr.start();
 					vidProcess.waitFor();
+					InputStream error = vidProcess.getErrorStream();
+					InputStreamReader iserror = new InputStreamReader(error);
+					BufferedReader br = new BufferedReader(iserror);
+					String line = null;
+					while((line = br.readLine()) != null) {
+						System.out.println(line);
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
