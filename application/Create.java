@@ -26,7 +26,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -82,14 +81,8 @@ public class Create {
 		searchBar.setSpacing(15);
 
 		message.setFont(new Font("Arial", 14));
-		search.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent arg0) {
-				if (arg0.getCode().equals(KeyCode.ENTER)) {
-					searchButton.fire();
-				}
-			}
-		});
+		
+		search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) searchButton.fire();});
 
 		searchButton.setOnAction(e -> searchTerm(search.getText()));
 
@@ -360,15 +353,8 @@ public class Create {
 				list.getItems().remove(list.getSelectionModel().getSelectedIndex());
 			}
 		});
-
-		nameField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent arg0) {
-				if (arg0.getCode().equals(KeyCode.ENTER)) {
-					butCombine.fire();
-				}
-			}
-		});
+		
+		nameField.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) butCombine.fire();});
 
 		butCombine.setOnAction(e -> {
 			String name = nameField.getText();
