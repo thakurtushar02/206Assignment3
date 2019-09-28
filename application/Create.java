@@ -176,8 +176,6 @@ public class Create {
 	}
 
 	public void displayLines(String reply) {
-//		_tabPane.getTabs().remove(0);
-//		_tabPane.getTabs().remove(0);
 
 //		Label title = new Label("Results for \"" + reply + "\"");
 //		title.setFont(new Font("Arial", 16));
@@ -213,13 +211,6 @@ public class Create {
 				+ "The creation will be created with audio\nfiles in the order "
 				+ "they are below.\n\nDouble click to play audio file.");
 		info.setFont(new Font("Arial", 12));
-
-//		Text info2 = new Text("The creation will be created with audio");
-//		info2.setFont(new Font("Arial", 12));
-//
-//		Text info3 = new Text("files in the order they are below.");
-//		info3.setFont(new Font("Arial", 12));
-
 		VBox text = new VBox(searchBar, textArea);
 		text.setSpacing(10);
 
@@ -390,58 +381,8 @@ public class Create {
 				butCombine.requestFocus();
 			} else if (validity.equals(VALID)) {
 				nameField.setPromptText("");
-				combineAudioFiles();
 				_popup.computeStagePopup();
-				Task<Void> task = new Task<Void>() {
-
-					@Override
-					protected Void call() throws Exception {
-						
-						String cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D "+ _name +".wav) "
-								+ "-vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" 
-								+ _term + "\'\" visual.mp4 &>/dev/null ;";
-						
-						//combining
-						
-//						"ffmpeg -i visual.mp4 -i temp.wav -c:v copy -c:a "
-//						+ "aac -strict experimental -y \"./AudioFiles/" + _name + ".mp4\" &>/dev/null ; "
-//								+ "rm visual.mp4;"
-						
-						ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
-						try {
-							Process vidProcess = builderr.start();
-							vidProcess.waitFor();
-						} catch (IOException e) {
-							e.printStackTrace();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-						
-						Platform.runLater(new Runnable() {
-
-							@Override
-							public void run() {
-								_main.refreshGUI(null);
-								_popup.closeComputeStagePopup();
-								_popup.showFeedback(_name, false);
-								try {
-									_view.findCreations();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-								
-							}
-							
-						});
-						return null;
-					}
-					
-					
-					//TODO Then make a video file with correct length and number of pictures.
-					//TODO Then combine audio file with video file.
-					//TODO Then give notification to user.
-				};
-				new Thread(task).start();
+				combineAudioFiles();
 	
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
@@ -477,138 +418,6 @@ public class Create {
 
 
 	}
-	
-
-
-	//		butText.setOnAction(e -> {
-	//			_popup.editText();
-	//			list.setEditable(true);
-	//			list.setCellFactory(TextFieldListCell.forListView());
-	//			lineOptions.getChildren().removeAll(prompt, numberTextField, butNum, butPreview, butText);
-	//			lineOptions.getChildren().add(butDone);
-	//		});
-
-	//		butDone.setOnAction(e -> {
-	//			list.setEditable(false);
-	//			lineOptions.getChildren().remove(butDone);
-	//			lineOptions.getChildren().addAll(prompt, numberTextField, butNum, butPreview, butText);
-	//				try {
-	//					String fileName = _file.getName();
-	//					FileWriter fw = new FileWriter(fileName, false);
-	//					fw.write("");
-	//					fw.close();
-	//					fw = new FileWriter(fileName, true);
-	//				int count = 1;
-	//				for (String s: listLines) {
-	//					if (s.length() < 4) {
-	//						continue;
-	//					}
-	//					String newString= "";
-	//					if (count < 10) {
-	//						String[] sArray = s.substring(3).split("\\. ");
-	//						for (String st: sArray) {
-	//							if (st.endsWith(".")) {
-	//								newString += st + "\n";
-	//							} else {
-	//								newString += st + ".\n";
-	//							}
-	//						}
-	//					} else {
-	//						String[] sArray = s.substring(4).split("\\. ");
-	//						for (String st: sArray) {
-	//							if (st.endsWith(".")) {
-	//								newString += st + "\n";
-	//							} else {
-	//								newString += st + ".\n";
-	//							}
-	//						}
-	//					}
-	//					fw.write(newString);
-	//					count++;
-	//				}
-	//				fw.close();
-	//			} catch (IOException ioe){
-	//				ioe.getMessage();
-	//			}
-	//			displayLines(reply);
-	//		});
-	//
-	//		butPreview.setOnAction(e -> {
-	//			_popup.previewText(_file);
-	//		});
-	//	}
-
-	//	public boolean getLines(int input, String reply) {
-	//		if(input>=lineCount || input<=0) {
-	//			_popup.showStage("", "Please enter a number between 1 and " + (lineCount-1), "OK", "Cancel", false);
-	//			return false;
-	//		} else {
-	//			input++;
-	//			if (input < lineCount && input > 1) {
-	//				String[] cmd = {"sed", "-i",  input + ","+ lineCount + "d", _file.toString()};
-	//				ProcessBuilder builder = new ProcessBuilder(cmd);
-	//				try {
-	//					Process process = builder.start();
-	//					process.waitFor();
-	//				} catch (IOException e) {
-	//					e.printStackTrace();
-	//				} catch (InterruptedException e) {
-	//					e.printStackTrace();
-	//				}
-	//			} else if (input == lineCount) {
-	//				String[] cmd= {"sed", "-i", "$d", _file.toString()};
-	//				ProcessBuilder builder = new ProcessBuilder(cmd);
-	//				try {
-	//					Process process = builder.start();
-	//					process.waitFor();
-	//				} catch (IOException | InterruptedException e) {
-	//					e.printStackTrace();
-	//				}
-	//			}
-	//			return true;
-	//		}
-	//	}
-
-	//	public void getName() {
-	//		VBox cont;
-	//		Button butNam = new Button("Create");
-	//
-	//		Label cre = new Label("Enter name for your creation: ");
-	//		cre.setFont(new Font("Arial", 16));
-	//		TextField wordTextField = new TextField();
-	//
-	//
-	//		HBox nameBar = new HBox(cre, wordTextField, butNam);
-	//		nameBar.setSpacing(15);
-	//
-	//		Label mes = new Label();
-	//		mes.setFont(new Font("Arial", 14));
-	//
-	//		butNam.setOnAction(new EventHandler<ActionEvent>() {
-	//			@Override
-	//			public void handle(ActionEvent e) {
-	//				String reply = wordTextField.getText();
-	//				String validity = checkName(reply);
-	//				_name = reply;
-	//				if (validity.equals(EMPTY)) {
-	//					mes.setText("You haven't entered a creation name! Please try again.");
-	//				} else if (validity.equals(VALID)) {
-	//					mes.setText("");
-	//					_name = reply;
-	//					//addCreation();
-	//				} else if (validity.equals(DUPLICATE)) {
-	//					_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
-	//				}
-	//				else if (validity.equals(INVALID)){
-	//					mes.setText("Creation name contains invalid characters, please try again.");
-	//				}
-	//			}
-	//		});
-	//
-	//		cont = new VBox(nameBar, mes);
-	//		cont.setPadding(new Insets(15,10,10,15));
-	//		_tab.setContent(cont);
-	//	}
 
 	public String checkName(String reply) {
 		File file = new File(reply + ".mp4");
@@ -703,7 +512,7 @@ public class Create {
 					cmd += "[" + i + ":0]";
 				}
 				cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" " + _name + ".wav &>/dev/null";
-				System.out.println(cmd);
+//				System.out.println(cmd);
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();
@@ -713,9 +522,41 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+        cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D "+ _name +".wav) "
+						+ "-vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" 
+						+ _term + "\'\" visual.mp4 &>/dev/null ; "; 
+				//combining
+				
+				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
+				try {
+					Process vidProcess = builderr.start();
+					vidProcess.waitFor();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				cmd = "ffmpeg -i visual.mp4 -i "+_name+".wav -c:v copy -c:a "
+				+ "aac -strict experimental -y \"" + _name + ".mp4\" &>/dev/null ; "
+						+ "rm visual.mp4;";
+				
+				builderr = new ProcessBuilder("bash", "-c", cmd);
+				builderr.start().waitFor();
+				
+				Platform.runLater(new Runnable() {
 
+					@Override
+					public void run() {
+						_view.setContents();
+						_main.refreshGUI(null);
+						_popup.showFeedback(_name, false);
+						_popup.closeComputeStagePopup();
+
+					}
+				});
 				deleteAudioFiles();
-
+        
 				return null;
 			}
 		};
@@ -745,4 +586,27 @@ public class Create {
 		};
 		new Thread(task).start();
 	}
+	
+//	public void makeVideo() {
+//		Task<Void> task = new Task<Void>() {
+//
+//			@Override
+//			protected Void call() throws Exception {
+//				
+//				
+//					}
+//					
+//				});
+//				return null;
+//			}
+//			
+//			
+//			//TODO Then make a video file with correct length and number of pictures.
+//			//TODO Then combine audio file with video file.
+//			//TODO Then give notification to user.
+//		};
+//		new Thread(task).start();
+//	}
 }
+
+
