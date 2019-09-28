@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
@@ -41,13 +40,13 @@ public class Create {
 	private String _name;
 	private Popup _popup;
 	private File _file;
-	private SlideMaker _imMan;
+	private ImageManager _imMan;
 	private int _numPics;
   
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
 		_popup = popup;
-		_imMan = new SlideMaker();
+		_imMan = new ImageManager();
 	}
 
 	public void setView(View view) {
@@ -351,18 +350,11 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				String cMD = "ffmpeg -framerate $((" + _numPics + "))/$(soxi -D temp.wav) -i " + _term + "%02d.jpg -vf \"scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\" -r 25 visual.mp4 ; rm " + _term + "??.jpg ; ffmpeg -i visual.mp4 -vf \"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i temp.wav -c:v copy -c:a aac -strict experimental -y " + _name + ".mp4 &>/dev/null ; rm visual.mp4 ; rm out.mp4";
+				String cMD = "ffmpeg -framerate $((" + _numPics + "))/$(soxi -D temp.wav) -i " + _term + "%02d.jpg -vf \"scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\" -r 25 visual.mp4 ; rm " + _term + "??.jpg ; ffmpeg -i visual.mp4 -vf \"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i temp.wav -c:v copy -c:a aac -strict experimental -y " + _name + ".mp4 &>/dev/null ; rm visual.mp4 ; rm out.mp4";
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cMD);
 				try {
 					Process vidProcess = builderr.start();
 					vidProcess.waitFor();
-					InputStream error = vidProcess.getErrorStream();
-					InputStreamReader isrerror = new InputStreamReader(error);
-					BufferedReader bre = new BufferedReader(isrerror);
-					String line = null;
-					while ((line = bre.readLine()) != null) {
-					        System.out.println(line);
-					    }
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
