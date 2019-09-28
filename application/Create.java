@@ -7,37 +7,26 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -53,7 +42,6 @@ public class Create {
 	private VBox contents;
 	private Label message = new Label();
 	private Tab _tab;
-	private int lineCount = 0;
 	private String _term;
 	private View _view;
 	private String _name;
@@ -84,7 +72,7 @@ public class Create {
 		create.setText("Enter term to search for: ");
 		create.setFont(new Font("Arial", 16));
 
-		searchButton = new Button("Search");
+		searchButton = new Button("Search ↳");
 
 		searchBar = new HBox(create, search, searchButton);
 		searchBar.setSpacing(15);
@@ -173,6 +161,7 @@ public class Create {
 							} else {
 								message.setText("");
 								_term = term;
+								deleteAudioFiles();
 								displayLines(term);
 							}
 						} catch (IOException e) {
@@ -188,8 +177,8 @@ public class Create {
 
 	public void displayLines(String reply) {
 
-		Label title = new Label("Results for \"" + reply + "\"");
-		title.setFont(new Font("Arial", 16));
+//		Label title = new Label("Results for \"" + reply + "\"");
+//		title.setFont(new Font("Arial", 16));
 
 
 		ListView<String> list = new ListView<String>();
@@ -218,12 +207,11 @@ public class Create {
 		Label lblList = new Label("Saved audio");
 		lblList.setFont(new Font("Arial", 16));
 
-		Text info = new Text("Move up/down to get desired order.\n"
+		Text info = new Text("Move audio files ↑ or ↓ to get desired order.\n\n"
 				+ "The creation will be created with audio\nfiles in the order "
-				+ "they are below");
+				+ "they are below.\n\nDouble click to play audio file.");
 		info.setFont(new Font("Arial", 12));
-
-		VBox text = new VBox(title, textArea);
+		VBox text = new VBox(searchBar, textArea);
 		text.setSpacing(10);
 
 		VBox.setVgrow(textArea, Priority.ALWAYS);
@@ -240,12 +228,12 @@ public class Create {
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
 		combobox.setValue("Default");
 		Label lblVoice = new Label("Voice: ");
-		Button butPlay = new Button(" Play ");
-		Button butSave = new Button(" Save ");
-		Button butUp = new Button("  Up  ");
-		Button butDown = new Button(" Down ");
-		Button butDelete = new Button("Delete");
-		Button butCombine = new Button("Combine!");
+		Button butPlay = new Button(" Play ►");
+		Button butSave = new Button(" Save ✔");
+		Button butUp = new Button("Move ↑");
+		Button butDown = new Button("Move ↓");
+		Button butDelete = new Button("Delete ✘");
+		Button butCombine = new Button("Combine ↳");
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
@@ -430,138 +418,6 @@ public class Create {
 
 
 	}
-	
-
-
-	//		butText.setOnAction(e -> {
-	//			_popup.editText();
-	//			list.setEditable(true);
-	//			list.setCellFactory(TextFieldListCell.forListView());
-	//			lineOptions.getChildren().removeAll(prompt, numberTextField, butNum, butPreview, butText);
-	//			lineOptions.getChildren().add(butDone);
-	//		});
-
-	//		butDone.setOnAction(e -> {
-	//			list.setEditable(false);
-	//			lineOptions.getChildren().remove(butDone);
-	//			lineOptions.getChildren().addAll(prompt, numberTextField, butNum, butPreview, butText);
-	//				try {
-	//					String fileName = _file.getName();
-	//					FileWriter fw = new FileWriter(fileName, false);
-	//					fw.write("");
-	//					fw.close();
-	//					fw = new FileWriter(fileName, true);
-	//				int count = 1;
-	//				for (String s: listLines) {
-	//					if (s.length() < 4) {
-	//						continue;
-	//					}
-	//					String newString= "";
-	//					if (count < 10) {
-	//						String[] sArray = s.substring(3).split("\\. ");
-	//						for (String st: sArray) {
-	//							if (st.endsWith(".")) {
-	//								newString += st + "\n";
-	//							} else {
-	//								newString += st + ".\n";
-	//							}
-	//						}
-	//					} else {
-	//						String[] sArray = s.substring(4).split("\\. ");
-	//						for (String st: sArray) {
-	//							if (st.endsWith(".")) {
-	//								newString += st + "\n";
-	//							} else {
-	//								newString += st + ".\n";
-	//							}
-	//						}
-	//					}
-	//					fw.write(newString);
-	//					count++;
-	//				}
-	//				fw.close();
-	//			} catch (IOException ioe){
-	//				ioe.getMessage();
-	//			}
-	//			displayLines(reply);
-	//		});
-	//
-	//		butPreview.setOnAction(e -> {
-	//			_popup.previewText(_file);
-	//		});
-	//	}
-
-	//	public boolean getLines(int input, String reply) {
-	//		if(input>=lineCount || input<=0) {
-	//			_popup.showStage("", "Please enter a number between 1 and " + (lineCount-1), "OK", "Cancel", false);
-	//			return false;
-	//		} else {
-	//			input++;
-	//			if (input < lineCount && input > 1) {
-	//				String[] cmd = {"sed", "-i",  input + ","+ lineCount + "d", _file.toString()};
-	//				ProcessBuilder builder = new ProcessBuilder(cmd);
-	//				try {
-	//					Process process = builder.start();
-	//					process.waitFor();
-	//				} catch (IOException e) {
-	//					e.printStackTrace();
-	//				} catch (InterruptedException e) {
-	//					e.printStackTrace();
-	//				}
-	//			} else if (input == lineCount) {
-	//				String[] cmd= {"sed", "-i", "$d", _file.toString()};
-	//				ProcessBuilder builder = new ProcessBuilder(cmd);
-	//				try {
-	//					Process process = builder.start();
-	//					process.waitFor();
-	//				} catch (IOException | InterruptedException e) {
-	//					e.printStackTrace();
-	//				}
-	//			}
-	//			return true;
-	//		}
-	//	}
-
-	//	public void getName() {
-	//		VBox cont;
-	//		Button butNam = new Button("Create");
-	//
-	//		Label cre = new Label("Enter name for your creation: ");
-	//		cre.setFont(new Font("Arial", 16));
-	//		TextField wordTextField = new TextField();
-	//
-	//
-	//		HBox nameBar = new HBox(cre, wordTextField, butNam);
-	//		nameBar.setSpacing(15);
-	//
-	//		Label mes = new Label();
-	//		mes.setFont(new Font("Arial", 14));
-	//
-	//		butNam.setOnAction(new EventHandler<ActionEvent>() {
-	//			@Override
-	//			public void handle(ActionEvent e) {
-	//				String reply = wordTextField.getText();
-	//				String validity = checkName(reply);
-	//				_name = reply;
-	//				if (validity.equals(EMPTY)) {
-	//					mes.setText("You haven't entered a creation name! Please try again.");
-	//				} else if (validity.equals(VALID)) {
-	//					mes.setText("");
-	//					_name = reply;
-	//					//addCreation();
-	//				} else if (validity.equals(DUPLICATE)) {
-	//					_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
-	//				}
-	//				else if (validity.equals(INVALID)){
-	//					mes.setText("Creation name contains invalid characters, please try again.");
-	//				}
-	//			}
-	//		});
-	//
-	//		cont = new VBox(nameBar, mes);
-	//		cont.setPadding(new Insets(15,10,10,15));
-	//		_tab.setContent(cont);
-	//	}
 
 	public String checkName(String reply) {
 		File file = new File(reply + ".mp4");
@@ -666,19 +522,7 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
-				cmd = "rm -r AudioFiles";
-				builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-				try {
-					Process process = builder.start();
-					process.waitFor();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				
-				cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D "+ _name +".wav) "
+        cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D "+ _name +".wav) "
 						+ "-vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" 
 						+ _term + "\'\" visual.mp4 &>/dev/null ; "; 
 				//combining
@@ -711,9 +555,34 @@ public class Create {
 
 					}
 				});
-
+				deleteAudioFiles();
+        
 				return null;
 			}
+		};
+		new Thread(task).start();
+	}
+	
+	public void deleteAudioFiles() {
+		listLines = FXCollections.observableArrayList();
+		numberOfAudioFiles = 0;
+		Task<Void> task = new Task<Void>() {
+
+			@Override
+			protected Void call() throws Exception {
+				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi";
+				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+				try {
+					Process process = builder.start();
+					process.waitFor();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+			
 		};
 		new Thread(task).start();
 	}
