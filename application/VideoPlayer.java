@@ -25,7 +25,7 @@ public class VideoPlayer {
 	private HBox buttonBox = new HBox(btnBackward, btnPlayPause, btnForward);
 
 	public void playVideo(String name) {
-		File fileURL = new File(name + ".mp4");
+		File fileURL = new File("./Creations/" + name + ".mp4");
 
 		Stage vidStage = new Stage();
 

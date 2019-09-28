@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
@@ -49,11 +50,11 @@ public class Create {
 	private Popup _popup;
 	private File _file;
 	private ImageManager _imMan;
-	private int _numPics;
 	private TabPane _tabPane;
 	private Main _main;
 	ObservableList<String> listLines = FXCollections.observableArrayList();
 	private int numberOfAudioFiles = 0;
+	private int numberOfPictures;
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
@@ -237,7 +238,7 @@ public class Create {
 		spacer.setMinSize(10, 1);
 
 		Slider slider = new Slider();
-		slider.setMin(1);
+		slider.setMin(3);
 		slider.setMax(10);
 		slider.setValue(1);
 		slider.setMajorTickUnit(1f);
@@ -359,7 +360,6 @@ public class Create {
 			if (list.getSelectionModel().getSelectedItem() != null) {
 				list.getItems().remove(list.getSelectionModel().getSelectedIndex());
 			}
-			//TODO Delete mp4 file
 		});
 
 		nameField.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -381,7 +381,10 @@ public class Create {
 			} else if (validity.equals(VALID)) {
 				nameField.setPromptText("");
 				_popup.computeStagePopup();
+				numberOfPictures = (int)slider.getValue();
+				getPics(numberOfPictures, _term);
 				combineAudioFiles();
+				
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
 				nameField.setPromptText("");
@@ -528,7 +531,7 @@ public class Create {
 				//		+ _term + "\'\" visual.mp4 &>/dev/null ; "; 
 				//combining
         
-        cmd = "ffmpeg -framerate $((" + _numPics + "))/$(soxi -D ./AudioFiles/"+ _name +".wav) -i " + _term + "%02d.jpg -vf \"scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\" -r 25 visual.mp4 ; rm " + _term + "??.jpg ; ffmpeg -i visual.mp4 -vf \"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i ./AudioFiles/"+ _name +".wav -c:v copy -c:a aac -strict experimental -y ./Creations/" + _name + ".mp4 &>/dev/null ; rm visual.mp4 ; rm out.mp4";
+        cmd = "ffmpeg -framerate $((" + numberOfPictures + "))/$(soxi -D ./AudioFiles/"+ _name +".wav) -i " + _term + "%02d.jpg -vf \"scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\" -r 25 visual.mp4 ; rm " + _term + "??.jpg ; ffmpeg -i visual.mp4 -vf \"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i ./AudioFiles/"+ _name +".wav -c:v copy -c:a aac -strict experimental -y ./Creations/" + _name + ".mp4 &>/dev/null ; rm visual.mp4 ; rm out.mp4";
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process vidProcess = builderr.start();
@@ -594,7 +597,7 @@ public class Create {
 			_popup.showStage("", "For amount of images, please enter a number between 1 and 10", "OK", "Cancel", false);
 			return false;
 		} else {
-			_numPics = input;
+			numberOfPictures = input;
 			_imMan.getImages(input, reply);
 			return true;
 		}
