@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -161,7 +162,7 @@ public class Create {
 							} else {
 								message.setText("");
 								_term = term;
-								deleteAudioFiles();
+								deleteFiles();
 								displayLines(term);
 							}
 						} catch (IOException e) {
@@ -234,6 +235,7 @@ public class Create {
 		Button butDown = new Button("Move ↓");
 		Button butDelete = new Button("Delete ✘");
 		Button butCombine = new Button("Combine ↳");
+		butCombine.disableProperty().bind(Bindings.size(listLines).isEqualTo(0));
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
@@ -359,7 +361,9 @@ public class Create {
 		});
 
 		butDelete.setOnAction(e -> {
-			list.getItems().remove(list.getSelectionModel().getSelectedIndex());
+			if (list.getSelectionModel().getSelectedItem() != null) {
+				list.getItems().remove(list.getSelectionModel().getSelectedIndex());
+			}
 			//TODO Delete mp4 file
 		});
 
@@ -383,7 +387,6 @@ public class Create {
 				nameField.setPromptText("");
 				_popup.computeStagePopup();
 				combineAudioFiles();
-	
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
 				nameField.setPromptText("");
@@ -420,7 +423,7 @@ public class Create {
 	}
 
 	public String checkName(String reply) {
-		File file = new File(reply + ".mp4");
+		File file = new File("./Creations/" + reply + ".mp4");
 		if(file.exists()) {
 			return DUPLICATE;
 		} else {
@@ -497,22 +500,27 @@ public class Create {
 	}
 
 	public void combineAudioFiles() {
+		
 		Task<Void> task = new Task<Void>() {
 
 			@Override
 			protected Void call() throws Exception {
+				String cmd;
+				if (listLines.size() == 1) {
+					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/"+ _name + ".wav";
+				} else {
+					cmd = "ffmpeg";
+					for (String s: listLines) {
+						cmd += " -i \"./AudioFiles/" + s + ".wav\"";
+					}
 
-				String cmd = "ffmpeg";
-				for (String s: listLines) {
-					cmd += " -i \"./AudioFiles/" + s + ".wav\"";
+					cmd += " -filter_complex \"";
+					for (int i = 0; i < listLines.size(); i++) {
+						cmd += "[" + i + ":0]";
+					}
+					cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" ./AudioFiles/" + _name + ".wav &>/dev/null";
 				}
 
-				cmd += " -filter_complex \"";
-				for (int i = 0; i < listLines.size(); i++) {
-					cmd += "[" + i + ":0]";
-				}
-				cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" " + _name + ".wav &>/dev/null";
-//				System.out.println(cmd);
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();
@@ -522,7 +530,7 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-        cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D "+ _name +".wav) "
+        cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D ./AudioFiles/"+ _name +".wav) "
 						+ "-vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" 
 						+ _term + "\'\" visual.mp4 &>/dev/null ; "; 
 				//combining
@@ -537,8 +545,8 @@ public class Create {
 					e.printStackTrace();
 				}
 				
-				cmd = "ffmpeg -i visual.mp4 -i "+_name+".wav -c:v copy -c:a "
-				+ "aac -strict experimental -y \"" + _name + ".mp4\" &>/dev/null ; "
+				cmd = "mkdir -p Creations; ffmpeg -i visual.mp4 -i ./AudioFiles/"+_name+".wav -c:v copy -c:a "
+				+ "aac -strict experimental -y \"Creations/" + _name + ".mp4\" &>/dev/null ; "
 						+ "rm visual.mp4;";
 				
 				builderr = new ProcessBuilder("bash", "-c", cmd);
@@ -555,7 +563,7 @@ public class Create {
 
 					}
 				});
-				deleteAudioFiles();
+				deleteFiles();
         
 				return null;
 			}
@@ -563,14 +571,14 @@ public class Create {
 		new Thread(task).start();
 	}
 	
-	public void deleteAudioFiles() {
+	public void deleteFiles() {
 		listLines = FXCollections.observableArrayList();
 		numberOfAudioFiles = 0;
 		Task<Void> task = new Task<Void>() {
 
 			@Override
 			protected Void call() throws Exception {
-				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi";
+				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi; if [ -e text.txt ]; then rm -f text.txt; fi";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();

@@ -95,7 +95,8 @@ public class View {
 
 	public void findCreations() throws IOException {
 		list.clear();
-		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", "ls *.mp4");
+		String cmd = "mkdir -p Creations; basename $(ls Creations/*.mp4)";
+		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 		Process process = builder.start();
 		InputStream stdout = process.getInputStream();
 
@@ -108,6 +109,6 @@ public class View {
 
 	public void playCreation(String name) {
 		VideoPlayer vid = new VideoPlayer();
-		vid.playVideo(name);
+		vid.playVideo("./Creations/" + name);
 	}
 }

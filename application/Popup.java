@@ -89,13 +89,13 @@ public class Popup {
 
 	public void action(String name, String nxtAction, boolean isView) {
 		if(isView) {
-			_create.removeCreation(name);
+			_create.removeCreation("./Creations/" + name);
 			_view.setContents();
 			showFeedback(name, true);
 		}else {
 			if(nxtAction.equals("Overwrite")) {
 				_create.removeCreation(name);
-				//_create.addCreation();
+				_create.combineAudioFiles();
 				_create.setContents(null);
 				showFeedback(name, false);
 			}else {
