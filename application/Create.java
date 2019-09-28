@@ -50,7 +50,8 @@ public class Create {
 	private ImageManager _imMan;
 	private TabPane _tabPane;
 	private Main _main;
-	ObservableList<String> listLines = FXCollections.observableArrayList();
+	private Slider slider = new Slider();
+	private ObservableList<String> listLines = FXCollections.observableArrayList();
 	private int numberOfAudioFiles = 0;
 	private int numberOfPictures;
 	private final String EMPTY = "Empty";
@@ -229,7 +230,7 @@ public class Create {
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
-		Slider slider = new Slider();
+		
 		slider.setMin(1);
 		slider.setMax(10);
 		slider.setValue(1);
@@ -251,7 +252,10 @@ public class Create {
 		TextField nameField = new TextField();
 		nameField.setPromptText("Enter name of creation");
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if ((newValue.contains("/")) || (newValue.contains("\0"))) {
+			if ((newValue.contains("/"))
+					|| (newValue.contains("\\"))
+					|| (newValue.contains("\\"))
+					|| (newValue.contains("\0"))) {
 				nameField.setText(oldValue);
 			}
 		});
@@ -365,9 +369,6 @@ public class Create {
 				butCombine.requestFocus();
 			} else if (validity.equals(VALID)) {
 				nameField.setPromptText("");
-				_popup.computeStagePopup();
-				numberOfPictures = (int)slider.getValue();
-				
 				combineAudioFiles();
 				
 			} else if (validity.equals(DUPLICATE)) {
@@ -472,7 +473,7 @@ public class Create {
 	}
 
 	public void removeCreation(String name) {
-		File file = new File(name + ".mp4");
+		File file = new File(name);
 		file.delete();
 	}
 
@@ -481,7 +482,8 @@ public class Create {
 	}
 
 	public void combineAudioFiles() {
-		
+		_popup.computeStagePopup();
+		numberOfPictures = (int)slider.getValue();
 		Task<Void> task = new Task<Void>() {
 
 			@Override
@@ -521,6 +523,7 @@ public class Create {
 								+ "/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i"
 										+ " \'./AudioFiles/" + "temp" + ".wav\' -c:v copy -c:a aac -strict experimental"
 										+ " -y \'./Creations/" + _name + ".mp4\' &>/dev/null ; rm visual.mp4 ; rm out.mp4";
+				
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process vidProcess = builderr.start();
