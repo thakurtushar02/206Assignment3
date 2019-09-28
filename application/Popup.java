@@ -74,16 +74,15 @@ public class Popup {
 	}
 
 	public void action(String name, String nxtAction, boolean isView) {
+		String fullName = "Creations/" + name + ".mp4";
 		if(isView) {
-			_create.removeCreation("./Creations/" + name);
+			_create.removeCreation(fullName);
 			_view.setContents();
 			showFeedback(name, true);
 		}else {
 			if(nxtAction.equals("Overwrite")) {
-				_create.removeCreation(name);
+				_create.removeCreation(fullName);
 				_create.combineAudioFiles();
-				_create.setContents(null);
-				showFeedback(name, false);
 			}else {
 				_create.setContents(null);
 			}
