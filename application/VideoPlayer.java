@@ -16,7 +16,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class VideoPlayer {
-	//Might also want to make video using this...
 
 	private Button btnMute = new Button("Mute");
 	private Button btnPlayPause = new Button("Pause");
