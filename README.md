@@ -10,3 +10,5 @@ Step 2: Type into the terminal the following: *java -jar WikiSpeak.jar*
 Step 3: Press enter. The application should now be running. Enjoy!  
 
 
+--module-path /home/student/Downloads/openjfx-13-rc+2_linux-x64_bin-sdk/javafx-sdk-13/lib
+ --add-modules=javafx.controls --add-modules=javafx.media
