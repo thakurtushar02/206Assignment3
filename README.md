@@ -5,7 +5,7 @@ The Wiki_Speak application creates video files of words you search on Wikipedia,
 ### Please use the ECSE computer lab Linux image for testing purposes.  
 
 ## Here are the directions to easily execute the runnable .jar file provided in the repository.
-Step 1: Navigate to the directory of the .jar file, and open a terminal there.
-Step 2: Type: java -jar WikiSpeak.jar
-Step 3: Press enter. The application should now be running. Enjoy!
+Step 1: Navigate to the directory of the .jar file, and open a terminal there.  
+Step 2: Type: java -jar WikiSpeak.jar  
+Step 3: Press enter. The application should now be running. Enjoy!  
 
