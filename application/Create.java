@@ -540,13 +540,6 @@ public class Create {
 				try {
 					Process vidProcess = builderr.start();
 					vidProcess.waitFor();
-					InputStream error = vidProcess.getErrorStream();
-					InputStreamReader iserror = new InputStreamReader(error);
-					BufferedReader br = new BufferedReader(iserror);
-					String line = null;
-					while((line = br.readLine()) != null) {
-						System.out.println(line);
-					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
