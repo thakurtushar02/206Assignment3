@@ -238,7 +238,7 @@ public class Create {
 		spacer.setMinSize(10, 1);
 
 		Slider slider = new Slider();
-		slider.setMin(3);
+		slider.setMin(1);
 		slider.setMax(10);
 		slider.setValue(1);
 		slider.setMajorTickUnit(1f);
@@ -425,7 +425,7 @@ public class Create {
 		if(file.exists()) {
 			return DUPLICATE;
 		} else {
-			String newName = reply.replaceAll("[^a-zA-Z0-9_\\-\\.]", "_");
+			String newName = reply.replaceAll("[^a-zA-Z0-9_\\-\\. ]", "_");
 			if(newName == reply) {
 				if (reply.isEmpty() == false) {
 					return VALID;
@@ -504,7 +504,7 @@ public class Create {
 				getPics(numberOfPictures, _term);
 				String cmd;
 				if (listLines.size() == 1) {
-					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/"+ _name + ".wav";
+					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/"+ "temp" + ".wav";
 				} else {
 					cmd = "ffmpeg";
 					for (String s: listLines) {
@@ -515,7 +515,7 @@ public class Create {
 					for (int i = 0; i < listLines.size(); i++) {
 						cmd += "[" + i + ":0]";
 					}
-					cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" ./AudioFiles/" + _name + ".wav &>/dev/null";
+					cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" ./AudioFiles/" + "temp" + ".wav &>/dev/null";
 				}
 
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
@@ -527,17 +527,15 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-        //cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D ./AudioFiles/"+ _name +".wav) "
-				//		+ "-vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" 
-				//		+ _term + "\'\" visual.mp4 &>/dev/null ; "; 
-				//combining
-        
-        cmd = "ffmpeg -framerate $((" + numberOfPictures + "))/$(soxi -D \"./AudioFiles/"+ _name +".wav\") -i \"" 
-        + _term + "\"%02d.jpg -vf \"scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:"
-        		+ "(oh-ih)/2\" -r 25 visual.mp4 ; rm \"" + _term + "\"??.jpg ; ffmpeg -i visual.mp4 -vf"
-        				+ " \"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:borderw=5:text=\'" 
-        		+ _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i \"./AudioFiles/"+ _name +".wav\" -c:v copy -c:a aac -strict "
-        				+ "experimental -y \"./Creations/" + _name + ".mp4\" &>/dev/null ; rm visual.mp4 ; rm out.mp4";
+				
+				cmd = "cat *.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
+						+ "$(soxi -D \'./AudioFiles/" + "temp" + ".wav\') -i - -c:v libx264 -pix_fmt yuv420p -vf \""
+								+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
+						+ " -r 25 -y visual.mp4 ; rm \"" + _term + "\"??.jpg ; ffmpeg -i visual.mp4 -vf "
+								+ "\"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)"
+								+ "/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i"
+										+ " \'./AudioFiles/" + "temp" + ".wav\' -c:v copy -c:a aac -strict experimental"
+										+ " -y \'./Creations/" + _name + ".mp4\' &>/dev/null ; rm visual.mp4 ; rm out.mp4";
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process vidProcess = builderr.start();
@@ -554,14 +552,7 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
-			//	cmd = "mkdir -p Creations; ffmpeg -i visual.mp4 -i ./AudioFiles/"+_name+".wav -c:v copy -c:a "
-			//	+ "aac -strict experimental -y \"Creations/" + _name + ".mp4\" &>/dev/null ; "
-			//			+ "rm visual.mp4;";
-				
-			//	builderr = new ProcessBuilder("bash", "-c", cmd);
-			//	builderr.start().waitFor();
-				
+
 				Platform.runLater(new Runnable() {
 
 					@Override
@@ -615,27 +606,6 @@ public class Create {
 			return true;
 		}
 	}
-	
-//	public void makeVideo() {
-//		Task<Void> task = new Task<Void>() {
-//
-//			@Override
-//			protected Void call() throws Exception {
-//				
-//				
-//					}
-//					
-//				});
-//				return null;
-//			}
-//			
-//			
-//			//TODO Then make a video file with correct length and number of pictures.
-//			//TODO Then combine audio file with video file.
-//			//TODO Then give notification to user.
-//		};
-//		new Thread(task).start();
-//	}
 }
 
 
