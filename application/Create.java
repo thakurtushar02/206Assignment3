@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
@@ -48,10 +49,12 @@ public class Create {
 	private String _name;
 	private Popup _popup;
 	private File _file;
+	private ImageManager _imMan;
 	private TabPane _tabPane;
 	private Main _main;
 	ObservableList<String> listLines = FXCollections.observableArrayList();
 	private int numberOfAudioFiles = 0;
+	private int numberOfPictures;
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
@@ -60,6 +63,7 @@ public class Create {
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
 		_popup = popup;
+		_imMan = new ImageManager();
 	}
 
 	public void setView(View view) {
@@ -177,11 +181,6 @@ public class Create {
 	}
 
 	public void displayLines(String reply) {
-
-//		Label title = new Label("Results for \"" + reply + "\"");
-//		title.setFont(new Font("Arial", 16));
-
-
 		ListView<String> list = new ListView<String>();
 
 		list.setItems(listLines);
@@ -203,7 +202,6 @@ public class Create {
 			e.printStackTrace();
 		}
 		textArea.setText(textArea.getText().substring(2));
-
 
 		Label lblList = new Label("Saved audio");
 		lblList.setFont(new Font("Arial", 16));
@@ -240,7 +238,7 @@ public class Create {
 		spacer.setMinSize(10, 1);
 
 		Slider slider = new Slider();
-		slider.setMin(1);
+		slider.setMin(3);
 		slider.setMax(10);
 		slider.setValue(1);
 		slider.setMajorTickUnit(1f);
@@ -298,11 +296,9 @@ public class Create {
 							voice = "festival --tts";
 						} else {
 							voice = "espeak";
-						}
-
+            }
 						String command = "echo \"" + textArea.getSelectedText() + " \" | " + voice ;
 						ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
-
 						try {
 							Process p = pb.start();
 							BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
@@ -364,7 +360,6 @@ public class Create {
 			if (list.getSelectionModel().getSelectedItem() != null) {
 				list.getItems().remove(list.getSelectionModel().getSelectedIndex());
 			}
-			//TODO Delete mp4 file
 		});
 
 		nameField.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -386,7 +381,10 @@ public class Create {
 			} else if (validity.equals(VALID)) {
 				nameField.setPromptText("");
 				_popup.computeStagePopup();
+				numberOfPictures = (int)slider.getValue();
+				getPics(numberOfPictures, _term);
 				combineAudioFiles();
+				
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
 				nameField.setPromptText("");
@@ -456,7 +454,6 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
 				numberOfAudioFiles++;
 				String nameOfFile = "AudioFile" + numberOfAudioFiles;
 
@@ -466,7 +463,6 @@ public class Create {
 					cmd = "espeak -f " + _file.toString() + " --stdout > \"./AudioFiles/" + nameOfFile + ".wav\"";
 				}
 				builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-
 				try {
 					Process process = builder.start();
 					process.waitFor();
@@ -530,11 +526,12 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-        cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D ./AudioFiles/"+ _name +".wav) "
-						+ "-vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" 
-						+ _term + "\'\" visual.mp4 &>/dev/null ; "; 
+        //cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D ./AudioFiles/"+ _name +".wav) "
+				//		+ "-vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" 
+				//		+ _term + "\'\" visual.mp4 &>/dev/null ; "; 
 				//combining
-				
+        
+        cmd = "ffmpeg -framerate $((" + numberOfPictures + "))/$(soxi -D ./AudioFiles/"+ _name +".wav) -i " + _term + "%02d.jpg -vf \"scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\" -r 25 visual.mp4 ; rm " + _term + "??.jpg ; ffmpeg -i visual.mp4 -vf \"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i ./AudioFiles/"+ _name +".wav -c:v copy -c:a aac -strict experimental -y ./Creations/" + _name + ".mp4 &>/dev/null ; rm visual.mp4 ; rm out.mp4";
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process vidProcess = builderr.start();
@@ -545,12 +542,12 @@ public class Create {
 					e.printStackTrace();
 				}
 				
-				cmd = "mkdir -p Creations; ffmpeg -i visual.mp4 -i ./AudioFiles/"+_name+".wav -c:v copy -c:a "
-				+ "aac -strict experimental -y \"Creations/" + _name + ".mp4\" &>/dev/null ; "
-						+ "rm visual.mp4;";
+			//	cmd = "mkdir -p Creations; ffmpeg -i visual.mp4 -i ./AudioFiles/"+_name+".wav -c:v copy -c:a "
+			//	+ "aac -strict experimental -y \"Creations/" + _name + ".mp4\" &>/dev/null ; "
+			//			+ "rm visual.mp4;";
 				
-				builderr = new ProcessBuilder("bash", "-c", cmd);
-				builderr.start().waitFor();
+			//	builderr = new ProcessBuilder("bash", "-c", cmd);
+			//	builderr.start().waitFor();
 				
 				Platform.runLater(new Runnable() {
 
@@ -593,6 +590,17 @@ public class Create {
 			
 		};
 		new Thread(task).start();
+	}
+  
+  	public boolean getPics(int input, String reply) {
+		if(input>10 || input<=0) {
+			_popup.showStage("", "For amount of images, please enter a number between 1 and 10", "OK", "Cancel", false);
+			return false;
+		} else {
+			numberOfPictures = input;
+			_imMan.getImages(input, reply);
+			return true;
+		}
 	}
 	
 //	public void makeVideo() {
