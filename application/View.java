@@ -23,6 +23,7 @@ import javafx.scene.text.Font;
 /**
  * This class is related to the View Creations tab and provides viewing,
  * playing and deleting creations functionalities for the app.
+ * @author Jacinta, Lynette, Tushar
  */
 public class View {
 	private ListView<String> creations = new ListView<>();

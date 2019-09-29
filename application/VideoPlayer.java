@@ -17,6 +17,7 @@ import javafx.util.Duration;
 
 /**
  * This class plays specified creations using MediaPlayer.
+ * @author Jacinta, Lynette, Tushar
  */
 public class VideoPlayer {
 

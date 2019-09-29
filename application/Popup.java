@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 
 /**
  * Represents Pop-ups windows that may be called during the use of the Wiki-Speak application 
- *
+ * @author Jacinta, Lynette, Tushar
  */
 public class Popup {
 	private Create _create;
