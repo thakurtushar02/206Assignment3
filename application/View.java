@@ -24,8 +24,8 @@ public class View {
 	private ListView<String> creations = new ListView<>();
 	private ObservableList<String> list = FXCollections.observableArrayList();
 	private Label title = new Label();
-	private Button delete = new Button("Delete");
-	private Button play = new Button("Play");
+	private Button delete = new Button("Delete ✘");
+	private Button play = new Button("Play ►");
 	private VBox sideOptions;
 	private HBox optionBox;
 	private VBox contents;
@@ -72,7 +72,7 @@ public class View {
 		}
 		creations.setItems(list);
 		
-		creations.setPrefSize(1000, list.size()* ROW_HEIGHT + SPACING);
+		creations.setPrefSize(1000, list.size() * ROW_HEIGHT + SPACING);
 		creations.setMaxHeight(550);
 
 		sideOptions = new VBox(delete, play);
@@ -95,7 +95,8 @@ public class View {
 
 	public void findCreations() throws IOException {
 		list.clear();
-		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", "ls *.mp4");
+		String cmd = "mkdir -p Creations; cd ./Creations; ls *.mp4; cd ../";
+		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 		Process process = builder.start();
 		InputStream stdout = process.getInputStream();
 

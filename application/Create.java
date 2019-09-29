@@ -7,37 +7,27 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -53,24 +43,28 @@ public class Create {
 	private VBox contents;
 	private Label message = new Label();
 	private Tab _tab;
-	private int lineCount = 0;
 	private String _term;
 	private View _view;
 	private String _name;
 	private Popup _popup;
 	private File _file;
+	private ImageManager _imMan;
 	private TabPane _tabPane;
 	private Main _main;
-	ObservableList<String> listLines = FXCollections.observableArrayList();
+	private Slider slider = new Slider();
+	private ObservableList<String> listLines = FXCollections.observableArrayList();
 	private int numberOfAudioFiles = 0;
+	private int numberOfPictures;
+	private ProgressBar pbSaveCombine = new ProgressBar();
+	private ProgressBar pbSearch = new ProgressBar();
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
-	private final String INVALID = "Invalid";
 
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
 		_popup = popup;
+		_imMan = new ImageManager();
 	}
 
 	public void setView(View view) {
@@ -84,20 +78,14 @@ public class Create {
 		create.setText("Enter term to search for: ");
 		create.setFont(new Font("Arial", 16));
 
-		searchButton = new Button("Search");
-
-		searchBar = new HBox(create, search, searchButton);
+		searchButton = new Button("Search ↳");
+		pbSearch.setVisible(false);
+		searchBar = new HBox(create, search, searchButton, pbSearch);
 		searchBar.setSpacing(15);
 
 		message.setFont(new Font("Arial", 14));
-		search.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent arg0) {
-				if (arg0.getCode().equals(KeyCode.ENTER)) {
-					searchButton.fire();
-				}
-			}
-		});
+
+		search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) searchButton.fire();});
 
 		searchButton.setOnAction(e -> searchTerm(search.getText()));
 
@@ -107,7 +95,7 @@ public class Create {
 	}
 
 	public void searchTerm(String term) {
-		_popup.computeStagePopup();
+		pbSearch.setVisible(true);
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
 				_file = new File ("text.txt");
@@ -164,7 +152,7 @@ public class Create {
 
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
-						_popup.closeComputeStagePopup();
+						pbSearch.setVisible(false);
 						try(BufferedReader fileReader = new BufferedReader(new FileReader(_file.toString()))){
 							String line = fileReader.readLine();
 							if(line.contains("not found :^(")) {
@@ -173,6 +161,7 @@ public class Create {
 							} else {
 								message.setText("");
 								_term = term;
+								deleteFiles();
 								displayLines(term);
 							}
 						} catch (IOException e) {
@@ -187,11 +176,6 @@ public class Create {
 	}
 
 	public void displayLines(String reply) {
-
-		Label title = new Label("Results for \"" + reply + "\"");
-		title.setFont(new Font("Arial", 16));
-
-
 		ListView<String> list = new ListView<String>();
 
 		list.setItems(listLines);
@@ -214,16 +198,14 @@ public class Create {
 		}
 		textArea.setText(textArea.getText().substring(2));
 
-
 		Label lblList = new Label("Saved audio");
 		lblList.setFont(new Font("Arial", 16));
 
-		Text info = new Text("Move up/down to get desired order.\n"
+		Text info = new Text("Move audio files ↑ or ↓ to get desired order.\n\n"
 				+ "The creation will be created with audio\nfiles in the order "
-				+ "they are below");
+				+ "they are below.\n\nDouble click to play audio file.");
 		info.setFont(new Font("Arial", 12));
-
-		VBox text = new VBox(title, textArea);
+		VBox text = new VBox(searchBar, textArea);
 		text.setSpacing(10);
 
 		VBox.setVgrow(textArea, Priority.ALWAYS);
@@ -240,16 +222,17 @@ public class Create {
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
 		combobox.setValue("Default");
 		Label lblVoice = new Label("Voice: ");
-		Button butPlay = new Button(" Play ");
-		Button butSave = new Button(" Save ");
-		Button butUp = new Button("  Up  ");
-		Button butDown = new Button(" Down ");
-		Button butDelete = new Button("Delete");
-		Button butCombine = new Button("Combine!");
+		Button butPlay = new Button(" Play ►");
+		Button butSave = new Button(" Save ✔");
+		Button butUp = new Button("Move ↑");
+		Button butDown = new Button("Move ↓");
+		Button butDelete = new Button("Delete ✘");
+		Button butCombine = new Button("Combine ↳");
+		butCombine.disableProperty().bind(Bindings.size(listLines).isEqualTo(0));
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
-		Slider slider = new Slider();
+
 		slider.setMin(1);
 		slider.setMax(10);
 		slider.setValue(1);
@@ -271,8 +254,12 @@ public class Create {
 		TextField nameField = new TextField();
 		nameField.setPromptText("Enter name of creation");
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if ((newValue.contains("/")) || (newValue.contains("\0"))) {
-				nameField.setText(oldValue);
+			String[] badCharacters = {"/", "?", "%", "*", ":", "|", "\"", "<", ">", "\0",
+					"\\", "(", ")", "$", "@", "!", "#", "^", "&", "+"};
+			for (String s: badCharacters) {
+				if (newValue.contains(s)) {
+					nameField.setText(oldValue);
+				}
 			}
 		});
 
@@ -283,8 +270,8 @@ public class Create {
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 		HBox.setHgrow(spacer2, Priority.ALWAYS);
 		VBox.setVgrow(textArea, Priority.ALWAYS);
-
-		HBox nameLayout = new HBox(10, photos, spacer2, nameField, butCombine);
+		pbSaveCombine.setVisible(false);
+		HBox nameLayout = new HBox(10, photos, pbSaveCombine, spacer2, nameField, butCombine);
 		nameLayout.setAlignment(Pos.BOTTOM_CENTER);
 
 		VBox layout = new VBox(views, lineOptions, nameLayout, slider);
@@ -309,10 +296,8 @@ public class Create {
 						} else {
 							voice = "espeak";
 						}
-
 						String command = "echo \"" + textArea.getSelectedText() + " \" | " + voice ;
 						ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
-
 						try {
 							Process p = pb.start();
 							BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
@@ -371,18 +356,12 @@ public class Create {
 		});
 
 		butDelete.setOnAction(e -> {
-			list.getItems().remove(list.getSelectionModel().getSelectedIndex());
-			//TODO Delete mp4 file
-		});
-
-		nameField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent arg0) {
-				if (arg0.getCode().equals(KeyCode.ENTER)) {
-					butCombine.fire();
-				}
+			if (list.getSelectionModel().getSelectedItem() != null) {
+				list.getItems().remove(list.getSelectionModel().getSelectedIndex());
 			}
 		});
+
+		nameField.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) butCombine.fire();});
 
 		butCombine.setOnAction(e -> {
 			String name = nameField.getText();
@@ -393,28 +372,22 @@ public class Create {
 				butCombine.requestFocus();
 			} else if (validity.equals(VALID)) {
 				nameField.setPromptText("");
-				_popup.computeStagePopup();
 				combineAudioFiles();
-	
+
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
 				nameField.setPromptText("");
 				butCombine.requestFocus();
 				_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
 			}
-			else if (validity.equals(INVALID)){
-				nameField.clear();
-				nameField.setPromptText("Invalid Characters");
-				butCombine.requestFocus();
-			}
 		});
-		
+
 		list.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent click) {
 				if (click.getClickCount() == 2) {
 					String audio = list.getSelectionModel().getSelectedItem();
-					
+
 					String cmd = "aplay AudioFiles/" + audio +".wav";
 					ProcessBuilder pb = new ProcessBuilder("bash", "-c", cmd);
 					try {
@@ -423,166 +396,27 @@ public class Create {
 						e.printStackTrace();
 					}
 				}
-				
+
 			}
-			
+
 		});
 
 
 	}
-	
-
-
-	//		butText.setOnAction(e -> {
-	//			_popup.editText();
-	//			list.setEditable(true);
-	//			list.setCellFactory(TextFieldListCell.forListView());
-	//			lineOptions.getChildren().removeAll(prompt, numberTextField, butNum, butPreview, butText);
-	//			lineOptions.getChildren().add(butDone);
-	//		});
-
-	//		butDone.setOnAction(e -> {
-	//			list.setEditable(false);
-	//			lineOptions.getChildren().remove(butDone);
-	//			lineOptions.getChildren().addAll(prompt, numberTextField, butNum, butPreview, butText);
-	//				try {
-	//					String fileName = _file.getName();
-	//					FileWriter fw = new FileWriter(fileName, false);
-	//					fw.write("");
-	//					fw.close();
-	//					fw = new FileWriter(fileName, true);
-	//				int count = 1;
-	//				for (String s: listLines) {
-	//					if (s.length() < 4) {
-	//						continue;
-	//					}
-	//					String newString= "";
-	//					if (count < 10) {
-	//						String[] sArray = s.substring(3).split("\\. ");
-	//						for (String st: sArray) {
-	//							if (st.endsWith(".")) {
-	//								newString += st + "\n";
-	//							} else {
-	//								newString += st + ".\n";
-	//							}
-	//						}
-	//					} else {
-	//						String[] sArray = s.substring(4).split("\\. ");
-	//						for (String st: sArray) {
-	//							if (st.endsWith(".")) {
-	//								newString += st + "\n";
-	//							} else {
-	//								newString += st + ".\n";
-	//							}
-	//						}
-	//					}
-	//					fw.write(newString);
-	//					count++;
-	//				}
-	//				fw.close();
-	//			} catch (IOException ioe){
-	//				ioe.getMessage();
-	//			}
-	//			displayLines(reply);
-	//		});
-	//
-	//		butPreview.setOnAction(e -> {
-	//			_popup.previewText(_file);
-	//		});
-	//	}
-
-	//	public boolean getLines(int input, String reply) {
-	//		if(input>=lineCount || input<=0) {
-	//			_popup.showStage("", "Please enter a number between 1 and " + (lineCount-1), "OK", "Cancel", false);
-	//			return false;
-	//		} else {
-	//			input++;
-	//			if (input < lineCount && input > 1) {
-	//				String[] cmd = {"sed", "-i",  input + ","+ lineCount + "d", _file.toString()};
-	//				ProcessBuilder builder = new ProcessBuilder(cmd);
-	//				try {
-	//					Process process = builder.start();
-	//					process.waitFor();
-	//				} catch (IOException e) {
-	//					e.printStackTrace();
-	//				} catch (InterruptedException e) {
-	//					e.printStackTrace();
-	//				}
-	//			} else if (input == lineCount) {
-	//				String[] cmd= {"sed", "-i", "$d", _file.toString()};
-	//				ProcessBuilder builder = new ProcessBuilder(cmd);
-	//				try {
-	//					Process process = builder.start();
-	//					process.waitFor();
-	//				} catch (IOException | InterruptedException e) {
-	//					e.printStackTrace();
-	//				}
-	//			}
-	//			return true;
-	//		}
-	//	}
-
-	//	public void getName() {
-	//		VBox cont;
-	//		Button butNam = new Button("Create");
-	//
-	//		Label cre = new Label("Enter name for your creation: ");
-	//		cre.setFont(new Font("Arial", 16));
-	//		TextField wordTextField = new TextField();
-	//
-	//
-	//		HBox nameBar = new HBox(cre, wordTextField, butNam);
-	//		nameBar.setSpacing(15);
-	//
-	//		Label mes = new Label();
-	//		mes.setFont(new Font("Arial", 14));
-	//
-	//		butNam.setOnAction(new EventHandler<ActionEvent>() {
-	//			@Override
-	//			public void handle(ActionEvent e) {
-	//				String reply = wordTextField.getText();
-	//				String validity = checkName(reply);
-	//				_name = reply;
-	//				if (validity.equals(EMPTY)) {
-	//					mes.setText("You haven't entered a creation name! Please try again.");
-	//				} else if (validity.equals(VALID)) {
-	//					mes.setText("");
-	//					_name = reply;
-	//					//addCreation();
-	//				} else if (validity.equals(DUPLICATE)) {
-	//					_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
-	//				}
-	//				else if (validity.equals(INVALID)){
-	//					mes.setText("Creation name contains invalid characters, please try again.");
-	//				}
-	//			}
-	//		});
-	//
-	//		cont = new VBox(nameBar, mes);
-	//		cont.setPadding(new Insets(15,10,10,15));
-	//		_tab.setContent(cont);
-	//	}
 
 	public String checkName(String reply) {
-		File file = new File(reply + ".mp4");
+		File file = new File("./Creations/" + reply + ".mp4");
 		if(file.exists()) {
 			return DUPLICATE;
+		} else if (reply.isEmpty()) {
+			return EMPTY;
 		} else {
-			String newName = reply.replaceAll("[^a-zA-Z0-9_\\-\\.]", "_");
-			if(newName == reply) {
-				if (reply.isEmpty() == false) {
-					return VALID;
-				} else {
-					return EMPTY;
-				}	
-			}else {
-				return INVALID;
-			}
-		}
+			return VALID;
+		}	
 	}
 
 	public void addCreation(String voice) {
-		_popup.computeStagePopup();
+		pbSaveCombine.setVisible(true);
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
 
@@ -597,7 +431,6 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
 				numberOfAudioFiles++;
 				String nameOfFile = "AudioFile" + numberOfAudioFiles;
 
@@ -607,7 +440,6 @@ public class Create {
 					cmd = "espeak -f " + _file.toString() + " --stdout > \"./AudioFiles/" + nameOfFile + ".wav\"";
 				}
 				builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-
 				try {
 					Process process = builder.start();
 					process.waitFor();
@@ -616,13 +448,13 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
+
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
 						_view.setContents();
 						_popup.showFeedback(nameOfFile, false);
 						listLines.add(nameOfFile);
-						_popup.closeComputeStagePopup();
+						pbSaveCombine.setVisible(false);
 					}
 				});
 				return null;
@@ -632,7 +464,7 @@ public class Create {
 	}
 
 	public void removeCreation(String name) {
-		File file = new File(name + ".mp4");
+		File file = new File(name);
 		file.delete();
 	}
 
@@ -641,22 +473,29 @@ public class Create {
 	}
 
 	public void combineAudioFiles() {
+		pbSaveCombine.setVisible(true);
+		numberOfPictures = (int)slider.getValue();
 		Task<Void> task = new Task<Void>() {
 
 			@Override
 			protected Void call() throws Exception {
+				getPics(numberOfPictures, _term);
+				String cmd;
+				if (listLines.size() == 1) {
+					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/"+ "temp" + ".wav";
+				} else {
+					cmd = "ffmpeg";
+					for (String s: listLines) {
+						cmd += " -i \"./AudioFiles/" + s + ".wav\"";
+					}
 
-				String cmd = "ffmpeg";
-				for (String s: listLines) {
-					cmd += " -i \"./AudioFiles/" + s + ".wav\"";
+					cmd += " -filter_complex \"";
+					for (int i = 0; i < listLines.size(); i++) {
+						cmd += "[" + i + ":0]";
+					}
+					cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" ./AudioFiles/" + "temp" + ".wav &>/dev/null";
 				}
 
-				cmd += " -filter_complex \"";
-				for (int i = 0; i < listLines.size(); i++) {
-					cmd += "[" + i + ":0]";
-				}
-				cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" " + _name + ".wav &>/dev/null";
-//				System.out.println(cmd);
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();
@@ -667,22 +506,15 @@ public class Create {
 					e.printStackTrace();
 				}
 
-				cmd = "rm -r AudioFiles";
-				builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-				try {
-					Process process = builder.start();
-					process.waitFor();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				
-				cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D "+ _name +".wav) "
-						+ "-vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" 
-						+ _term + "\'\" visual.mp4 &>/dev/null ; "; 
-				//combining
-				
+				cmd = "cat *.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
+						+ "$(soxi -D \'./AudioFiles/" + "temp" + ".wav\') -i - -c:v libx264 -pix_fmt yuv420p -vf \""
+						+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
+						+ " -r 25 -y visual.mp4 ; rm \"" + _term + "\"??.jpg ; ffmpeg -i visual.mp4 -vf "
+						+ "\"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)"
+						+ "/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i"
+						+ " \'./AudioFiles/" + "temp" + ".wav\' -c:v copy -c:a aac -strict experimental"
+						+ " -y \'./Creations/" + _name + ".mp4\' &>/dev/null ; rm visual.mp4 ; rm out.mp4";
+
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process vidProcess = builderr.start();
@@ -692,14 +524,7 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
-				cmd = "ffmpeg -i visual.mp4 -i "+_name+".wav -c:v copy -c:a "
-				+ "aac -strict experimental -y \"" + _name + ".mp4\" &>/dev/null ; "
-						+ "rm visual.mp4;";
-				
-				builderr = new ProcessBuilder("bash", "-c", cmd);
-				builderr.start().waitFor();
-				
+
 				Platform.runLater(new Runnable() {
 
 					@Override
@@ -707,37 +532,52 @@ public class Create {
 						_view.setContents();
 						_main.refreshGUI(null);
 						_popup.showFeedback(_name, false);
-						_popup.closeComputeStagePopup();
+						pbSaveCombine.setVisible(false);
 
 					}
 				});
+				deleteFiles();
 
 				return null;
 			}
 		};
 		new Thread(task).start();
 	}
-	
-//	public void makeVideo() {
-//		Task<Void> task = new Task<Void>() {
-//
-//			@Override
-//			protected Void call() throws Exception {
-//				
-//				
-//					}
-//					
-//				});
-//				return null;
-//			}
-//			
-//			
-//			//TODO Then make a video file with correct length and number of pictures.
-//			//TODO Then combine audio file with video file.
-//			//TODO Then give notification to user.
-//		};
-//		new Thread(task).start();
-//	}
+
+	public void deleteFiles() {
+		listLines = FXCollections.observableArrayList();
+		numberOfAudioFiles = 0;
+		Task<Void> task = new Task<Void>() {
+
+			@Override
+			protected Void call() throws Exception {
+				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi; if [ -e text.txt ]; then rm -f text.txt; fi";
+				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+				try {
+					Process process = builder.start();
+					process.waitFor();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+
+		};
+		new Thread(task).start();
+	}
+
+	public boolean getPics(int input, String reply) {
+		if(input>10 || input<=0) {
+			_popup.showStage("", "For amount of images, please enter a number between 1 and 10", "OK", "Cancel", false);
+			return false;
+		} else {
+			numberOfPictures = input;
+			_imMan.getImages(input, reply);
+			return true;
+		}
+	}
 }
 
 
