@@ -15,8 +15,11 @@ import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * This class plays specified creations using MediaPlayer.
+ * @author Jacinta, Lynette, Tushar
+ */
 public class VideoPlayer {
-	//Might also want to make video using this...
 
 	private Button btnMute = new Button("Mute");
 	private Button btnPlayPause = new Button("Pause");
@@ -24,8 +27,13 @@ public class VideoPlayer {
 	private Button btnBackward = new Button("<<");
 	private HBox buttonBox = new HBox(btnBackward, btnPlayPause, btnForward);
 
+	/**
+	 * Creates a new Stage to play creation. The video has mute/unmute, play/pause and forward/backward
+	 * functionality. The stage closes automatically when the video finishes.
+	 * @param name
+	 */
 	public void playVideo(String name) {
-		File fileURL = new File(name + ".mp4");
+		File fileURL = new File("Creations/" + name + ".mp4");
 
 		Stage vidStage = new Stage();
 
