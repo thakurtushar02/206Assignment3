@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -54,6 +55,8 @@ public class Create {
 	private ObservableList<String> listLines = FXCollections.observableArrayList();
 	private int numberOfAudioFiles = 0;
 	private int numberOfPictures;
+	private ProgressBar pbSaveCombine = new ProgressBar();
+	private ProgressBar pbSearch = new ProgressBar();
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
@@ -77,8 +80,8 @@ public class Create {
 		create.setFont(new Font("Arial", 16));
 
 		searchButton = new Button("Search ↳");
-
-		searchBar = new HBox(create, search, searchButton);
+		pbSearch.setVisible(false);
+		searchBar = new HBox(create, search, searchButton, pbSearch);
 		searchBar.setSpacing(15);
 
 		message.setFont(new Font("Arial", 14));
@@ -93,7 +96,7 @@ public class Create {
 	}
 
 	public void searchTerm(String term) {
-		_popup.computeStagePopup();
+		pbSearch.setVisible(true);
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
 				_file = new File ("text.txt");
@@ -150,7 +153,7 @@ public class Create {
 
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
-						_popup.closeComputeStagePopup();
+						pbSearch.setVisible(false);
 						try(BufferedReader fileReader = new BufferedReader(new FileReader(_file.toString()))){
 							String line = fileReader.readLine();
 							if(line.contains("not found :^(")) {
@@ -254,7 +257,6 @@ public class Create {
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
 			if ((newValue.contains("/"))
 					|| (newValue.contains("\\"))
-					|| (newValue.contains("\\"))
 					|| (newValue.contains("\0"))) {
 				nameField.setText(oldValue);
 			}
@@ -267,8 +269,8 @@ public class Create {
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 		HBox.setHgrow(spacer2, Priority.ALWAYS);
 		VBox.setVgrow(textArea, Priority.ALWAYS);
-
-		HBox nameLayout = new HBox(10, photos, spacer2, nameField, butCombine);
+		pbSaveCombine.setVisible(false);
+		HBox nameLayout = new HBox(10, photos, pbSaveCombine, spacer2, nameField, butCombine);
 		nameLayout.setAlignment(Pos.BOTTOM_CENTER);
 
 		VBox layout = new VBox(views, lineOptions, nameLayout, slider);
@@ -425,7 +427,7 @@ public class Create {
 	}
 
 	public void addCreation(String voice) {
-		_popup.computeStagePopup();
+		pbSaveCombine.setVisible(true);
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
 				
@@ -463,7 +465,7 @@ public class Create {
 						_view.setContents();
 						_popup.showFeedback(nameOfFile, false);
 						listLines.add(nameOfFile);
-						_popup.closeComputeStagePopup();
+						pbSaveCombine.setVisible(false);
 					}
 				});
 				return null;
@@ -482,7 +484,7 @@ public class Create {
 	}
 
 	public void combineAudioFiles() {
-		_popup.computeStagePopup();
+		pbSaveCombine.setVisible(true);
 		numberOfPictures = (int)slider.getValue();
 		Task<Void> task = new Task<Void>() {
 
@@ -541,7 +543,7 @@ public class Create {
 						_view.setContents();
 						_main.refreshGUI(null);
 						_popup.showFeedback(_name, false);
-						_popup.closeComputeStagePopup();
+						pbSaveCombine.setVisible(false);
 
 					}
 				});
