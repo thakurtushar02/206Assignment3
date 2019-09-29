@@ -12,7 +12,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-
+/**
+ * Represents Pop-ups windows that may be called during the use of the Wiki-Speak application 
+ *
+ */
 public class Popup {
 	private Create _create;
 	private View _view;
@@ -26,6 +29,14 @@ public class Popup {
 		_view = view;
 	}
 
+	/**
+	 * Creates a popup with two buttons
+	 * @param name		name of the file the popup will take action on 
+	 * @param output	text that the pop up will contain
+	 * @param button1	text to be written on button
+	 * @param button2	text to be written on button
+	 * @param isView	boolean of whether the popup is being called from the View tab
+	 */
 	public void showStage(String name, String output, String button1, String button2, boolean isView){
 		if(isView) {
 			_popup.setTitle("Delete Creation");
@@ -72,14 +83,23 @@ public class Popup {
 		_popup.show();
 	}
 
+	/**
+	 * Defines the action that is to be taken depending on whether it is being called 
+	 * from the View tab
+	 * @param name		name of file
+	 * @param nxtAction	text of the button that was pushed
+	 * @param isView	boolean of whether popup is being called from View tab
+	 */
 	public void action(String name, String nxtAction, boolean isView) {
 		String fullName = "Creations/" + name + ".mp4";
 		if(isView) {
+			//delete creation, refresh tab and display confirmation popup
 			_create.removeCreation(fullName);
 			_view.setContents();
 			showFeedback(name, true);
 		}else {
 			if(nxtAction.equals("Overwrite")) {
+				//delete creation of the same name and create new creation
 				_create.removeCreation(fullName);
 				_create.combineAudioFiles();
 			}else {
@@ -88,6 +108,11 @@ public class Popup {
 		}
 	}
 
+	/**
+	 * Creates and displays a confirmation popup
+	 * @param name		name of creation
+	 * @param isView	boolean of whether popup is being called from View tab
+	 */
 	public void showFeedback(String name, boolean isView) {
 		Label confirmation = new Label();
 		if(isView) {
@@ -127,6 +152,9 @@ public class Popup {
 		_confirmPopup.show();
 	}
 
+	/**
+	 * Creates and displays a warning popup when user highlights too many words
+	 */
 	public void tooManyWordsHighlighted() {
 		_tooManyWords.setTitle("Too many words");
 		
