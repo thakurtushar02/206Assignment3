@@ -17,4 +17,4 @@ that Wiki_Speak Folder is ticked --> Finish
 - **Step 3**: Right click Wiki_Speak from Package Explorer --> Build Paths --> Add Libraries --> User Library --> User
 libraries --> New... --> name it whatever you want --> Add JARs --> Browse to WikiSpeak/libs --> Highlight all .jar
 files --> Apply and close --> Make sure library is ticked --> Finish  
-- **Step 4**: Go to Main.java --> Run. The application should now be running.  Enjoy! (next time you can just press Ctrl + F11).
+- **Step 4**: Go to Main.java --> Run. The application should now be running.  Enjoy!
