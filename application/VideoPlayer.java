@@ -16,7 +16,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class VideoPlayer {
-	//Might also want to make video using this...
 
 	private Button btnMute = new Button("Mute");
 	private Button btnPlayPause = new Button("Pause");
@@ -25,7 +24,7 @@ public class VideoPlayer {
 	private HBox buttonBox = new HBox(btnBackward, btnPlayPause, btnForward);
 
 	public void playVideo(String name) {
-		File fileURL = new File(name + ".mp4");
+		File fileURL = new File("Creations/" + name + ".mp4");
 
 		Stage vidStage = new Stage();
 

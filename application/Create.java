@@ -26,7 +26,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -49,11 +48,12 @@ public class Create {
 	private Popup _popup;
 	private File _file;
 	private ImageManager _imMan;
-	private int _numPics;
 	private TabPane _tabPane;
 	private Main _main;
-	ObservableList<String> listLines = FXCollections.observableArrayList();
+	private Slider slider = new Slider();
+	private ObservableList<String> listLines = FXCollections.observableArrayList();
 	private int numberOfAudioFiles = 0;
+	private int numberOfPictures;
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
@@ -82,14 +82,8 @@ public class Create {
 		searchBar.setSpacing(15);
 
 		message.setFont(new Font("Arial", 14));
-		search.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent arg0) {
-				if (arg0.getCode().equals(KeyCode.ENTER)) {
-					searchButton.fire();
-				}
-			}
-		});
+		
+		search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) searchButton.fire();});
 
 		searchButton.setOnAction(e -> searchTerm(search.getText()));
 
@@ -236,7 +230,7 @@ public class Create {
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
-		Slider slider = new Slider();
+		
 		slider.setMin(1);
 		slider.setMax(10);
 		slider.setValue(1);
@@ -258,7 +252,10 @@ public class Create {
 		TextField nameField = new TextField();
 		nameField.setPromptText("Enter name of creation");
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if ((newValue.contains("/")) || (newValue.contains("\0"))) {
+			if ((newValue.contains("/"))
+					|| (newValue.contains("\\"))
+					|| (newValue.contains("\\"))
+					|| (newValue.contains("\0"))) {
 				nameField.setText(oldValue);
 			}
 		});
@@ -359,17 +356,9 @@ public class Create {
 			if (list.getSelectionModel().getSelectedItem() != null) {
 				list.getItems().remove(list.getSelectionModel().getSelectedIndex());
 			}
-			//TODO Delete mp4 file
 		});
-
-		nameField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent arg0) {
-				if (arg0.getCode().equals(KeyCode.ENTER)) {
-					butCombine.fire();
-				}
-			}
-		});
+		
+		nameField.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) butCombine.fire();});
 
 		butCombine.setOnAction(e -> {
 			String name = nameField.getText();
@@ -380,8 +369,8 @@ public class Create {
 				butCombine.requestFocus();
 			} else if (validity.equals(VALID)) {
 				nameField.setPromptText("");
-				_popup.computeStagePopup();
 				combineAudioFiles();
+				
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
 				nameField.setPromptText("");
@@ -422,7 +411,7 @@ public class Create {
 		if(file.exists()) {
 			return DUPLICATE;
 		} else {
-			String newName = reply.replaceAll("[^a-zA-Z0-9_\\-\\.]", "_");
+			String newName = reply.replaceAll("[^a-zA-Z0-9_\\-\\. ]", "_");
 			if(newName == reply) {
 				if (reply.isEmpty() == false) {
 					return VALID;
@@ -439,7 +428,7 @@ public class Create {
 		_popup.computeStagePopup();
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
-
+				
 				String cmd = "mkdir -p AudioFiles";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 
@@ -484,7 +473,7 @@ public class Create {
 	}
 
 	public void removeCreation(String name) {
-		File file = new File(name + ".mp4");
+		File file = new File(name);
 		file.delete();
 	}
 
@@ -493,14 +482,16 @@ public class Create {
 	}
 
 	public void combineAudioFiles() {
-		
+		_popup.computeStagePopup();
+		numberOfPictures = (int)slider.getValue();
 		Task<Void> task = new Task<Void>() {
 
 			@Override
 			protected Void call() throws Exception {
+				getPics(numberOfPictures, _term);
 				String cmd;
 				if (listLines.size() == 1) {
-					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/"+ _name + ".wav";
+					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/"+ "temp" + ".wav";
 				} else {
 					cmd = "ffmpeg";
 					for (String s: listLines) {
@@ -511,7 +502,7 @@ public class Create {
 					for (int i = 0; i < listLines.size(); i++) {
 						cmd += "[" + i + ":0]";
 					}
-					cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" ./AudioFiles/" + _name + ".wav &>/dev/null";
+					cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" ./AudioFiles/" + "temp" + ".wav &>/dev/null";
 				}
 
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
@@ -523,12 +514,16 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-        //cmd = "ffmpeg -f lavfi -i color=c=blue:s=320x240:d=$(soxi -D ./AudioFiles/"+ _name +".wav) "
-				//		+ "-vf \"drawtext=fontsize=30:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text=\'" 
-				//		+ _term + "\'\" visual.mp4 &>/dev/null ; "; 
-				//combining
-        
-        cmd = "ffmpeg -framerate $((" + _numPics + "))/$(soxi -D ./AudioFiles/"+ _name +".wav) -i " + _term + "%02d.jpg -vf \"scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\" -r 25 visual.mp4 ; rm " + _term + "??.jpg ; ffmpeg -i visual.mp4 -vf \"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i ./AudioFiles/"+ _name +".wav -c:v copy -c:a aac -strict experimental -y ./Creations/" + _name + ".mp4 &>/dev/null ; rm visual.mp4 ; rm out.mp4";
+				
+				cmd = "cat *.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
+						+ "$(soxi -D \'./AudioFiles/" + "temp" + ".wav\') -i - -c:v libx264 -pix_fmt yuv420p -vf \""
+								+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
+						+ " -r 25 -y visual.mp4 ; rm \"" + _term + "\"??.jpg ; ffmpeg -i visual.mp4 -vf "
+								+ "\"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)"
+								+ "/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i"
+										+ " \'./AudioFiles/" + "temp" + ".wav\' -c:v copy -c:a aac -strict experimental"
+										+ " -y \'./Creations/" + _name + ".mp4\' &>/dev/null ; rm visual.mp4 ; rm out.mp4";
+				
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process vidProcess = builderr.start();
@@ -538,14 +533,7 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
-			//	cmd = "mkdir -p Creations; ffmpeg -i visual.mp4 -i ./AudioFiles/"+_name+".wav -c:v copy -c:a "
-			//	+ "aac -strict experimental -y \"Creations/" + _name + ".mp4\" &>/dev/null ; "
-			//			+ "rm visual.mp4;";
-				
-			//	builderr = new ProcessBuilder("bash", "-c", cmd);
-			//	builderr.start().waitFor();
-				
+
 				Platform.runLater(new Runnable() {
 
 					@Override
@@ -594,32 +582,11 @@ public class Create {
 			_popup.showStage("", "For amount of images, please enter a number between 1 and 10", "OK", "Cancel", false);
 			return false;
 		} else {
-			_numPics = input;
+			numberOfPictures = input;
 			_imMan.getImages(input, reply);
 			return true;
 		}
 	}
-	
-//	public void makeVideo() {
-//		Task<Void> task = new Task<Void>() {
-//
-//			@Override
-//			protected Void call() throws Exception {
-//				
-//				
-//					}
-//					
-//				});
-//				return null;
-//			}
-//			
-//			
-//			//TODO Then make a video file with correct length and number of pictures.
-//			//TODO Then combine audio file with video file.
-//			//TODO Then give notification to user.
-//		};
-//		new Thread(task).start();
-//	}
 }
 
 

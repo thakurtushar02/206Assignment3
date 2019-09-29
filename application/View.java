@@ -72,7 +72,7 @@ public class View {
 		}
 		creations.setItems(list);
 		
-		creations.setPrefSize(1000, list.size()* ROW_HEIGHT + SPACING);
+		creations.setPrefSize(1000, list.size() * ROW_HEIGHT + SPACING);
 		creations.setMaxHeight(550);
 
 		sideOptions = new VBox(delete, play);
@@ -95,7 +95,7 @@ public class View {
 
 	public void findCreations() throws IOException {
 		list.clear();
-		String cmd = "mkdir -p Creations; basename $(ls Creations/*.mp4)";
+		String cmd = "mkdir -p Creations; cd ./Creations; ls *.mp4; cd ../";
 		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 		Process process = builder.start();
 		InputStream stdout = process.getInputStream();
@@ -109,6 +109,6 @@ public class View {
 
 	public void playCreation(String name) {
 		VideoPlayer vid = new VideoPlayer();
-		vid.playVideo("./Creations/" + name);
+		vid.playVideo(name);
 	}
 }
