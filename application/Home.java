@@ -6,6 +6,12 @@ import javafx.scene.control.Tab;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
+/**
+ * This class is related to the Home tab. It is where the user starts once
+ * the application begins running, and after a creation is created.
+ * @author Jacinta, Lynette, Tushar
+ *
+ */
 public class Home {
 	private VBox contents;
 	private Label heading;
@@ -17,6 +23,10 @@ public class Home {
 		_tab = tab;
 	}
 	
+	/**
+	 * Initialises the starting Home page for the GUI and instructions on how to use
+	 * the application.
+	 */
 	public void setContents() {
 		heading = new Label();
 		heading.setText("Welcome to the Wiki-Speak Authoring Tool!\t(◕ヮ◕)");

@@ -13,6 +13,7 @@ import com.flickr4java.flickr.photos.*;
 
 /**
  * This class downloads images from Flickr using an API Key.
+ * @author Jacinta, Lynette, Tushar
  *
  */
 public class ImageManager {
