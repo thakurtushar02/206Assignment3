@@ -1,6 +1,7 @@
 package application;
 
 import java.awt.image.BufferedImage;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -10,8 +11,19 @@ import javax.imageio.ImageIO;
 import com.flickr4java.flickr.*;
 import com.flickr4java.flickr.photos.*;
 
+/**
+ * This class downloads images from Flickr using an API Key.
+ *
+ */
 public class ImageManager {
 
+	/**
+	 * This method gets the API Key from the text file where the API Key is stored for further use when getting the images.
+	 * The method throws a Runtime Exception if it cannot find an API Key.
+	 * @param key
+	 * @return
+	 * @throws Exception
+	 */
 	public static String getAPIKey(String key) throws Exception {
 		String config = System.getProperty("user.dir") 
 				+ System.getProperty("file.separator")+ "flickr-api-keys.txt"; 
@@ -30,6 +42,12 @@ public class ImageManager {
 		throw new RuntimeException("Couldn't find " + key +" in config file "+file.getName());
 	}
 
+	/**
+	 * This method gets the specified amount of images from Flickr relating to the search term and saves them as jpg files.
+	 * It also makes sure the images does not have an odd pixel dimension to prepare it for ffmpeg video creation.
+	 * @param num
+	 * @param query
+	 */
 	public void getImages(int num, String query) {
 		try {
 			String apiKey = getAPIKey("apiKey");

@@ -20,6 +20,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
+/**
+ * This class is related to the View Creations tab and provides viewing,
+ * playing and deleting creations functionalities for the app.
+ */
 public class View {
 	private ListView<String> creations = new ListView<>();
 	private ObservableList<String> list = FXCollections.observableArrayList();
@@ -37,9 +41,12 @@ public class View {
 	public View(Tab tab, Popup popup) {
 		_tab = tab;
 		_popup = popup;
-		
 	}
 
+	/**
+	 * Sets the contents of the View Creations tab, with a list of creations and has play and
+	 * delete buttons and functionalities for when a creation is selected.
+	 */
 	public void setContents() {
 		delete.setMinWidth(100);
 		delete.disableProperty().bind(creations.getSelectionModel().selectedItemProperty().isNull());
@@ -93,6 +100,10 @@ public class View {
 		
 	}
 
+	/**
+	 * Lists all creations into the ListView.
+	 * @throws IOException
+	 */
 	public void findCreations() throws IOException {
 		list.clear();
 		String cmd = "mkdir -p Creations; cd ./Creations; ls *.mp4; cd ../";
@@ -107,6 +118,10 @@ public class View {
 		}
 	}
 
+	/**
+	 * Creates a new VideoPlayer and calls playVideo of the creation specified.
+	 * @param name
+	 */
 	public void playCreation(String name) {
 		VideoPlayer vid = new VideoPlayer();
 		vid.playVideo(name);
