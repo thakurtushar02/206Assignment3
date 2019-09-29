@@ -35,6 +35,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+/**
+ * Represents the Create tab of the WikiSpeak application
+ * 
+ *@author Jacinta, Lynette, Tushar
+ */
 public class Create {
 	private Button searchButton;
 	private TextField search = new TextField();
@@ -71,6 +76,10 @@ public class Create {
 		_view = view;
 	}
 
+	/**
+	 * Sets the contents of the Create tab
+	 * @param main
+	 */
 	public void setContents(Main main) {
 		if (_main == null) {
 			_main = main;
@@ -94,13 +103,20 @@ public class Create {
 		_tab.setContent(contents);
 	}
 
+	/**
+	 * Retrieves the wiki search of the supplied term and writes it to a file
+	 * @param term	the search term given by user
+	 */
 	public void searchTerm(String term) {
 		pbSearch.setVisible(true);
+		
+		// Term searched using wikit, written to a file and reformatted onto separate lines
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
 				_file = new File ("text.txt");
 				ProcessBuilder builder = new ProcessBuilder("wikit", term);
 				try {
+					// Search and write to file
 					Process process = builder.start();
 					BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
 					BufferedReader stderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -108,7 +124,9 @@ public class Create {
 					PrintWriter out = new PrintWriter(new FileWriter(_file));
 
 					int exitStatus = process.waitFor();
-
+					
+					// If search process executes without problems, reformat file contents so that each sentence 
+					// is on its own line
 					if (exitStatus == 0) {
 						String line;
 						while ((line = stdout.readLine()) != null) {
@@ -151,10 +169,12 @@ public class Create {
 				}
 
 				Platform.runLater(new Runnable(){
+					// Progress bar is hidden and GUI is updated by reading the text file 
 					@Override public void run() {
 						pbSearch.setVisible(false);
 						try(BufferedReader fileReader = new BufferedReader(new FileReader(_file.toString()))){
 							String line = fileReader.readLine();
+							// Display contents if there are results, otherwise prompt user to search again
 							if(line.contains("not found :^(")) {
 								message.setText("Search term is invalid, please try again with another search term.");
 								setContents(_main);
@@ -175,8 +195,12 @@ public class Create {
 		new Thread(task).start();
 	}
 
+	/**
+	 * Displays the wiki search results into the TextArea
+	 * @param reply	the search term
+	 */
 	public void displayLines(String reply) {
-		ListView<String> list = new ListView<String>();
+		ListView<String> list = new ListView<String>(); // List displaying audio files
 
 		list.setItems(listLines);
 
@@ -185,6 +209,7 @@ public class Create {
 		textArea.setEditable(true);
 		textArea.setWrapText(true);
 
+		// Populate TextArea with text file contents
 		BufferedReader fileContent;
 		try {
 			fileContent = new BufferedReader(new FileReader(_file));
@@ -218,9 +243,12 @@ public class Create {
 		views.getChildren().addAll(text, listView);
 		views.setSpacing(10);
 
+		// combo box to select voice
 		ObservableList<String> voices = FXCollections.observableArrayList("Default", "Espeak");
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
 		combobox.setValue("Default");
+		
+		// buttons
 		Label lblVoice = new Label("Voice: ");
 		Button butPlay = new Button(" Play ►");
 		Button butSave = new Button(" Save ✔");
@@ -232,7 +260,7 @@ public class Create {
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
-
+		// slider to select number of pictures
 		slider.setMin(1);
 		slider.setMax(10);
 		slider.setValue(1);
@@ -246,13 +274,14 @@ public class Create {
 
 		slider.valueProperty().addListener((obs, oldval, newVal) -> slider.setValue(newVal.intValue()));
 
-
 		HBox lineOptions = new HBox(lblVoice, combobox, butPlay, butSave, spacer, butUp, butDown, butDelete);
 		lineOptions.setSpacing(15);
 		lineOptions.setAlignment(Pos.BOTTOM_CENTER);
 
 		TextField nameField = new TextField();
 		nameField.setPromptText("Enter name of creation");
+		
+		// Does not allow characters to be typed into text field
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
 			String[] badCharacters = {"/", "?", "%", "*", ":", "|", "\"", "<", ">", "\0",
 					"\\", "(", ")", "$", "@", "!", "#", "^", "&", "+"};
@@ -283,10 +312,12 @@ public class Create {
 
 		butPlay.setOnAction(e -> {
 			String selectedText = textArea.getSelectedText();
+			// Display pop-up if number of highlighted words > 30
 			if (selectedText.split(" ").length > 30) {
 				_popup.tooManyWordsHighlighted();
 			} else {
 				Task<Void> task = new Task<Void>() {
+					// Preview text according to user's selected voice
 					@Override
 					protected Void call() throws Exception {				
 						String voice;
@@ -319,6 +350,8 @@ public class Create {
 				new Thread(task).start();
 			}
 		});
+		
+		// Save selected text as an audio file  
 		butSave.setOnAction(e -> {
 			String selectedText = textArea.getSelectedText();
 			try {
@@ -362,7 +395,7 @@ public class Create {
 		});
 
 		nameField.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) butCombine.fire();});
-
+		
 		butCombine.setOnAction(e -> {
 			String name = nameField.getText();
 			String validity = checkName(name);
@@ -372,8 +405,7 @@ public class Create {
 				butCombine.requestFocus();
 			} else if (validity.equals(VALID)) {
 				nameField.setPromptText("");
-				combineAudioFiles();
-
+				combineAudioFiles(); // Site of creation creation
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
 				nameField.setPromptText("");
@@ -382,6 +414,7 @@ public class Create {
 			}
 		});
 
+		// Plays the selected audio file on double-click
 		list.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent click) {
@@ -401,9 +434,15 @@ public class Create {
 
 		});
 
-
 	}
 
+	/**
+	 * Checks the validity of the creation name
+	 * @param reply	name supplied by user
+	 * @return DUPLICATE if the creation already exists
+	 * 		   EMPTY if the field is empty
+	 * 		   otherwise VALID
+	 */
 	public String checkName(String reply) {
 		File file = new File("./Creations/" + reply + ".mp4");
 		if(file.exists()) {
@@ -415,6 +454,10 @@ public class Create {
 		}	
 	}
 
+	/**
+	 * Creates and saves an audiofile into the ListvIew
+	 * @param voice	voice selected by user
+	 */
 	public void addCreation(String voice) {
 		pbSaveCombine.setVisible(true);
 		Task<Void> task = new Task<Void>() {
@@ -463,6 +506,10 @@ public class Create {
 		new Thread(task).start();
 	}
 
+	/**
+	 * Deletes a specified file
+	 * @param name name of the file to be deleted
+	 */
 	public void removeCreation(String name) {
 		File file = new File(name);
 		file.delete();
@@ -472,6 +519,10 @@ public class Create {
 		_tabPane = tabPane;
 	}
 
+	/**
+	 * Creates creation by combining audio files, downloading images, creating video, and merging them all into 
+	 * one mp4 video file
+	 */
 	public void combineAudioFiles() {
 		pbSaveCombine.setVisible(true);
 		numberOfPictures = (int)slider.getValue();
@@ -481,6 +532,8 @@ public class Create {
 			protected Void call() throws Exception {
 				getPics(numberOfPictures, _term);
 				String cmd;
+				
+				// Combine list of audio files into in one if there are multiple, otherwise rename the one audio file
 				if (listLines.size() == 1) {
 					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/"+ "temp" + ".wav";
 				} else {
@@ -506,6 +559,7 @@ public class Create {
 					e.printStackTrace();
 				}
 
+				// Create video with images and text, combine with audio, and remove intermediary output files
 				cmd = "cat *.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
 						+ "$(soxi -D \'./AudioFiles/" + "temp" + ".wav\') -i - -c:v libx264 -pix_fmt yuv420p -vf \""
 						+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
@@ -544,6 +598,9 @@ public class Create {
 		new Thread(task).start();
 	}
 
+	/**
+	 * Deletes supporting files from working directory
+	 */
 	public void deleteFiles() {
 		listLines = FXCollections.observableArrayList();
 		numberOfAudioFiles = 0;
@@ -568,15 +625,15 @@ public class Create {
 		new Thread(task).start();
 	}
 
-	public boolean getPics(int input, String reply) {
-		if(input>10 || input<=0) {
-			_popup.showStage("", "For amount of images, please enter a number between 1 and 10", "OK", "Cancel", false);
-			return false;
-		} else {
-			numberOfPictures = input;
-			_imMan.getImages(input, reply);
-			return true;
-		}
+	/**
+	 * Downloads a number of images (of the search term) from Flickr
+	 * @param input	the number of images
+	 * @param reply	the search term
+	 */
+	public void getPics(int input, String reply) {
+		numberOfPictures = input;
+		_imMan.getImages(input, reply);
+
 	}
 }
 
