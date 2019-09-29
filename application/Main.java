@@ -8,6 +8,11 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.layout.BorderPane;
 
+/**
+ * Class containing the main method used to run the entire application.
+ * @author Jacinta, Lynette, Tushar
+ *
+ */
 public class Main extends Application {
 	private Home home;
 	private View view;
@@ -17,6 +22,9 @@ public class Main extends Application {
 	private final String VIEW_STYLE = "-fx-background-color: #f2cef2";
 	private final String CREATE_STYLE = "-fx-background-color: #cef2f1";
 	
+	/**
+	 * Creates the three tabs, Home, View, and Create Creation.
+	 */
 	@Override
 	public void start(Stage primaryStage) {
 		currentStage = primaryStage;
@@ -60,12 +68,6 @@ public class Main extends Application {
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.show();
-		
-		primaryStage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue) {
-				
-			}
-		});
 	}
 
 	public static void main(String[] args) {
