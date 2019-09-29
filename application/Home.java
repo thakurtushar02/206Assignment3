@@ -19,7 +19,7 @@ public class Home {
 	
 	public void setContents() {
 		heading = new Label();
-		heading.setText("\nWelcome to the Wiki-Speak Authoring Tool!(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧");
+		heading.setText("Welcome to the Wiki-Speak Authoring Tool!\t(◕ヮ◕)");
 		heading.setFont(new Font("Arial", 40));
 		
 		
@@ -33,7 +33,7 @@ public class Home {
 		heading2.setText("\nHave fun!\n\n"
 				+ "\t\t\t\t\t\t(╯°□°）╯︵ ┻━┻\n\n"
 				+ "...But not too much fun.\n\n"
-				+ "\t\t\t\t\t\t┬──┬ ノ( ゜-゜ノ)");
+				+ "\t\t\t\t\t\t┬──┬ ノ( °-°ノ)");
 		heading2.setFont(new Font("Arial", 30));
 		
 		
