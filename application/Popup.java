@@ -5,7 +5,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -19,7 +18,7 @@ public class Popup {
 	private View _view;
 	private Stage _popup = new Stage();
 	private Stage _confirmPopup = new Stage();
-	private Stage _computing = new Stage();
+	private Stage _tooManyWords = new Stage();
 
 
 	public void setViewCreate(View view, Create create) {
@@ -128,31 +127,16 @@ public class Popup {
 		_confirmPopup.show();
 	}
 
-	public void computeStagePopup() {
-		VBox vbox = new VBox(10);
-		Label searchText = new Label("Computing... Please wait...");
-		ProgressBar pb = new ProgressBar();
-		pb.prefWidthProperty().bind(vbox.widthProperty());
-		vbox.getChildren().addAll(searchText, pb);
-		_computing.setTitle("Computing Task");
-		_computing.setScene(new Scene(vbox, 275, 75));
-		_computing.show();
-	}
-
-	public void closeComputeStagePopup() {
-		_computing.close();
-	}
-
 	public void tooManyWordsHighlighted() {
-		_computing.setTitle("Too many words");
+		_tooManyWords.setTitle("Too many words");
 		
 		Label text = new Label("Preview between 1 and 30 words.");
 		Button butOK = new Button("OK");
-		butOK.setOnAction(e -> closeComputeStagePopup());
+		butOK.setOnAction(e -> _tooManyWords.close());
 		VBox vbox = new VBox(10, text, butOK);
 		vbox.setAlignment(Pos.CENTER);
-		_computing.setScene(new Scene(vbox, 275, 75));
-		_computing.show();
+		_tooManyWords.setScene(new Scene(vbox, 275, 75));
+		_tooManyWords.show();
 		
 	}
 
