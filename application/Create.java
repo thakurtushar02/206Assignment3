@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
@@ -86,14 +85,14 @@ public class Create {
 			_main = main;
 		}
 		create.setText("Enter term to search for: ");
-		create.setFont(new Font("Arial", 16));
+		create.setFont(new Font("Arial", 20));
 
 		searchButton = new Button("Search ↳");
 		pbSearch.setVisible(false);
 		searchBar = new HBox(create, search, searchButton, pbSearch);
 		searchBar.setSpacing(15);
 
-		message.setFont(new Font("Arial", 14));
+		message.setFont(new Font("Arial", 16));
 
 		search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) searchButton.fire();});
 
@@ -203,12 +202,14 @@ public class Create {
 	public void displayLines(String reply) {
 		ListView<String> list = new ListView<String>(); // List displaying audio files
 
+		list.getStyleClass().add("list_style");
 		list.setItems(listLines);
 
 		HBox views= new HBox();
 		TextArea textArea = new TextArea();
 		textArea.setEditable(true);
 		textArea.setWrapText(true);
+		textArea.setFont(new Font("Arial", 14));
 
 		// Populate TextArea with text file contents
 		BufferedReader fileContent;
@@ -225,12 +226,12 @@ public class Create {
 		textArea.setText(textArea.getText().substring(2));
 
 		Label lblList = new Label("Saved audio");
-		lblList.setFont(new Font("Arial", 16));
+		lblList.setFont(new Font("Arial", 20));
 
 		Text info = new Text("Move audio files ↑ or ↓ to get desired order.\n\n"
 				+ "The creation will be created with audio\nfiles in the order "
 				+ "they are below.\n\nDouble click to play audio file.");
-		info.setFont(new Font("Arial", 12));
+		info.setFont(new Font("Arial", 14));
 		VBox text = new VBox(searchBar, textArea);
 		text.setSpacing(10);
 
@@ -251,6 +252,7 @@ public class Create {
 		
 		// buttons
 		Label lblVoice = new Label("Voice: ");
+		lblVoice.setFont(new Font("Arial", 20));
 		Button butPlay = new Button(" Play ►");
 		Button butSave = new Button(" Save ✔");
 		Button butUp = new Button("Move ↑");
@@ -271,7 +273,7 @@ public class Create {
 		slider.setShowTickMarks(true);
 
 		Label photos = new Label("Choose Number of Pictures");
-		photos.setFont(new Font("Arial", 16));
+		photos.setFont(new Font("Arial", 20));
 
 		slider.valueProperty().addListener((obs, oldval, newVal) -> slider.setValue(newVal.intValue()));
 

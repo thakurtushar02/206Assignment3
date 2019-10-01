@@ -70,8 +70,9 @@ public class View {
 		});
 
 		title.setText("Creations:");
-		title.setFont(new Font("Arial", 16));
+		title.setFont(new Font("Arial", 20));
 
+		creations.getStyleClass().add("list_style");
 		try {
 			findCreations();
 		} catch (IOException e) {
