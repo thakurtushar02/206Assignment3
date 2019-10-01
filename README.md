@@ -6,7 +6,7 @@ The Wiki_Speak application creates video files of words you search on Wikipedia,
 ## Directions to easily execute the runnable .jar file provided in the repository
 - **Step 1**: Navigate to the directory of the .jar file, and open a terminal there.  
 
-- **Step 2**: Type into the terminal the following: ***java -jar WikiSpeak.jar***  
+- **Step 2**: Type into the terminal the following: ***java -jar Wiki_Speak.jar***  
 - **Step 3**: Press enter. The application should now be running. Enjoy!  
 
 ## Directions on how to run the project through Eclipse
@@ -17,7 +17,4 @@ that Wiki_Speak Folder is ticked --> Finish
 - **Step 3**: Right click Wiki_Speak from Package Explorer --> Build Paths --> Add Libraries --> User Library --> User
 libraries --> New... --> name it whatever you want --> Add JARs --> Browse to WikiSpeak/libs --> Highlight all .jar
 files --> Apply and close --> Make sure library is ticked --> Finish  
-- **Step 4**: Go to Main.java --> Run --> Run configurations... --> Arguments tab --> In VM Arguments, type:  
-***--module-path /home/student/Downloads/openjfx-13-rc+2_linux-x64_bin-sdk/javafx-sdk-13/lib
- --add-modules=javafx.controls --add-modules=javafx.media***  
- Apply --> Run. The application should now be running.  Enjoy! (next time you can just press Ctrl + F11).
+- **Step 4**: Go to Main.java --> Run. The application should now be running.  Enjoy!
