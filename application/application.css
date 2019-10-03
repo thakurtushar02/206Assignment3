@@ -18,6 +18,15 @@
 
 .list-cell{
 	-fx-font-size:14px;
+	-fx-background-color:white;
+}
+
+.list-cell:even{
+	-fx-background-color:ghostwhite;
+}
+
+.list-cell:selected{
+	-fx-background-color:lightgrey;
 }
 
 .button{
