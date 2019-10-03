@@ -202,7 +202,6 @@ public class Create {
 	public void displayLines(String reply) {
 		ListView<String> list = new ListView<String>(); // List displaying audio files
 
-		list.getStyleClass().add("list_style");
 		list.setItems(listLines);
 
 		HBox views= new HBox();
@@ -564,7 +563,7 @@ public class Create {
 
 
 				// Create video with images and text, combine with audio, and remove intermediary output files
-				cmd = "cat *.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
+				cmd = "cat \"" + _term + "\"??.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
 						+ "$(soxi -D \'./AudioFiles/" + "temp" + ".wav\') -i - -c:v libx264 -pix_fmt yuv420p -vf \""
 						+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
 						+ " -r 25 -y visual.mp4 ; rm \"" + _term + "\"??.jpg ; ffmpeg -i visual.mp4 -vf "

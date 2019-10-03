@@ -29,7 +29,7 @@ public class Home {
 	 */
 	public void setContents() {
 		heading = new Label();
-		heading.setText("Welcome to the Wiki-Speak Authoring Tool!\t(◕ヮ◕)");
+		heading.setText("Welcome to the VARpedia!\t(◕ヮ◕)");
 		heading.setFont(new Font("Arial", 30));
 		
 		

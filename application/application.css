@@ -12,10 +12,20 @@
 	-fx-background-color: #f2cef2;
 }
 
-.list_style{
-	-fx-font-size:16px;
+.root{
+	-fx-background-color:ghostwhite;
+}
+
+.list-cell{
+	-fx-font-size:14px;
 }
 
 .button{
-	-fx-font-size:16px;
+	-fx-font-size:14px;
+	-fx-background-color:lightgrey;
+}
+
+.combo-box{
+	-fx-font-size:14px;
+	-fx-background-color:lightgrey;
 }

@@ -25,7 +25,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		currentStage = primaryStage;
-		primaryStage.setTitle("Wiki Speak Authoring Tool");
+		primaryStage.setTitle("VARpedia");
 		
 		BorderPane root = new BorderPane();
 		
