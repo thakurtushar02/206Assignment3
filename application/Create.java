@@ -255,10 +255,12 @@ public class Create {
 		Button butPlay = new Button(" Play ►");
 		Button butSave = new Button(" Save ✔");
 		Button butUp = new Button("Move ↑");
+		butUp.disableProperty().bind(Bindings.size(listLines).lessThan(2));
 		Button butDown = new Button("Move ↓");
+		butDown.disableProperty().bind(Bindings.size(listLines).lessThan(2));
 		Button butDelete = new Button("Delete ✘");
+		butDelete.disableProperty().bind(Bindings.size(listLines).isEqualTo(0));
 		Button butCombine = new Button("Combine ↳");
-		butCombine.disableProperty().bind(Bindings.size(listLines).isEqualTo(0));
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
@@ -282,6 +284,16 @@ public class Create {
 
 		TextField nameField = new TextField();
 		nameField.setPromptText("Enter name of creation");
+		
+//		butCombine.disableProperty().bind(Bindings.createBooleanBinding(() ->{
+//			if(listLines.isEmpty() || nameField.getText().equals("")){
+//				return true;
+//			}else {
+//				return false;
+//			}
+//		}));
+		
+		butCombine.disableProperty().bind(Bindings.or(Bindings.size(listLines).isEqualTo(0), nameField.getText().isEmpty()));
 		
 		// Does not allow characters to be typed into text field
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
