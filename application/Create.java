@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -255,11 +256,13 @@ public class Create {
 		Button butPlay = new Button(" Play ►");
 		Button butSave = new Button(" Save ✔");
 		Button butUp = new Button("Move ↑");
-		butUp.disableProperty().bind(Bindings.size(listLines).lessThan(2));
+		BooleanBinding upDownBinding = Bindings.size(listLines).lessThan(2).or(list.getSelectionModel().selectedItemProperty().isNull());
+		butUp.disableProperty().bind(upDownBinding);
 		Button butDown = new Button("Move ↓");
-		butDown.disableProperty().bind(Bindings.size(listLines).lessThan(2));
+		butDown.disableProperty().bind(upDownBinding);
+		
 		Button butDelete = new Button("Delete ✘");
-		butDelete.disableProperty().bind(Bindings.size(listLines).isEqualTo(0));
+		butDelete.disableProperty().bind(list.getSelectionModel().selectedItemProperty().isNull());
 		Button butCombine = new Button("Combine ↳");
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
@@ -285,15 +288,8 @@ public class Create {
 		TextField nameField = new TextField();
 		nameField.setPromptText("Enter name of creation");
 		
-//		butCombine.disableProperty().bind(Bindings.createBooleanBinding(() ->{
-//			if(listLines.isEmpty() || nameField.getText().equals("")){
-//				return true;
-//			}else {
-//				return false;
-//			}
-//		}));
-		
-		butCombine.disableProperty().bind(Bindings.or(Bindings.size(listLines).isEqualTo(0), nameField.getText().isEmpty()));
+		BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0).or(nameField.textProperty().isEmpty());
+		butCombine.disableProperty().bind(combBinding);
 		
 		// Does not allow characters to be typed into text field
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
