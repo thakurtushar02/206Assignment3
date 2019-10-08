@@ -89,6 +89,7 @@ public class Create {
 		create.setFont(new Font("Arial", 20));
 
 		searchButton = new Button("Search ↳");
+		searchButton.disableProperty().bind(search.textProperty().isEmpty());
 		pbSearch.setVisible(false);
 		searchBar = new HBox(create, search, searchButton, pbSearch);
 		searchBar.setSpacing(15);
