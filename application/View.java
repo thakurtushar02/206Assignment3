@@ -36,7 +36,7 @@ public class View {
 	private VBox contents;
 	private Tab _tab;
 	private Popup _popup;
-	public final static int ROW_HEIGHT = 24;
+	public final static int ROW_HEIGHT = 26;
 	public final static int SPACING = 2;
 
 	public View(Tab tab, Popup popup) {

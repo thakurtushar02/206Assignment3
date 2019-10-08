@@ -253,8 +253,13 @@ public class Create {
 		// buttons
 		Label lblVoice = new Label("Voice: ");
 		lblVoice.setFont(new Font("Arial", 20));
+		
 		Button butPlay = new Button(" Play ►");
+		BooleanBinding playSaveBinding = textArea.selectedTextProperty().isEmpty();
+		butPlay.disableProperty().bind(playSaveBinding);
 		Button butSave = new Button(" Save ✔");
+		butSave.disableProperty().bind(playSaveBinding);
+		
 		Button butUp = new Button("Move ↑");
 		BooleanBinding upDownBinding = Bindings.size(listLines).lessThan(2).or(list.getSelectionModel().selectedItemProperty().isNull());
 		butUp.disableProperty().bind(upDownBinding);
