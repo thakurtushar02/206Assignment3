@@ -18,7 +18,6 @@ import javafx.scene.layout.VBox;
 public class Home {
 	private Tab _tab;
 	private int _titleNumber = 0;
-	private final int HEADING_SIZE = 1100;
 	private final int TITLE_SIZE = 800;
 	
 	public Home(Tab tab) {
@@ -51,41 +50,55 @@ public class Home {
 		ImageView infoView = new ImageView();
 		infoView.setImage(new Image(".resources/home/heading.png"));
 		infoView.setPreserveRatio(true);
-		infoView.setFitWidth(HEADING_SIZE);
+		infoView.setFitWidth(1000);
 		
 		ImageView createHeading = new ImageView();
 		createHeading.setImage(new Image(".resources/home/heading2.png"));
 		createHeading.setPreserveRatio(true);
-		createHeading.setFitWidth(HEADING_SIZE);
+		createHeading.setFitWidth(550);
 		
-		HBox createBox = new HBox(createHeading);
+		ImageView arrow = new ImageView();
+		arrow.setImage(new Image(".resources/home/arrow.png"));
+		arrow.setPreserveRatio(true);
+		arrow.setFitWidth(50);
+		
+		ImageView arrow2 = new ImageView();
+		arrow2.setImage(new Image(".resources/home/arrow.png"));
+		arrow2.setPreserveRatio(true);
+		arrow2.setFitWidth(50);
+		
+		HBox createBox = new HBox(20, arrow, createHeading);
 		createBox.setOnMouseEntered(arg0 -> {
-			createHeading.setFitWidth(HEADING_SIZE + 50);
+			createHeading.setFitWidth(600);
+			arrow.setFitWidth(60);
 		});
 		createBox.setOnMouseExited(arg0 -> {
-			createHeading.setFitWidth(HEADING_SIZE);
+			createHeading.setFitWidth(550);
+			arrow.setFitWidth(50);
 		});
 		createBox.setOnMouseClicked(arg0 -> {
 			tabPane.getSelectionModel().select(2);
 		});
-		createBox.setAlignment(Pos.CENTER);
+		//createBox.setAlignment(Pos.CENTER);
 		
 		ImageView viewHeading = new ImageView();
 		viewHeading.setImage(new Image(".resources/home/heading3.png"));
 		viewHeading.setPreserveRatio(true);
-		viewHeading.setFitWidth(HEADING_SIZE - 450);
+		viewHeading.setFitWidth(500);
 		
-		HBox viewBox = new HBox(viewHeading);
+		HBox viewBox = new HBox(20, arrow2, viewHeading);
 		viewBox.setOnMouseEntered(arg0 -> {
-			viewHeading.setFitWidth(HEADING_SIZE - 400);
+			viewHeading.setFitWidth(550);
+			arrow2.setFitWidth(60);
 		});
 		viewBox.setOnMouseExited(arg0 -> {
-			viewHeading.setFitWidth(HEADING_SIZE - 450);
+			viewHeading.setFitWidth(500);
+			arrow2.setFitWidth(50);
 		});
 		viewBox.setOnMouseClicked(arg0 -> {
 			tabPane.getSelectionModel().select(1);
 		});
-		viewBox.setAlignment(Pos.CENTER);
+		//viewBox.setAlignment(Pos.CENTER);
 	
 		VBox contents = new VBox(titleBox, infoView, createBox, viewBox);
 		contents.setPadding(new Insets(30,30,30,30));
