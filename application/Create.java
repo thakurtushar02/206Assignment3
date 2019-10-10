@@ -96,7 +96,7 @@ public class Create {
 			BufferedReader br = new BufferedReader(new FileReader(file)); 
 			  String st; 
 			  while ((st = br.readLine()) != null) {
-			    searchBinding = searchBinding.or(search.textProperty().isEqualTo(st));
+			    searchBinding = searchBinding.or(search.textProperty().isEqualToIgnoreCase(st));
 			  }
 			  br.close();
 		} catch (FileNotFoundException e1) {
@@ -236,8 +236,10 @@ public class Create {
 		try {
 			fileContent = new BufferedReader(new FileReader(_file));
 			String line;
-			while ((line = fileContent.readLine()) != null) {
+			int numberOfLines = 0;
+			while (((line = fileContent.readLine()) != null) && (numberOfLines < 4)) {
 				textArea.appendText(line + "\n");
+				numberOfLines++;
 			}
 			fileContent.close();
 		} catch (IOException e) {
@@ -311,7 +313,13 @@ public class Create {
 		lineOptions.setAlignment(Pos.BOTTOM_CENTER);
 
 		TextField nameField = new TextField();
-		nameField.setPromptText("Enter name of creation");
+		String potentialName = reply;
+		int count = 1;
+		while (checkName(potentialName).equals(DUPLICATE)) {
+			potentialName = reply + "-" + count;
+			count++;
+		}
+		nameField.setText(potentialName);
 
 		BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0).or(nameField.textProperty().isEmpty());
 		butCombine.disableProperty().bind(combBinding);
