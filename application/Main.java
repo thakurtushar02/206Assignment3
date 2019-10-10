@@ -56,11 +56,9 @@ public class Main extends Application {
 		create.storeTabs(tabPane);
 		
 		root.setTop(tabPane);
-		int height = 750;
-		primaryStage.setMinHeight(height);
-		primaryStage.setMaxHeight(height);
+		primaryStage.setResizable(false);
 		
-		Scene scene = new Scene(root, 1200, height);
+		Scene scene = new Scene(root, 1200, 750);
 
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		primaryStage.setScene(scene);

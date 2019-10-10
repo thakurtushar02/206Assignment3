@@ -1,8 +1,12 @@
 package application;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
@@ -14,10 +18,10 @@ import javafx.scene.text.Font;
  */
 public class Home {
 	private VBox contents;
-	private Label heading;
 	private Label heading1;
 	private Label heading2;
 	private Tab _tab;
+	private int _titleNumber = 0;
 	
 	public Home(Tab tab) {
 		_tab = tab;
@@ -28,9 +32,25 @@ public class Home {
 	 * the application.
 	 */
 	public void setContents() {
-		heading = new Label();
-		heading.setText("Welcome to the VARpedia!\t(◕ヮ◕)");
-		heading.setFont(new Font("Arial", 30));
+		ImageView iv = new ImageView();
+		iv.setImage(new Image(".resources/titles/title" + _titleNumber + ".png"));
+		iv.setPreserveRatio(true);
+		iv.setFitWidth(800);
+		
+		HBox imageBox = new HBox(iv);
+		
+		imageBox.setOnMouseEntered(arg0 -> {
+			iv.setFitWidth(900);
+		});
+		imageBox.setOnMouseExited(arg0 -> {
+			iv.setFitWidth(800);
+		});
+		imageBox.setOnMouseClicked(arg0 -> {
+			_titleNumber = (_titleNumber + 1) % 3;
+			iv.setImage(new Image(".resources/titles/title" + _titleNumber + ".png"));
+		});
+		
+		imageBox.setAlignment(Pos.CENTER);
 		
 		
 		heading1 = new Label();
@@ -47,8 +67,8 @@ public class Home {
 		heading2.setFont(new Font("Arial", 20));
 		
 		
-		contents = new VBox(heading, heading1, heading2);
-		contents.setPadding(new Insets(15,10,10,15));
+		contents = new VBox(imageBox, heading1, heading2);
+		contents.setPadding(new Insets(30,10,10,15));
 		contents.setSpacing(15);
 		_tab.setContent(contents);
 	}
