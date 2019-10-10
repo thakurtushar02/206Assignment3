@@ -82,7 +82,7 @@ public class Create {
 	 * Sets the contents of the Create tab
 	 * @param main
 	 */
-	public void setContents(Main main) {
+	public void setContents(Main main) {		
 		if (_main == null) {
 			_main = main;
 		}
