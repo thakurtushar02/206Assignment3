@@ -36,14 +36,14 @@ public class Main extends Application {
 		Tab homeTab = new Tab("Home");
 		homeTab.getStyleClass().add("home_style");
 		home = new Home(homeTab);
-		home.setContents();
+		home.setContents(tabPane);
 		
-		Tab createTab = new Tab("Create Creations");
+		Tab createTab = new Tab("Create!");
 		createTab.getStyleClass().add("create_style");
 		create = new Create(createTab, popup);
 		create.setContents(this);
 		
-		Tab viewTab = new Tab("View Creations");
+		Tab viewTab = new Tab("My Creations");
 		viewTab.getStyleClass().add("view_style");
 		view = new View(viewTab, popup);
 		view.setContents();
