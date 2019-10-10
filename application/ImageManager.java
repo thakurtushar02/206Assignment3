@@ -49,14 +49,14 @@ public class ImageManager {
 	 * @param num
 	 * @param query
 	 */
-	public void getImages(int num, String query) {
+	public void getImages(String query) {
 		try {
 			String apiKey = getAPIKey("apiKey");
 			String sharedSecret = getAPIKey("sharedSecret");
 
 			Flickr flickr = new Flickr(apiKey, sharedSecret, new REST());
 
-			int resultsPerPage = num;
+			int resultsPerPage = 10;
 			int page = 0;
 
 			PhotosInterface photos = flickr.getPhotosInterface();
@@ -69,7 +69,7 @@ public class ImageManager {
 
 			for (Photo photo: results) {
 				int toPad = results.indexOf(photo);
-				String padded = String.format("%02d", toPad);
+				//String padded = String.format("%02d", toPad);
 				try {
 					BufferedImage image = photos.getImage(photo,Size.LARGE);
 					if(image.getWidth()%2 != 0) {
@@ -77,7 +77,7 @@ public class ImageManager {
 					} if(image.getHeight()%2 != 0) {
 						image = image.getSubimage(0, 0, image.getWidth(), image.getHeight()-1);
 					}
-					String filename = query + padded + ".jpg";
+					String filename = query + toPad + ".jpg";
 					File outputfile = new File(System.getProperty("user.dir") 
 							+ System.getProperty("file.separator"),filename);
 					ImageIO.write(image, "jpg", outputfile);

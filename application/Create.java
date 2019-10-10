@@ -27,8 +27,12 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -184,7 +188,9 @@ public class Create {
 								message.setText("");
 								_term = term;
 								deleteFiles();
-								displayLines(term);
+								//displayLines(term);
+								getPics(10, term);
+								displayImages();
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -269,6 +275,7 @@ public class Create {
 		
 		Button butDelete = new Button("Delete ✘");
 		butDelete.disableProperty().bind(list.getSelectionModel().selectedItemProperty().isNull());
+		
 		Button butCombine = new Button("Combine ↳");
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
@@ -450,6 +457,43 @@ public class Create {
 
 		});
 
+	}
+	
+	/**
+	 * Displays images for user to choose
+	 */
+	public void displayImages() {
+		VBox chooseImages;
+		Label prompt = new Label("Choose 1 to 10 pictures you want in your creation:");
+		prompt.setFont(new Font("Arial", 20));
+		prompt.setPadding(new Insets(15,10,10,15));
+		GridPane imgPane = new GridPane();
+		for(int i = 0; i < 10; i++) {
+			Image im = new Image(_term + i + ".jpg");
+			ImageView imv = new ImageView(im);
+			BorderPane bp = new BorderPane(imv);
+			imv.setPreserveRatio(true);
+			imv.setFitHeight(200);
+			imv.setFitWidth(200);
+			imv.setOnMouseEntered(arg0 -> {
+				imv.setFitHeight(210);
+				imv.setFitWidth(210);
+			});
+			imv.setOnMouseExited(arg0 -> {
+				imv.setFitHeight(200);
+				imv.setFitWidth(200);
+			});
+			imv.setOnMouseClicked(arg0 -> {
+				bp.getStyleClass().add("border");
+			});
+			imgPane.add(bp, i%5, i/5);
+		}
+		imgPane.setPadding(new Insets(30,30,30,30));
+		imgPane.setHgap(30);
+		imgPane.setVgap(30);
+		Button btnCreate = new Button("Create ↳");
+		chooseImages = new VBox(prompt, imgPane, btnCreate);
+		_tab.setContent(chooseImages);
 	}
 
 	/**
@@ -649,7 +693,7 @@ public class Create {
 	 */
 	public void getPics(int input, String reply) {
 		numberOfPictures = input;
-		_imMan.getImages(input, reply);
+		_imMan.getImages(reply);
 
 	}
 }

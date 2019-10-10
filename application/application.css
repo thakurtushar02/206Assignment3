@@ -38,3 +38,8 @@
 	-fx-font-size:14px;
 	-fx-background-color:lightgrey;
 }
+
+.border{
+	-fx-padding:5;
+	-fx-background-color: lightblue;
+}
