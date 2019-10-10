@@ -17,7 +17,7 @@ import javafx.scene.layout.VBox;
  */
 public class Home {
 	private Tab _tab;
-	private int _titleNumber = 0;
+	private int _titleNumber = (int) (6*Math.random());
 	private final int TITLE_SIZE = 1000;
 	
 	public Home(Tab tab) {
@@ -43,7 +43,7 @@ public class Home {
 			titleView.setFitWidth(TITLE_SIZE);
 		});
 		titleBox.setOnMouseClicked(arg0 -> {
-			_titleNumber = (_titleNumber + 1) % 3;
+			_titleNumber = (_titleNumber + 1) % 6;
 			titleView.setImage(new Image(".resources/home/title" + _titleNumber + ".png"));
 		});
 		titleBox.setAlignment(Pos.CENTER);
@@ -72,6 +72,11 @@ public class Home {
 		arrow3.setImage(new Image(".resources/home/arrow.png"));
 		arrow3.setPreserveRatio(true);
 		arrow3.setFitWidth(50);
+		
+		ImageView book = new ImageView();
+		book.setImage(new Image(".resources/home/book.png"));
+		book.setPreserveRatio(true);
+		book.setFitWidth(500);
 		
 		HBox createBox = new HBox(20, arrow, createHeading);
 		createBox.setMinHeight(createHeading.getFitHeight() + 100);
@@ -124,8 +129,12 @@ public class Home {
 		playBox.setOnMouseClicked(arg0 -> {
 			//tabPane.getSelectionModel().select(1);
 		});
+		
+		VBox text = new VBox(20, createBox, viewBox, playBox);
+		text.setMinWidth(createBox.getWidth()+100);
+		HBox headings = new HBox(20, text, book);
 	
-		VBox contents = new VBox(titleBox, infoView, createBox, viewBox, playBox);
+		VBox contents = new VBox(titleBox, infoView, headings);
 		contents.setPadding(new Insets(30,30,30,30));
 		contents.setSpacing(30);
 		contents.setAlignment(Pos.CENTER);
