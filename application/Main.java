@@ -33,17 +33,17 @@ public class Main extends Application {
 		
 		Popup popup = new Popup();
 		
-		Tab homeTab = new Tab("Home");
+		Tab homeTab = new Tab("HOME");
 		homeTab.getStyleClass().add("home_style");
 		home = new Home(homeTab);
 		home.setContents(tabPane);
 		
-		Tab createTab = new Tab("Create!");
+		Tab createTab = new Tab("CREATE");
 		createTab.getStyleClass().add("create_style");
 		create = new Create(createTab, popup);
 		create.setContents(this);
 		
-		Tab viewTab = new Tab("My Creations");
+		Tab viewTab = new Tab("VIEW");
 		viewTab.getStyleClass().add("view_style");
 		view = new View(viewTab, popup);
 		view.setContents();
@@ -58,7 +58,7 @@ public class Main extends Application {
 		root.setTop(tabPane);
 		primaryStage.setResizable(false);
 		
-		Scene scene = new Scene(root, 1200, 750);
+		Scene scene = new Scene(root, 1200, 900);
 
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		primaryStage.setScene(scene);

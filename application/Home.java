@@ -52,7 +52,7 @@ public class Home {
 		ImageView createHeading = new ImageView();
 		createHeading.setImage(new Image(".resources/home/heading2.png"));
 		createHeading.setPreserveRatio(true);
-		createHeading.setFitWidth(325);
+		createHeading.setFitWidth(550);
 		
 		ImageView arrow = new ImageView();
 		arrow.setImage(new Image(".resources/home/arrow.png"));
@@ -76,8 +76,14 @@ public class Home {
 		
 		HBox createBox = new HBox(20, arrow, createHeading);
 		createBox.setMinHeight(createHeading.getFitHeight() + 100);
-		createBox.setOnMouseEntered(arg0 -> {createHeading.setFitWidth(375);arrow.setFitWidth(60);});
-		createBox.setOnMouseExited(arg0 -> {createHeading.setFitWidth(325);arrow.setFitWidth(50);});
+		createBox.setOnMouseEntered(arg0 -> {
+			createHeading.setFitWidth(createHeading.getFitWidth() + 50);
+			arrow.setFitWidth(60);
+			});
+		createBox.setOnMouseExited(arg0 -> {
+			createHeading.setFitWidth(createHeading.getFitWidth() - 50);
+			arrow.setFitWidth(50);
+			});
 		createBox.setOnMouseClicked(arg0 -> {tabPane.getSelectionModel().select(2);});
 		
 		ImageView viewHeading = new ImageView();
@@ -87,8 +93,14 @@ public class Home {
 		
 		HBox viewBox = new HBox(20, arrow2, viewHeading);
 		viewBox.setMinHeight(viewHeading.getFitHeight() + 100);
-		viewBox.setOnMouseEntered(arg0 -> {viewHeading.setFitWidth(550);arrow2.setFitWidth(60);});
-		viewBox.setOnMouseExited(arg0 -> {viewHeading.setFitWidth(500);arrow2.setFitWidth(50);});
+		viewBox.setOnMouseEntered(arg0 -> {
+			viewHeading.setFitWidth(viewHeading.getFitWidth() + 50);
+			arrow2.setFitWidth(60);
+			});
+		viewBox.setOnMouseExited(arg0 -> {
+			viewHeading.setFitWidth(viewHeading.getFitWidth() - 50);
+			arrow2.setFitWidth(50);
+			});
 		viewBox.setOnMouseClicked(arg0 -> {tabPane.getSelectionModel().select(1);});
 		
 		ImageView playHeading = new ImageView();
@@ -98,8 +110,14 @@ public class Home {
 		
 		HBox playBox = new HBox(20, arrow3, playHeading);
 		playBox.setMinHeight(playHeading.getFitHeight() + 100);
-		playBox.setOnMouseEntered(arg0 -> {playHeading.setFitWidth(375);arrow3.setFitWidth(60);});
-		playBox.setOnMouseExited(arg0 -> {playHeading.setFitWidth(325);arrow3.setFitWidth(50);});
+		playBox.setOnMouseEntered(arg0 -> {
+			playHeading.setFitWidth(playHeading.getFitWidth() + 50);
+			arrow3.setFitWidth(60);
+			});
+		playBox.setOnMouseExited(arg0 -> {
+			playHeading.setFitWidth(playHeading.getFitWidth() - 50);
+			arrow3.setFitWidth(50);
+			});
 		playBox.setOnMouseClicked(arg0 -> {
 			//TODO Learn tab
 		});

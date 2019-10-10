@@ -86,8 +86,7 @@ public class Create {
 		if (_main == null) {
 			_main = main;
 		}
-		create.setText("Enter term to search for: ");
-		create.setFont(new Font("Arial", 20));
+		create.setText("Enter word: ");
 		
 		BooleanBinding searchBinding = search.textProperty().isEmpty();
 		
@@ -113,8 +112,7 @@ public class Create {
 		searchBar = new HBox(create, search, searchButton, pbSearch);
 		searchBar.setSpacing(15);
 
-		message.setFont(new Font("Arial", 16));
-
+		search.setFont(new Font("Arial", 30));
 		search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) searchButton.fire();});
 
 		searchButton.setOnAction(e -> searchTerm(search.getText()));
@@ -197,13 +195,13 @@ public class Create {
 							String line = fileReader.readLine();
 							// Display contents if there are results, otherwise prompt user to search again
 							if(line.contains("not found :^(")) {
-								message.setText("Search term is invalid, please try again with another search term.");
+								message.setText("Did you misspell? Try again!");
 								setContents(_main);
 							} else {
 								message.setText("");
 								_term = term;
-								displayLines(term);
 								deleteFiles();
+								displayLines(term);
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -229,7 +227,7 @@ public class Create {
 		TextArea textArea = new TextArea();
 		textArea.setEditable(true);
 		textArea.setWrapText(true);
-		textArea.setFont(new Font("Arial", 14));
+		textArea.setFont(new Font("Arial", 20));
 
 		// Populate TextArea with text file contents
 		BufferedReader fileContent;
@@ -238,7 +236,7 @@ public class Create {
 			String line;
 			int numberOfLines = 0;
 			while (((line = fileContent.readLine()) != null) && (numberOfLines < 4)) {
-				textArea.appendText(line + "\n");
+				textArea.appendText(line + "\n\n");
 				numberOfLines++;
 			}
 			fileContent.close();
@@ -248,12 +246,8 @@ public class Create {
 		textArea.setText(textArea.getText().substring(2));
 
 		Label lblList = new Label("Saved audio");
-		lblList.setFont(new Font("Arial", 20));
 
-		Text info = new Text("Move audio files ↑ or ↓ to get desired order.\n\n"
-				+ "The creation will be created with audio\nfiles in the order "
-				+ "they are below.\n\nDouble click to play audio file.");
-		info.setFont(new Font("Arial", 14));
+		Label info = new Label("Reorder audio below!");
 		VBox text = new VBox(searchBar, textArea);
 		text.setSpacing(10);
 
@@ -262,15 +256,15 @@ public class Create {
 		VBox listView = new VBox(lblList, info, list);
 
 		listView.setAlignment(Pos.CENTER_LEFT);
-		listView.setSpacing(10);
 
 		views.getChildren().addAll(text, listView);
 		views.setSpacing(10);
 
 		// combo box to select voice
-		ObservableList<String> voices = FXCollections.observableArrayList("Default", "Espeak");
+		ObservableList<String> voices = FXCollections.observableArrayList("Real", "Robot");
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
-		combobox.setValue("Default");
+		combobox.setValue("Real");
+		
 
 		// buttons
 		Label lblVoice = new Label("Voice: ");
@@ -279,6 +273,8 @@ public class Create {
 		Button butPlay = new Button(" Play ►");
 		BooleanBinding playSaveBinding = textArea.selectedTextProperty().isEmpty();
 		butPlay.disableProperty().bind(playSaveBinding);
+		combobox.prefHeightProperty().bind(butPlay.prefHeightProperty());
+		
 		Button butSave = new Button(" Save ✔");
 		butSave.disableProperty().bind(playSaveBinding);
 
@@ -365,7 +361,7 @@ public class Create {
 					protected Void call() throws Exception {				
 						String voice;
 						String selection = combobox.getSelectionModel().getSelectedItem();
-						if ( selection.equals("Default")) {
+						if ( selection.equals("Real")) {
 							voice = "festival --tts";
 						} else {
 							voice = "espeak";
@@ -448,6 +444,25 @@ public class Create {
 				butCombine.requestFocus();
 			} else if (validity.equals(VALID)) {
 				nameField.setPromptText("");
+				butCombine.disableProperty().unbind();
+				butCombine.setDisable(true);
+				butUp.disableProperty().unbind();
+				butUp.setDisable(true);
+				butDown.disableProperty().unbind();
+				butDown.setDisable(true);
+				butDelete.disableProperty().unbind();
+				butDelete.setDisable(true);
+				butSave.disableProperty().unbind();
+				butSave.setDisable(true);
+				butPlay.disableProperty().unbind();
+				butPlay.setDisable(true);
+				searchButton.disableProperty().unbind();
+				searchButton.setDisable(true);
+				combobox.setDisable(true);
+				list.setDisable(true);
+				search.setDisable(true);
+				slider.setDisable(true);
+				textArea.setDisable(true);
 				combineAudioFiles(); // Site of creation creation
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
@@ -520,7 +535,7 @@ public class Create {
 				numberOfAudioFiles++;
 				String nameOfFile = "AudioFile" + numberOfAudioFiles;
 
-				if (voice.equals("Default")) {
+				if (voice.equals("Real")) {
 					cmd = "cat " + _file.toString() + " | text2wave -o \"./AudioFiles/" + nameOfFile + ".wav\"";
 				} else {
 					cmd = "espeak -f " + _file.toString() + " --stdout > \"./AudioFiles/" + nameOfFile + ".wav\"";
@@ -538,7 +553,7 @@ public class Create {
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
 						_view.setContents();
-						_popup.showFeedback(nameOfFile, false);
+						//_popup.showFeedback(nameOfFile, false);
 						listLines.add(nameOfFile);
 						pbSaveCombine.setVisible(false);
 					}
@@ -652,7 +667,7 @@ public class Create {
 
 			@Override
 			protected Void call() throws Exception {
-				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi; if [ -e text.txt ]; then rm -f text.txt; fi";
+				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();
