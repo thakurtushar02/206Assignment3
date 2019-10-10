@@ -1,1 +1,40 @@
 /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+.home_style{
+	-fx-background-color: #f2eace;
+}
+	
+.create_style{
+	-fx-background-color: #cef2f1;
+}
+
+.view_style{
+	-fx-background-color: #f2cef2;
+}
+
+.root{
+	-fx-background-color:ghostwhite;
+}
+
+.list-cell{
+	-fx-font-size:14px;
+	-fx-background-color:white;
+}
+
+.list-cell:even{
+	-fx-background-color:ghostwhite;
+}
+
+.list-cell:selected{
+	-fx-background-color:lightgrey;
+}
+
+.button{
+	-fx-font-size:14px;
+	-fx-background-color:lightgrey;
+}
+
+.combo-box{
+	-fx-font-size:14px;
+	-fx-background-color:lightgrey;
+}

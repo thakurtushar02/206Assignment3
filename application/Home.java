@@ -29,14 +29,14 @@ public class Home {
 	 */
 	public void setContents() {
 		heading = new Label();
-		heading.setText("Welcome to the Wiki-Speak Authoring Tool!\t(◕ヮ◕)");
-		heading.setFont(new Font("Arial", 40));
+		heading.setText("Welcome to the VARpedia!\t(◕ヮ◕)");
+		heading.setFont(new Font("Arial", 30));
 		
 		
 		heading1 = new Label();
 		heading1.setText("\nPlease choose your options from the tabs above.\n"
 				+ "If you want to DELETE or PLAY your creations please select View Creations.\n\n\n");
-		heading1.setFont(new Font("Arial", 25));
+		heading1.setFont(new Font("Arial", 20));
 		
 		
 		heading2 = new Label();
@@ -44,7 +44,7 @@ public class Home {
 				+ "\t\t\t\t\t\t(╯°□°）╯︵ ┻━┻\n\n"
 				+ "...But not too much fun.\n\n"
 				+ "\t\t\t\t\t\t┬──┬ ノ( °-°ノ)");
-		heading2.setFont(new Font("Arial", 30));
+		heading2.setFont(new Font("Arial", 20));
 		
 		
 		contents = new VBox(heading, heading1, heading2);

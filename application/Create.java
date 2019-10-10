@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -85,14 +86,15 @@ public class Create {
 			_main = main;
 		}
 		create.setText("Enter term to search for: ");
-		create.setFont(new Font("Arial", 16));
+		create.setFont(new Font("Arial", 20));
 
 		searchButton = new Button("Search ↳");
+		searchButton.disableProperty().bind(search.textProperty().isEmpty());
 		pbSearch.setVisible(false);
 		searchBar = new HBox(create, search, searchButton, pbSearch);
 		searchBar.setSpacing(15);
 
-		message.setFont(new Font("Arial", 14));
+		message.setFont(new Font("Arial", 16));
 
 		search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) searchButton.fire();});
 
@@ -208,6 +210,7 @@ public class Create {
 		TextArea textArea = new TextArea();
 		textArea.setEditable(true);
 		textArea.setWrapText(true);
+		textArea.setFont(new Font("Arial", 14));
 
 		// Populate TextArea with text file contents
 		BufferedReader fileContent;
@@ -224,12 +227,12 @@ public class Create {
 		textArea.setText(textArea.getText().substring(2));
 
 		Label lblList = new Label("Saved audio");
-		lblList.setFont(new Font("Arial", 16));
+		lblList.setFont(new Font("Arial", 20));
 
 		Text info = new Text("Move audio files ↑ or ↓ to get desired order.\n\n"
 				+ "The creation will be created with audio\nfiles in the order "
 				+ "they are below.\n\nDouble click to play audio file.");
-		info.setFont(new Font("Arial", 12));
+		info.setFont(new Font("Arial", 14));
 		VBox text = new VBox(searchBar, textArea);
 		text.setSpacing(10);
 
@@ -250,13 +253,23 @@ public class Create {
 		
 		// buttons
 		Label lblVoice = new Label("Voice: ");
+		lblVoice.setFont(new Font("Arial", 20));
+		
 		Button butPlay = new Button(" Play ►");
+		BooleanBinding playSaveBinding = textArea.selectedTextProperty().isEmpty();
+		butPlay.disableProperty().bind(playSaveBinding);
 		Button butSave = new Button(" Save ✔");
+		butSave.disableProperty().bind(playSaveBinding);
+		
 		Button butUp = new Button("Move ↑");
+		BooleanBinding upDownBinding = Bindings.size(listLines).lessThan(2).or(list.getSelectionModel().selectedItemProperty().isNull());
+		butUp.disableProperty().bind(upDownBinding);
 		Button butDown = new Button("Move ↓");
+		butDown.disableProperty().bind(upDownBinding);
+		
 		Button butDelete = new Button("Delete ✘");
+		butDelete.disableProperty().bind(list.getSelectionModel().selectedItemProperty().isNull());
 		Button butCombine = new Button("Combine ↳");
-		butCombine.disableProperty().bind(Bindings.size(listLines).isEqualTo(0));
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
@@ -270,7 +283,7 @@ public class Create {
 		slider.setShowTickMarks(true);
 
 		Label photos = new Label("Choose Number of Pictures");
-		photos.setFont(new Font("Arial", 16));
+		photos.setFont(new Font("Arial", 20));
 
 		slider.valueProperty().addListener((obs, oldval, newVal) -> slider.setValue(newVal.intValue()));
 
@@ -280,6 +293,9 @@ public class Create {
 
 		TextField nameField = new TextField();
 		nameField.setPromptText("Enter name of creation");
+		
+		BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0).or(nameField.textProperty().isEmpty());
+		butCombine.disableProperty().bind(combBinding);
 		
 		// Does not allow characters to be typed into text field
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -559,8 +575,9 @@ public class Create {
 					e.printStackTrace();
 				}
 
+
 				// Create video with images and text, combine with audio, and remove intermediary output files
-				cmd = "cat *.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
+				cmd = "cat \"" + _term + "\"??.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
 						+ "$(soxi -D \'./AudioFiles/" + "temp" + ".wav\') -i - -c:v libx264 -pix_fmt yuv420p -vf \""
 						+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
 						+ " -r 25 -y visual.mp4 ; rm \"" + _term + "\"??.jpg ; ffmpeg -i visual.mp4 -vf "

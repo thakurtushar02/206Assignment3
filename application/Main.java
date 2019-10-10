@@ -18,9 +18,6 @@ public class Main extends Application {
 	private View view;
 	private Create create;
 	private Stage currentStage;
-	private final String HOME_STYLE = "-fx-background-color: #f2eace";
-	private final String VIEW_STYLE = "-fx-background-color: #f2cef2";
-	private final String CREATE_STYLE = "-fx-background-color: #cef2f1";
 	
 	/**
 	 * Creates the three tabs, Home, View, and Create Creation.
@@ -28,7 +25,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		currentStage = primaryStage;
-		primaryStage.setTitle("Wiki Speak Authoring Tool");
+		primaryStage.setTitle("VARpedia");
 		
 		BorderPane root = new BorderPane();
 		
@@ -37,17 +34,17 @@ public class Main extends Application {
 		Popup popup = new Popup();
 		
 		Tab homeTab = new Tab("Home");
-		homeTab.setStyle(HOME_STYLE);
+		homeTab.getStyleClass().add("home_style");
 		home = new Home(homeTab);
 		home.setContents();
 		
 		Tab createTab = new Tab("Create Creations");
-		createTab.setStyle(CREATE_STYLE);
+		createTab.getStyleClass().add("create_style");
 		create = new Create(createTab, popup);
 		create.setContents(this);
 		
 		Tab viewTab = new Tab("View Creations");
-		viewTab.setStyle(VIEW_STYLE);
+		viewTab.getStyleClass().add("view_style");
 		view = new View(viewTab, popup);
 		view.setContents();
 		
