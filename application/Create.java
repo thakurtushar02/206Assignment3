@@ -2,6 +2,7 @@ package application;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -87,9 +88,27 @@ public class Create {
 		}
 		create.setText("Enter term to search for: ");
 		create.setFont(new Font("Arial", 20));
+		
+		BooleanBinding searchBinding = search.textProperty().isEmpty();
+		
+		  File file = new File(".resources/search/badWords.txt"); 
+		  try {
+			BufferedReader br = new BufferedReader(new FileReader(file)); 
+			  String st; 
+			  while ((st = br.readLine()) != null) {
+			    searchBinding = searchBinding.or(search.textProperty().isEqualTo(st));
+			  }
+			  br.close();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
 
 		searchButton = new Button("Search ↳");
-		searchButton.disableProperty().bind(search.textProperty().isEmpty());
+		searchButton.disableProperty().bind(searchBinding);
+		
 		pbSearch.setVisible(false);
 		searchBar = new HBox(create, search, searchButton, pbSearch);
 		searchBar.setSpacing(15);
@@ -111,7 +130,7 @@ public class Create {
 	 */
 	public void searchTerm(String term) {
 		pbSearch.setVisible(true);
-		
+
 		// Term searched using wikit, written to a file and reformatted onto separate lines
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
@@ -126,7 +145,7 @@ public class Create {
 					PrintWriter out = new PrintWriter(new FileWriter(_file));
 
 					int exitStatus = process.waitFor();
-					
+
 					// If search process executes without problems, reformat file contents so that each sentence 
 					// is on its own line
 					if (exitStatus == 0) {
@@ -250,23 +269,23 @@ public class Create {
 		ObservableList<String> voices = FXCollections.observableArrayList("Default", "Espeak");
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
 		combobox.setValue("Default");
-		
+
 		// buttons
 		Label lblVoice = new Label("Voice: ");
 		lblVoice.setFont(new Font("Arial", 20));
-		
+
 		Button butPlay = new Button(" Play ►");
 		BooleanBinding playSaveBinding = textArea.selectedTextProperty().isEmpty();
 		butPlay.disableProperty().bind(playSaveBinding);
 		Button butSave = new Button(" Save ✔");
 		butSave.disableProperty().bind(playSaveBinding);
-		
+
 		Button butUp = new Button("Move ↑");
 		BooleanBinding upDownBinding = Bindings.size(listLines).lessThan(2).or(list.getSelectionModel().selectedItemProperty().isNull());
 		butUp.disableProperty().bind(upDownBinding);
 		Button butDown = new Button("Move ↓");
 		butDown.disableProperty().bind(upDownBinding);
-		
+
 		Button butDelete = new Button("Delete ✘");
 		butDelete.disableProperty().bind(list.getSelectionModel().selectedItemProperty().isNull());
 		Button butCombine = new Button("Combine ↳");
@@ -293,10 +312,10 @@ public class Create {
 
 		TextField nameField = new TextField();
 		nameField.setPromptText("Enter name of creation");
-		
+
 		BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0).or(nameField.textProperty().isEmpty());
 		butCombine.disableProperty().bind(combBinding);
-		
+
 		// Does not allow characters to be typed into text field
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
 			String[] badCharacters = {"/", "?", "%", "*", ":", "|", "\"", "<", ">", "\0",
@@ -366,7 +385,7 @@ public class Create {
 				new Thread(task).start();
 			}
 		});
-		
+
 		// Save selected text as an audio file  
 		butSave.setOnAction(e -> {
 			String selectedText = textArea.getSelectedText();
@@ -411,7 +430,7 @@ public class Create {
 		});
 
 		nameField.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) butCombine.fire();});
-		
+
 		butCombine.setOnAction(e -> {
 			String name = nameField.getText();
 			String validity = checkName(name);
@@ -548,7 +567,7 @@ public class Create {
 			protected Void call() throws Exception {
 				getPics(numberOfPictures, _term);
 				String cmd;
-				
+
 				// Combine list of audio files into in one if there are multiple, otherwise rename the one audio file
 				if (listLines.size() == 1) {
 					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/"+ "temp" + ".wav";
