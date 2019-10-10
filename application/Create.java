@@ -202,8 +202,8 @@ public class Create {
 							} else {
 								message.setText("");
 								_term = term;
-								deleteFiles();
 								displayLines(term);
+								deleteFiles();
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
