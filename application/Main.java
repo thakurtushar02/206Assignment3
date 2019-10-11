@@ -17,6 +17,7 @@ public class Main extends Application {
 	private Home home;
 	private View view;
 	private Create create;
+	private Learn learn;
 	private Stage currentStage;
 	
 	/**
@@ -51,7 +52,11 @@ public class Main extends Application {
 		create.setView(view);
 		popup.setViewCreate(view, create);
 		
-		tabPane.getTabs().addAll(homeTab, viewTab, createTab);
+		Tab learnTab = new Tab("Review");
+		learn = new Learn(learnTab);
+		
+		
+		tabPane.getTabs().addAll(homeTab, viewTab, createTab, learnTab);
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 		create.storeTabs(tabPane);
 		
