@@ -45,6 +45,11 @@
 	-fx-background-color:lightgrey;
 }
 
+.border{
+	-fx-padding:5;
+	-fx-background-color: lightblue;
+}
+
 .label{
 	-fx-font-size:30px;
 }
