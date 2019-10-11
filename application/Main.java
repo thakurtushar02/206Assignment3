@@ -12,6 +12,7 @@ public class Main extends Application {
 	private Home home;
 	private View view;
 	private Create create;
+	private Learn learn;
 	private Stage currentStage;
 	private final String HOME_STYLE = "-fx-background-color: #f2eace";
 	private final String VIEW_STYLE = "-fx-background-color: #f2cef2";
@@ -46,7 +47,11 @@ public class Main extends Application {
 		create.setView(view);
 		popup.setViewCreate(view, create);
 		
-		tabPane.getTabs().addAll(homeTab, viewTab, createTab);
+		Tab learnTab = new Tab("Review");
+		learn = new Learn(learnTab);
+		
+		
+		tabPane.getTabs().addAll(homeTab, viewTab, createTab, learnTab);
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 		create.storeTabs(tabPane);
 		
