@@ -1,6 +1,7 @@
 package application;
 
 import java.awt.image.BufferedImage;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -10,8 +11,20 @@ import javax.imageio.ImageIO;
 import com.flickr4java.flickr.*;
 import com.flickr4java.flickr.photos.*;
 
+/**
+ * This class downloads images from Flickr using an API Key.
+ * @author Jacinta, Lynette, Tushar
+ *
+ */
 public class ImageManager {
 
+	/**
+	 * This method gets the API Key from the text file where the API Key is stored for further use when getting the images.
+	 * The method throws a Runtime Exception if it cannot find an API Key.
+	 * @param key
+	 * @return
+	 * @throws Exception
+	 */
 	public static String getAPIKey(String key) throws Exception {
 		String config = System.getProperty("user.dir") 
 				+ System.getProperty("file.separator")+ "flickr-api-keys.txt"; 
@@ -30,14 +43,20 @@ public class ImageManager {
 		throw new RuntimeException("Couldn't find " + key +" in config file "+file.getName());
 	}
 
-	public void getImages(int num, String query) {
+	/**
+	 * This method gets the specified amount of images from Flickr relating to the search term and saves them as jpg files.
+	 * It also makes sure the images does not have an odd pixel dimension to prepare it for ffmpeg video creation.
+	 * @param num
+	 * @param query
+	 */
+	public void getImages(String query) {
 		try {
 			String apiKey = getAPIKey("apiKey");
 			String sharedSecret = getAPIKey("sharedSecret");
 
 			Flickr flickr = new Flickr(apiKey, sharedSecret, new REST());
 
-			int resultsPerPage = num;
+			int resultsPerPage = 10;
 			int page = 0;
 
 			PhotosInterface photos = flickr.getPhotosInterface();
@@ -50,7 +69,7 @@ public class ImageManager {
 
 			for (Photo photo: results) {
 				int toPad = results.indexOf(photo);
-				String padded = String.format("%02d", toPad);
+				//String padded = String.format("%02d", toPad);
 				try {
 					BufferedImage image = photos.getImage(photo,Size.LARGE);
 					if(image.getWidth()%2 != 0) {
@@ -58,7 +77,7 @@ public class ImageManager {
 					} if(image.getHeight()%2 != 0) {
 						image = image.getSubimage(0, 0, image.getWidth(), image.getHeight()-1);
 					}
-					String filename = query + padded + ".jpg";
+					String filename = query + toPad + ".jpg";
 					File outputfile = new File(System.getProperty("user.dir") 
 							+ System.getProperty("file.separator"),filename);
 					ImageIO.write(image, "jpg", outputfile);

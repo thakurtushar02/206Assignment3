@@ -1,27 +1,32 @@
 package application;
 	
 import javafx.application.Application;
-import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
+/**
+ * Class containing the main method used to run the entire application.
+ * @author Jacinta, Lynette, Tushar
+ *
+ */
 public class Main extends Application {
 	private Home home;
 	private View view;
 	private Create create;
 	private Learn learn;
 	private Stage currentStage;
-	private final String HOME_STYLE = "-fx-background-color: #f2eace";
-	private final String VIEW_STYLE = "-fx-background-color: #f2cef2";
-	private final String CREATE_STYLE = "-fx-background-color: #cef2f1";
 	
+	/**
+	 * Creates the three tabs, Home, View, and Create Creation.
+	 */
 	@Override
 	public void start(Stage primaryStage) {
 		currentStage = primaryStage;
-		primaryStage.setTitle("Wiki Speak Authoring Tool");
+		primaryStage.setTitle("VARpedia");
 		
 		BorderPane root = new BorderPane();
 		
@@ -29,18 +34,18 @@ public class Main extends Application {
 		
 		Popup popup = new Popup();
 		
-		Tab homeTab = new Tab("Home");
-		homeTab.setStyle(HOME_STYLE);
+		Tab homeTab = new Tab("HOME");
+		homeTab.getStyleClass().add("home_style");
 		home = new Home(homeTab);
-		home.setContents();
+		home.setContents(tabPane);
 		
-		Tab createTab = new Tab("Create Creations");
-		createTab.setStyle(CREATE_STYLE);
+		Tab createTab = new Tab("CREATE");
+		createTab.getStyleClass().add("create_style");
 		create = new Create(createTab, popup);
 		create.setContents(this);
 		
-		Tab viewTab = new Tab("View Creations");
-		viewTab.setStyle(VIEW_STYLE);
+		Tab viewTab = new Tab("VIEW");
+		viewTab.getStyleClass().add("view_style");
 		view = new View(viewTab, popup);
 		view.setContents();
 		
@@ -56,21 +61,13 @@ public class Main extends Application {
 		create.storeTabs(tabPane);
 		
 		root.setTop(tabPane);
-		int height = 750;
-		primaryStage.setMinHeight(height);
-		primaryStage.setMaxHeight(height);
+		primaryStage.setResizable(false);
 		
-		Scene scene = new Scene(root, 1200, height);
+		Scene scene = new Scene(root, 1200, 900);
 
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.show();
-		
-		primaryStage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue) {
-				
-			}
-		});
 	}
 
 	public static void main(String[] args) {
