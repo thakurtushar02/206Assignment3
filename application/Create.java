@@ -2,6 +2,7 @@ package application;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -87,21 +88,37 @@ public class Create {
 	 * Sets the contents of the Create tab
 	 * @param main
 	 */
-	public void setContents(Main main) {
+	public void setContents(Main main) {		
 		if (_main == null) {
 			_main = main;
 		}
-		create.setText("Enter term to search for: ");
-		create.setFont(new Font("Arial", 20));
+		create.setText("Enter word: ");
+		
+		BooleanBinding searchBinding = search.textProperty().isEmpty();
+		
+		  File file = new File(".resources/search/badWords.txt"); 
+		  try {
+			BufferedReader br = new BufferedReader(new FileReader(file)); 
+			  String st; 
+			  while ((st = br.readLine()) != null) {
+			    searchBinding = searchBinding.or(search.textProperty().isEqualToIgnoreCase(st));
+			  }
+			  br.close();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
 
 		searchButton = new Button("Search ↳");
-		searchButton.disableProperty().bind(search.textProperty().isEmpty());
+		searchButton.disableProperty().bind(searchBinding);
+		
 		pbSearch.setVisible(false);
 		searchBar = new HBox(create, search, searchButton, pbSearch);
 		searchBar.setSpacing(15);
 
-		message.setFont(new Font("Arial", 16));
-
+		search.setFont(new Font("Arial", 30));
 		search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) searchButton.fire();});
 
 		searchButton.setOnAction(e -> searchTerm(search.getText()));
@@ -117,7 +134,7 @@ public class Create {
 	 */
 	public void searchTerm(String term) {
 		pbSearch.setVisible(true);
-		
+
 		// Term searched using wikit, written to a file and reformatted onto separate lines
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
@@ -132,7 +149,7 @@ public class Create {
 					PrintWriter out = new PrintWriter(new FileWriter(_file));
 
 					int exitStatus = process.waitFor();
-					
+
 					// If search process executes without problems, reformat file contents so that each sentence 
 					// is on its own line
 					if (exitStatus == 0) {
@@ -184,7 +201,7 @@ public class Create {
 							String line = fileReader.readLine();
 							// Display contents if there are results, otherwise prompt user to search again
 							if(line.contains("not found :^(")) {
-								message.setText("Search term is invalid, please try again with another search term.");
+								message.setText("Did you misspell? Try again!");
 								setContents(_main);
 							} else {
 								message.setText("");
@@ -217,15 +234,17 @@ public class Create {
 		TextArea textArea = new TextArea();
 		textArea.setEditable(true);
 		textArea.setWrapText(true);
-		textArea.setFont(new Font("Arial", 14));
+		textArea.setFont(new Font("Arial", 20));
 
 		// Populate TextArea with text file contents
 		BufferedReader fileContent;
 		try {
 			fileContent = new BufferedReader(new FileReader(_file));
 			String line;
-			while ((line = fileContent.readLine()) != null) {
-				textArea.appendText(line + "\n");
+			int numberOfLines = 0;
+			while (((line = fileContent.readLine()) != null) && (numberOfLines < 4)) {
+				textArea.appendText(line + "\n\n");
+				numberOfLines++;
 			}
 			fileContent.close();
 		} catch (IOException e) {
@@ -234,12 +253,8 @@ public class Create {
 		textArea.setText(textArea.getText().substring(2));
 
 		Label lblList = new Label("Saved audio");
-		lblList.setFont(new Font("Arial", 20));
 
-		Text info = new Text("Move audio files ↑ or ↓ to get desired order.\n\n"
-				+ "The creation will be created with audio\nfiles in the order "
-				+ "they are below.\n\nDouble click to play audio file.");
-		info.setFont(new Font("Arial", 14));
+		Label info = new Label("Reorder audio below!");
 		VBox text = new VBox(searchBar, textArea);
 		text.setSpacing(10);
 
@@ -248,32 +263,34 @@ public class Create {
 		VBox listView = new VBox(lblList, info, list);
 
 		listView.setAlignment(Pos.CENTER_LEFT);
-		listView.setSpacing(10);
 
 		views.getChildren().addAll(text, listView);
 		views.setSpacing(10);
 
 		// combo box to select voice
-		ObservableList<String> voices = FXCollections.observableArrayList("Default", "Espeak");
+		ObservableList<String> voices = FXCollections.observableArrayList("Real", "Robot");
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
-		combobox.setValue("Default");
+		combobox.setValue("Real");
 		
+
 		// buttons
 		Label lblVoice = new Label("Voice: ");
 		lblVoice.setFont(new Font("Arial", 20));
-		
+
 		Button butPlay = new Button(" Play ►");
 		BooleanBinding playSaveBinding = textArea.selectedTextProperty().isEmpty();
 		butPlay.disableProperty().bind(playSaveBinding);
+		combobox.prefHeightProperty().bind(butPlay.prefHeightProperty());
+		
 		Button butSave = new Button(" Save ✔");
 		butSave.disableProperty().bind(playSaveBinding);
-		
+
 		Button butUp = new Button("Move ↑");
 		BooleanBinding upDownBinding = Bindings.size(listLines).lessThan(2).or(list.getSelectionModel().selectedItemProperty().isNull());
 		butUp.disableProperty().bind(upDownBinding);
 		Button butDown = new Button("Move ↓");
 		butDown.disableProperty().bind(upDownBinding);
-		
+
 		Button butDelete = new Button("Delete ✘");
 		butDelete.disableProperty().bind(list.getSelectionModel().selectedItemProperty().isNull());
 		
@@ -299,12 +316,9 @@ public class Create {
 		lineOptions.setSpacing(15);
 		lineOptions.setAlignment(Pos.BOTTOM_CENTER);
 
-		//TextField nameField = new TextField();
-		//nameField.setPromptText("Enter name of creation");
-		
 		BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0);
 		butCombine.disableProperty().bind(combBinding);
-		
+
 		// Does not allow characters to be typed into text field
 		//nameField.textProperty().addListener((observable, oldValue, newValue) -> {
 		//	String[] badCharacters = {"/", "?", "%", "*", ":", "|", "\"", "<", ">", "\0",
@@ -346,7 +360,7 @@ public class Create {
 					protected Void call() throws Exception {				
 						String voice;
 						String selection = combobox.getSelectionModel().getSelectedItem();
-						if ( selection.equals("Default")) {
+						if ( selection.equals("Real")) {
 							voice = "festival --tts";
 						} else {
 							voice = "espeak";
@@ -374,7 +388,7 @@ public class Create {
 				new Thread(task).start();
 			}
 		});
-		
+
 		// Save selected text as an audio file  
 		butSave.setOnAction(e -> {
 			String selectedText = textArea.getSelectedText();
@@ -473,8 +487,15 @@ public class Create {
 		prompt.setPadding(new Insets(15,10,10,15));
 		GridPane imgPane = new GridPane();
 		TextField nameField = new TextField();
-		nameField.setPromptText("Enter name of creation");
 		Button btnCreate = new Button("Create ↳");
+    
+    String potentialName = reply;
+		int count = 1;
+		while (checkName(potentialName).equals(DUPLICATE)) {
+			potentialName = reply + "-" + count;
+			count++;
+		}
+		nameField.setText(potentialName);
 		
 		// Does not allow characters to be typed into text field
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -536,6 +557,9 @@ public class Create {
 			} else if (validity.equals(VALID)) {
 				numberOfPictures = 10 - oToDelete.size();
 				nameField.setPromptText("");
+        btnCreate.disableProperty().unbind();
+				btnCreate.setDisable(true);
+        nameField.setDisable(true);
 				combineAudioFiles(); // Site of creation creation
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
@@ -589,7 +613,7 @@ public class Create {
 				numberOfAudioFiles++;
 				String nameOfFile = "AudioFile" + numberOfAudioFiles;
 
-				if (voice.equals("Default")) {
+				if (voice.equals("Real")) {
 					cmd = "cat " + _file.toString() + " | text2wave -o \"./AudioFiles/" + nameOfFile + ".wav\"";
 				} else {
 					cmd = "espeak -f " + _file.toString() + " --stdout > \"./AudioFiles/" + nameOfFile + ".wav\"";
@@ -607,7 +631,7 @@ public class Create {
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
 						_view.setContents();
-						_popup.showFeedback(nameOfFile, false);
+						//_popup.showFeedback(nameOfFile, false);
 						listLines.add(nameOfFile);
 						pbSaveCombine.setVisible(false);
 					}
@@ -644,7 +668,7 @@ public class Create {
 			protected Void call() throws Exception {
 				//getPics(numberOfPictures, _term);
 				String cmd;
-				
+
 				// Combine list of audio files into in one if there are multiple, otherwise rename the one audio file
 				if (listLines.size() == 1) {
 					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/"+ "temp" + ".wav";
@@ -722,7 +746,7 @@ public class Create {
 
 			@Override
 			protected Void call() throws Exception {
-				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi; if [ -e text.txt ]; then rm -f text.txt; fi";
+				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();

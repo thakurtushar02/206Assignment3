@@ -30,14 +30,14 @@ public class View {
 	private ObservableList<String> list = FXCollections.observableArrayList();
 	private Label title = new Label();
 	private Button delete = new Button("Delete ✘");
-	private Button play = new Button("Play ►");
+	private Button play = new Button(" Play ►  ");
 	private VBox sideOptions;
 	private HBox optionBox;
 	private VBox contents;
 	private Tab _tab;
 	private Popup _popup;
-	public final static int ROW_HEIGHT = 26;
-	public final static int SPACING = 2;
+	public final static int ROW_HEIGHT = 75;
+	public final static int SPACING = 20;
 
 	public View(Tab tab, Popup popup) {
 		_tab = tab;
@@ -79,9 +79,8 @@ public class View {
 			e.printStackTrace();
 		}
 		creations.setItems(list);
-		
 		creations.setPrefSize(1000, list.size() * ROW_HEIGHT + SPACING);
-		creations.setMaxHeight(550);
+		creations.setMaxHeight(800);
 
 		sideOptions = new VBox(delete, play);
 		sideOptions.setPadding(new Insets(10,10,10,10));
