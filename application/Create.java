@@ -68,13 +68,23 @@ public class Create {
 	private ObservableList<String> listLines = FXCollections.observableArrayList();
 	private int numberOfAudioFiles = 0;
 	private int numberOfPictures;
-	private ProgressBar pbSaveCombine = new ProgressBar();
+	private ProgressBar pbCombine = new ProgressBar();
+	private ProgressBar pbSave = new ProgressBar();
 	private ProgressBar pbSearch = new ProgressBar();
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
 	private final String FESTIVAL = "Human";
 	private final String ESPEAK = "Robot";
+	
+	{
+		pbCombine.setPrefHeight(25);
+		pbCombine.setPrefWidth(700);
+		pbSave.setPrefHeight(25);
+		pbSave.setPrefWidth(1000);
+		pbSearch.setPrefHeight(25);
+		pbSearch.setPrefWidth(200);
+	}
 
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
@@ -90,7 +100,8 @@ public class Create {
 	 * Sets the contents of the Create tab
 	 * @param main
 	 */
-	public void setContents(Main main) {		
+	public void setContents(Main main) {	
+		
 		if (_main == null) {
 			_main = main;
 		}
@@ -111,7 +122,6 @@ public class Create {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-
 
 		searchButton = new Button("Search ↳");
 		searchButton.disableProperty().bind(searchBinding);
@@ -242,7 +252,7 @@ public class Create {
 			fileContent = new BufferedReader(new FileReader(_file));
 			String line;
 			int numberOfLines = 0;
-			while (((line = fileContent.readLine()) != null) && (numberOfLines < 4)) {
+			while (((line = fileContent.readLine()) != null) && (numberOfLines < 5)) {
 				textArea.appendText(line + "\n\n");
 				numberOfLines++;
 			}
@@ -310,8 +320,8 @@ public class Create {
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 		HBox.setHgrow(spacer2, Priority.ALWAYS);
 		VBox.setVgrow(textArea, Priority.ALWAYS);
-		pbSaveCombine.setVisible(false);
-		HBox nameLayout = new HBox(10, pbSaveCombine, spacer2, butNext);
+		pbSave.setVisible(false);
+		HBox nameLayout = new HBox(10, pbSave, spacer2, butNext);
 		nameLayout.setAlignment(Pos.BOTTOM_CENTER);
 
 		VBox layout = new VBox(views, lineOptions, nameLayout);
@@ -409,6 +419,7 @@ public class Create {
 		});
 
 		butNext.setOnAction(e -> {
+			pbCombine.setVisible(false);
 			displayImages();
 		});
 
@@ -539,7 +550,7 @@ public class Create {
 				_popup.showStage(_name, "Name already exists. Overwrite?", "✘", "✔", false);
 			}
 		});
-		HBox nameAndCreate = new HBox(nameField, btnCreate, pbSaveCombine);
+		HBox nameAndCreate = new HBox(nameField, btnCreate, pbCombine);
 		nameAndCreate.setPadding(new Insets(10,10,10,10));
 		nameAndCreate.setSpacing(10);
 		chooseImages = new VBox(prompt, imgPane, nameAndCreate);
@@ -571,7 +582,7 @@ public class Create {
 	 */
 	public void addCreation(String voice) {
 		if (Home.mode.getText().equals(Home.ADVANCED)) {
-			pbSaveCombine.setVisible(true);
+			pbSave.setVisible(true);
 		}
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
@@ -610,7 +621,7 @@ public class Create {
 						_view.setContents();
 						//_popup.showFeedback(nameOfFile, false);
 						listLines.add(nameOfFile);
-						pbSaveCombine.setVisible(false);
+						pbSave.setVisible(false);
 					}
 				});
 				return null;
@@ -637,7 +648,7 @@ public class Create {
 	 * one mp4 video file
 	 */
 	public void combineAudioFiles() {
-		pbSaveCombine.setVisible(true);
+		pbCombine.setVisible(true);
 		//numberOfPictures = (int)slider.getValue();
 		Task<Void> task = new Task<Void>() {
 
@@ -711,7 +722,7 @@ public class Create {
 						_view.setContents();
 						_main.refreshGUI(null);
 						_popup.showFeedback(_name, false);
-						pbSaveCombine.setVisible(false);
+						pbCombine.setVisible(false);
 
 					}
 				});

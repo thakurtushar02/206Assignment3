@@ -43,7 +43,6 @@ public class Main extends Application {
 		homeTab.getStyleClass().add("home_style");
 		home = new Home(homeTab);
 		home.setContents(tabPane);
-		
 		Tab createTab = new Tab("Create");
 		createTab.getStyleClass().add("create_style");
 		create = new Create(createTab, popup);

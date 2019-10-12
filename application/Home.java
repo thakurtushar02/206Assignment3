@@ -3,10 +3,8 @@ package application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -28,7 +26,7 @@ public class Home {
 	private final static String SMALL = "-fx-font-size:" + SMALL_SIZE + "px;";
 	protected final static String BASIC = "Choose mode: Basic!";
 	protected final static String ADVANCED = "Choose mode: Advanced";
-	protected final static Label mode = new Label(BASIC);
+	protected final static Label mode = new Label(ADVANCED);
 
 	public Home(Tab tab) {
 		_tab = tab;
@@ -98,7 +96,7 @@ public class Home {
 			}
 		});
 
-		Label createHeading = new Label("Create new Creation!");
+		Label createHeading = new Label("New Creation!");
 		createHeading.setStyle(SMALL);
 		HBox createBox = new HBox(20, arrow, createHeading);
 		createBox.setMinHeight(BIG_SIZE + 20);
@@ -113,7 +111,7 @@ public class Home {
 		createBox.setOnMouseClicked(arg0 -> tabPane.getSelectionModel().select(2));
 
 
-		Label viewHeading = new Label("See Past Creations");
+		Label viewHeading = new Label("Past Creations");
 		viewHeading.setStyle(SMALL);
 		HBox viewBox = new HBox(20, arrow2, viewHeading);
 		viewBox.setMinHeight(BIG_SIZE + 20);
