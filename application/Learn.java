@@ -1,11 +1,15 @@
 package application;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
@@ -28,6 +32,8 @@ public class Learn {
 	private Label learn = new Label();
 	private Button start = new Button();
 	private BorderPane content = new BorderPane();
+	private final double BUTTON_WIDTH = 75;
+	private final double BUTTON_HEIGHT = 75;
 	
 	public Learn(Tab tab) {
 		this.tab = tab;
@@ -48,7 +54,6 @@ public class Learn {
 		learn.setAlignment(Pos.CENTER);
 		content.setCenter(start);
 		
-//		content.getChildren().addAll(learn, start);
 		content.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(3))));
 		content.setPadding(new Insets(20));
 		
@@ -64,31 +69,31 @@ public class Learn {
 		
 		Button q1 = new Button();
 		q1.setText("1");
-		q1.setPrefSize(50, 50);
+		q1.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		q1.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
 		q1.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 		
 		Button q2 = new Button();
 		q2.setText("2");
-		q2.setPrefSize(50, 50);
+		q2.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		q2.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
 		q2.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 		
 		Button q3 = new Button();
 		q3.setText("3");
-		q3.setPrefSize(50, 50);
+		q3.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		q3.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
 		q3.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 		
 		Button q4 = new Button();
 		q4.setText("4");
-		q4.setPrefSize(50, 50);
+		q4.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		q4.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
 		q4.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 		
 		Button q5 = new Button();
 		q5.setText("5");
-		q5.setPrefSize(50, 50);
+		q5.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		q5.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
 		q5.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 		
@@ -101,27 +106,49 @@ public class Learn {
 		video.setPrefSize(200, 300);
 		video.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
 		
+		ToggleGroup ops = new ToggleGroup();
+		
 		ToggleButton option1 = new ToggleButton();
 		option1.setText("Correct Answer");
+		option1.setToggleGroup(ops);
 		
 		ToggleButton option2 = new ToggleButton();
 		option2.setText("Wrong Answer");
+		option2.setToggleGroup(ops);
 		
 		ToggleButton option3 = new ToggleButton();
 		option3.setText("Wrong Answer");
+		option3.setToggleGroup(ops);
 
 		ToggleButton option4 = new ToggleButton();
 		option4.setText("Wrong Answer");
+		option4.setToggleGroup(ops);
 		
 		ToggleButton option5 = new ToggleButton();
 		option5.setText("Wrong Answer");
+		option5.setToggleGroup(ops);
+
 		
 		Button submit = new Button("Check answer");
+		submit.setVisible(false);
 		
-		submit.setOnAction(e -> {
-			// check answer
-			// change text to submit
+		// Button only appears if an answer is selected
+		ops.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+			@Override
+			public void changed(ObservableValue<? extends Toggle> arg0, Toggle arg1, Toggle arg2) {
+				  if (ops.getSelectedToggle() != null) {
+		            	submit.setVisible(true);
+		            } else {
+		            	submit.setVisible(false);
+		            }
+			}
 		});
+		
+		
+//		submit.setOnAction(e -> {
+//			// check answer
+//			// change text to next
+//		});
 		
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
@@ -133,6 +160,7 @@ public class Learn {
 		options.setSpacing(10);
 		options.setAlignment(Pos.CENTER);
 		
+		
 		VBox main = new VBox();
 		main.getChildren().addAll(video, options);
 		main.setSpacing(20);
@@ -140,9 +168,9 @@ public class Learn {
 		HBox check = new HBox();
 		check.getChildren().addAll(spacer, submit);
 		
+		content.setTop(quiz);
 		content.setRight(qNumbers);
 		content.setCenter(main);
-		content.setTop(quiz);
 		content.setBottom(check);
 		
 		BorderPane.setMargin(quiz, new Insets(10, 10, 10, 0));
