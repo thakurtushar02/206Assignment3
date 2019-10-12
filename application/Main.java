@@ -1,12 +1,18 @@
 package application;
 	
+import java.io.IOException;
+
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * Class containing the main method used to run the entire application.
@@ -17,6 +23,7 @@ public class Main extends Application {
 	private Home home;
 	private View view;
 	private Create create;
+	private Learn learn;
 	private Stage currentStage;
 	
 	/**
@@ -33,36 +40,72 @@ public class Main extends Application {
 		
 		Popup popup = new Popup();
 		
-		Tab homeTab = new Tab("HOME");
+		Tab homeTab = new Tab("Home");
 		homeTab.getStyleClass().add("home_style");
 		home = new Home(homeTab);
 		home.setContents(tabPane);
 		
-		Tab createTab = new Tab("CREATE");
+		Tab createTab = new Tab("Create");
 		createTab.getStyleClass().add("create_style");
 		create = new Create(createTab, popup);
 		create.setContents(this);
 		
-		Tab viewTab = new Tab("VIEW");
+		Tab viewTab = new Tab("View");
 		viewTab.getStyleClass().add("view_style");
 		view = new View(viewTab, popup);
 		view.setContents();
 		
+		tabPane.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				view.setContents();
+			}
+		}); 
+		
 		create.setView(view);
 		popup.setViewCreate(view, create);
 		
-		tabPane.getTabs().addAll(homeTab, viewTab, createTab);
+		Tab learnTab = new Tab("Learn");
+		learnTab.getStyleClass().add("learn_style");
+		learn = new Learn(learnTab);
+		learn.setContents();
+		
+		tabPane.getTabs().addAll(homeTab, viewTab, createTab, learnTab);
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 		create.storeTabs(tabPane);
 		
 		root.setTop(tabPane);
 		primaryStage.setResizable(false);
 		
-		Scene scene = new Scene(root, 1200, 900);
+		Scene scene = new Scene(root, 1200, 700);
 
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.show();
+		
+		primaryStage.setOnCloseRequest(arg0 -> {
+			create.deleteFiles();
+			Task<Void> task = new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {
+					
+					String cmd = "rm -f text.txt";
+					ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+					try {
+						Process process = builder.start();
+						process.waitFor();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					return null;
+				}
+
+			};
+			new Thread(task).start();
+		});
 	}
 
 	public static void main(String[] args) {

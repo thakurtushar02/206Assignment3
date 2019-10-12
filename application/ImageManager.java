@@ -77,7 +77,7 @@ public class ImageManager {
 					} if(image.getHeight()%2 != 0) {
 						image = image.getSubimage(0, 0, image.getWidth(), image.getHeight()-1);
 					}
-					String filename = query + toPad + ".jpg";
+					String filename = "." + query + toPad + ".jpg";
 					File outputfile = new File(System.getProperty("user.dir") 
 							+ System.getProperty("file.separator"),filename);
 					ImageIO.write(image, "jpg", outputfile);
