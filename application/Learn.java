@@ -1,5 +1,11 @@
 package application;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -23,8 +29,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import jdk.javadoc.internal.doclets.formats.html.Contents;
 
 public class Learn {
 	
@@ -34,9 +44,22 @@ public class Learn {
 	private BorderPane content = new BorderPane();
 	private final double BUTTON_WIDTH = 75;
 	private final double BUTTON_HEIGHT = 75;
+	private List<ToggleButton> answer = new ArrayList<ToggleButton>();
+	private List<Button> qNums = new ArrayList<Button>();
+	private ToggleGroup ops = new ToggleGroup();
+	private int current;
+	private Question question;
+	private Questions qSet = new Questions();
+	private Label end = new Label();
+	private int correct;
+	private Button playAgain = new Button();
+	private MediaView mView;
+	private Media media;
+	private MediaPlayer player;
 	
-	public Learn(Tab tab) {
+	public Learn(Tab tab, Questions set) {
 		this.tab = tab;
+		qSet = set;
 	}
 	
 	public void setContents() {
@@ -62,74 +85,49 @@ public class Learn {
 	}
 	
 	public void quizStart() {
+		qNums.clear();
+		answer.clear();
+		
 		content.getChildren().removeAll(content.getChildren());
+		question = qSet.getQuestion();
+		
+		HBox options = new HBox();
+		VBox qNumbers = new VBox();
+		
+		correct = 0;
+		current = 1;
 		
 		Label quiz = new Label("What is this?");
 		quiz.setFont(new Font("Arial", 16));
 		
-		Button q1 = new Button();
-		q1.setText("1");
-		q1.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-		q1.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-		q1.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+		for (int i = 1; i < 6; i ++) {
+			Button btn = new Button();
+			btn.setText(""+i);
+			btn.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+			btn.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
+			btn.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+			qNums.add(btn);
+			qNumbers.getChildren().add(btn);
+		}
 		
-		Button q2 = new Button();
-		q2.setText("2");
-		q2.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-		q2.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-		q2.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-		
-		Button q3 = new Button();
-		q3.setText("3");
-		q3.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-		q3.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-		q3.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-		
-		Button q4 = new Button();
-		q4.setText("4");
-		q4.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-		q4.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-		q4.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-		
-		Button q5 = new Button();
-		q5.setText("5");
-		q5.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-		q5.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-		q5.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-		
-		VBox qNumbers = new VBox();
-		qNumbers.getChildren().addAll(q1,q2,q3,q4,q5);
 		qNumbers.setAlignment(Pos.CENTER_LEFT);
 		qNumbers.setSpacing(10);
 		
-		Region video = new Region();
-		video.setPrefSize(200, 300);
-		video.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
 		
-		ToggleGroup ops = new ToggleGroup();
 		
-		ToggleButton option1 = new ToggleButton();
-		option1.setText("Correct Answer");
-		option1.setToggleGroup(ops);
+		for (int i = 0; i < 4; i++) {
+			ToggleButton btn = new ToggleButton();
+			btn.setToggleGroup(ops);
+			answer.add(btn);
+			options.getChildren().add(btn);
+		}
 		
-		ToggleButton option2 = new ToggleButton();
-		option2.setText("Wrong Answer");
-		option2.setToggleGroup(ops);
+		setQuestion(question);
 		
-		ToggleButton option3 = new ToggleButton();
-		option3.setText("Wrong Answer");
-		option3.setToggleGroup(ops);
-
-		ToggleButton option4 = new ToggleButton();
-		option4.setText("Wrong Answer");
-		option4.setToggleGroup(ops);
+		mView.setFitHeight(400);
+		mView.setPreserveRatio(true);
 		
-		ToggleButton option5 = new ToggleButton();
-		option5.setText("Wrong Answer");
-		option5.setToggleGroup(ops);
-
-		
-		Button submit = new Button("Check answer");
+		Button submit = new Button("Check Answer");
 		submit.setVisible(false);
 		
 		// Button only appears if an answer is selected
@@ -145,24 +143,43 @@ public class Learn {
 		});
 		
 		
-//		submit.setOnAction(e -> {
-//			// check answer
-//			// change text to next
-//		});
+		submit.setOnAction(e -> {
+			if (submit.getText() == "Check Answer") {
+				Button btn = qNums.get(current - 1);
+				if (isCorrect(question)) {
+					btn.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
+					btn.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+					correct++;
+				} else {
+					btn.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
+					btn.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+				}
+				
+				if (current < 5) {
+					submit.setText("Next");
+				} else if (current == 5) {
+					submit.setText("Finish");
+				}
+			} else if (submit.getText() == "Next") {
+				nextQuestion();
+				current++;
+				submit.setText("Check Answer");
+			} else if (submit.getText() == "Finish") {
+				endScreen();
+			}
+			
+		});
 		
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 		
-		HBox options = new HBox();
-		options.getChildren().addAll(option1, option2,option3,option4,option5);
 		options.setSpacing(10);
 		options.setAlignment(Pos.CENTER);
 		
-		
 		VBox main = new VBox();
-		main.getChildren().addAll(video, options);
+		main.getChildren().addAll(mView, options);
 		main.setSpacing(20);
 		
 		HBox check = new HBox();
@@ -178,5 +195,45 @@ public class Learn {
 		BorderPane.setMargin(qNumbers, new Insets(0,10,10,0));
 		
 	}
-
+	
+	public void setQuestion(Question question) {
+		
+		Collections.shuffle(answer);
+		for (int i = 0; i < 4; i++) {
+			answer.get(i).setText(question.getAnswers().get(i));
+			answer.get(i).setSelected(false);
+		}
+		
+		media = new Media(question.getVideo());
+		player = new MediaPlayer(media);
+		player.setAutoPlay(true);
+		player.setCycleCount(MediaPlayer.INDEFINITE);
+		mView = new MediaView(player);
+	}
+	
+	public boolean isCorrect(Question question) {
+		ToggleButton selected = (ToggleButton) ops.getSelectedToggle();
+		if (selected.getText() == question.getCorrectAnswer()) {
+			return true;
+		}
+		return false;
+	}
+	
+	public void nextQuestion() {
+		question = qSet.getQuestion();
+		setQuestion(question);
+	}
+	
+	public void endScreen() {
+		content.getChildren().removeAll(content.getChildren());
+		end.setText("You got "+correct+"/5!");
+		
+		playAgain.setText("Play Again!");
+		playAgain.setOnAction(e -> quizStart());
+		
+		content.setTop(end);
+		content.setCenter(playAgain);
+		
+	}
+	
 }

@@ -73,12 +73,15 @@ public class Create {
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
+	private final Questions _set;
 
-	public Create(Tab tab, Popup popup) {
+	public Create(Tab tab, Popup popup, Questions set) {
 		_tab = tab;
 		_popup = popup;
 		_imMan = new ImageManager();
+		_set = set;
 	}
+
 
 	public void setView(View view) {
 		_view = view;
@@ -489,10 +492,10 @@ public class Create {
 		TextField nameField = new TextField();
 		Button btnCreate = new Button("Create ↳");
     
-    String potentialName = reply;
+    String potentialName = _term;
 		int count = 1;
 		while (checkName(potentialName).equals(DUPLICATE)) {
-			potentialName = reply + "-" + count;
+			potentialName = _term + "-" + count;
 			count++;
 		}
 		nameField.setText(potentialName);
@@ -706,6 +709,7 @@ public class Create {
 						+ "/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i"
 						+ " \'./AudioFiles/" + "temp" + ".wav\' -c:v copy -c:a aac -strict experimental"
 						+ " -y \'./Creations/" + _name + ".mp4\' &>/dev/null ; rm out.mp4";
+				
 
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
@@ -717,6 +721,12 @@ public class Create {
 					e.printStackTrace();
 				}
 
+				//create question 
+				
+				Question question = new Question(new File("Quizzes/"+_name+".mp4"), _term);
+				_set.addQuestion(question);
+				
+				
 				Platform.runLater(new Runnable() {
 
 					@Override
