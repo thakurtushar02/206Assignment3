@@ -119,14 +119,14 @@ public class Create {
 
 		pbSearch.setVisible(false);
 		searchBar = new HBox(create, search, searchButton, pbSearch);
-		searchBar.setSpacing(15);
+		searchBar.setSpacing(10);
 
 		search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) searchButton.fire();});
 
 		searchButton.setOnAction(e -> searchTerm(search.getText()));
 
 		contents = new VBox(searchBar, message);
-		contents.setPadding(new Insets(15,10,10,15));
+		contents.setPadding(new Insets(15,30,30,30));
 		_tab.setContent(contents);
 	}
 
@@ -253,15 +253,13 @@ public class Create {
 		}
 		textArea.setText(textArea.getText().substring(2));
 
-		Label lblList = new Label("Saved audio");
-
 		Label info = new Label("Reorder audio below!");
 		VBox text = new VBox(searchBar, textArea);
 		text.setSpacing(10);
 
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 
-		VBox listView = new VBox(lblList, info, list);
+		VBox listView = new VBox(info, list);
 
 		listView.setAlignment(Pos.CENTER_LEFT);
 
@@ -299,37 +297,12 @@ public class Create {
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
-		// slider to select number of pictures
-		//slider.setMin(1);
-		//slider.setMax(10);
-		//slider.setValue(1);
-		//slider.setMajorTickUnit(1f);
-		//slider.isSnapToTicks();
-		//slider.setShowTickLabels(true);
-		//slider.setShowTickMarks(true);
-
-		//Label photos = new Label("Choose Number of Pictures");
-		//photos.setFont(new Font("Arial", 20));
-
-		//slider.valueProperty().addListener((obs, oldval, newVal) -> slider.setValue(newVal.intValue()));
-
 		HBox lineOptions = new HBox(lblVoice, combobox, butPlay, butSave, spacer, butUp, butDown, butDelete);
 		lineOptions.setSpacing(15);
 		lineOptions.setAlignment(Pos.BOTTOM_CENTER);
 
 		BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0);
 		butCombine.disableProperty().bind(combBinding);
-
-		// Does not allow characters to be typed into text field
-		//nameField.textProperty().addListener((observable, oldValue, newValue) -> {
-		//	String[] badCharacters = {"/", "?", "%", "*", ":", "|", "\"", "<", ">", "\0",
-		//			"\\", "(", ")", "$", "@", "!", "#", "^", "&", "+"};
-		//	for (String s: badCharacters) {
-		//		if (newValue.contains(s)) {
-		//			nameField.setText(oldValue);
-		//		}
-		//	}
-		//});
 
 		final Pane spacer2 = new Pane();
 		spacer2.setMinSize(10, 1);
@@ -343,7 +316,7 @@ public class Create {
 		nameLayout.setAlignment(Pos.BOTTOM_CENTER);
 
 		VBox layout = new VBox(views, lineOptions, nameLayout);
-		layout.setPadding(new Insets(10));
+		layout.setPadding(new Insets(15,30,30,30));
 		layout.setSpacing(10);
 
 		_tab.setContent(layout);
@@ -433,25 +406,8 @@ public class Create {
 			}
 		});
 
-		//nameField.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) butCombine.fire();});
-
 		butCombine.setOnAction(e -> {
 			displayImages();
-			//String name = nameField.getText();
-			//String validity = checkName(name);
-			//_name = name;
-			//if (validity.equals(EMPTY)) {
-			//	nameField.setPromptText("Nothing entered.");
-			//	butCombine.requestFocus();
-			//} else if (validity.equals(VALID)) {
-			//	nameField.setPromptText("");
-			//	combineAudioFiles(); // Site of creation creation
-			//} else if (validity.equals(DUPLICATE)) {
-			//	nameField.clear();
-			//	nameField.setPromptText("");
-			//	butCombine.requestFocus();
-			//	_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
-			//}
 		});
 
 		// Plays the selected audio file on double-click
@@ -480,7 +436,6 @@ public class Create {
 	 * Displays images for user to choose
 	 */
 	public void displayImages() {
-		//List<File> toDelete = new ArrayList<File>();
 		ObservableList<File> oToDelete = FXCollections.observableArrayList();
 		VBox chooseImages;
 		Label prompt = new Label("Choose 1 to 10 pictures you want in your creation:");
@@ -539,7 +494,7 @@ public class Create {
 			});
 			imgPane.add(imBox, i%5, i/5);
 		}
-		imgPane.setPadding(new Insets(30,30,30,30));
+		imgPane.setPadding(new Insets(10,10,10,10));
 		imgPane.setHgap(10);
 		imgPane.setVgap(10);
 		nameField.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) btnCreate.fire();});
@@ -569,7 +524,11 @@ public class Create {
 				_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
 			}
 		});
-		chooseImages = new VBox(prompt, imgPane, nameField, btnCreate);
+		HBox nameAndCreate = new HBox(nameField, btnCreate);
+		nameAndCreate.setPadding(new Insets(10,10,10,10));
+		nameAndCreate.setSpacing(10);
+		chooseImages = new VBox(prompt, imgPane, nameAndCreate);
+		chooseImages.setPadding(new Insets(15,30,30,30));
 		_tab.setContent(chooseImages);
 	}
 
@@ -707,7 +666,7 @@ public class Create {
 				float durationInSeconds = (audioFileLength / (frameSize * frameRate));
 
 				// Create video with images and text, combine with audio, and remove intermediary output files
-				cmd = "mkdir -p Quizzes ; cat \"" + _term + "\"?.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
+				cmd = "rm -f out.mp4; mkdir -p Quizzes ; cat \"" + _term + "\"?.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
 						+ durationInSeconds + " -i - -c:v libx264 -pix_fmt yuv420p -vf \""
 						+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
 						+ " -r 25 -y \'./Quizzes/" + _name + ".mp4\' ; rm -f \"" + _term + "\"?.jpg ; ffmpeg -i "
@@ -781,9 +740,18 @@ public class Create {
 	 * @param reply	the search term
 	 */
 	public void getPics(int input, String reply) {
-		_imMan.getImages(reply);
+		Task<Void> task = new Task<Void>() {
 
+			@Override
+			protected Void call() throws Exception {
+				_imMan.getImages(reply);
+				return null;
+			}
+		};
+		
+		new Thread(task).start();
 	}
+	
 }
 
 

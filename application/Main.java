@@ -65,7 +65,8 @@ public class Main extends Application {
 		create.setView(view);
 		popup.setViewCreate(view, create);
 		
-		Tab learnTab = new Tab("REVIEW");
+		Tab learnTab = new Tab("LEARN");
+		learnTab.getStyleClass().add("learn_style");
 		learn = new Learn(learnTab);
 		learn.setContents();
 		
@@ -76,7 +77,7 @@ public class Main extends Application {
 		root.setTop(tabPane);
 		primaryStage.setResizable(false);
 		
-		Scene scene = new Scene(root, 1200, 900);
+		Scene scene = new Scene(root, 1200, 700);
 
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		primaryStage.setScene(scene);

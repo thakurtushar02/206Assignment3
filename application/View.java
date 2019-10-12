@@ -70,7 +70,6 @@ public class View {
 		});
 
 		title.setText("Creations:");
-		title.setFont(new Font("Arial", 20));
 
 		try {
 			findCreations();
@@ -80,7 +79,7 @@ public class View {
 		}
 		creations.setItems(list);
 		creations.setPrefSize(1000, list.size() * ROW_HEIGHT + SPACING);
-		creations.setMaxHeight(700);
+		creations.setMaxHeight(500);
 
 		sideOptions = new VBox(delete, play);
 		sideOptions.setPadding(new Insets(10,10,10,10));
@@ -94,7 +93,7 @@ public class View {
 		spacer.setMinSize(10, 1);
 		VBox.setVgrow(spacer, Priority.ALWAYS);
 		contents = new VBox(title, optionBox, spacer);
-		contents.setPadding(new Insets(10,10,10,10));
+		contents.setPadding(new Insets(10,30,30,30));
 		contents.setSpacing(10);
 		_tab.setContent(contents);
 		

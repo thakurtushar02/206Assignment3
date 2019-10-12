@@ -5,15 +5,19 @@
 }
 
 .home_style{
-	-fx-background-color: #f2eace;
+	-fx-background-color: #ffffe3;
 }
 	
 .create_style{
-	-fx-background-color: #cef2f1;
+	-fx-background-color: #e1f7d5;
 }
 
 .view_style{
 	-fx-background-color: #f2cef2;
+}
+
+.learn_style {
+	-fx-background-color: #FFDB99;
 }
 
 .root{
@@ -33,7 +37,24 @@
 }
 
 .list-cell:selected{
-	-fx-background-color:lightgrey;
+	-fx-background-color:#bbccff;
+	-fx-text-fill:white;
+	
+}
+
+.tab {
+	-fx-pref-height: 30px;
+	-fx-pref-width: 299px;
+    -fx-font-size: 40px; /* all the same except this newly added one */
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+	
+	-fx-background-color: #BBEEFF;
+}
+
+.tab-pane {
+	-fx-padding: -10 -10 -10 -10;
 }
 
 .button{
@@ -47,14 +68,22 @@
 
 .combo-box{
 	-fx-font-size:18px;
-	-fx-background-color:lightgrey;
+	-fx-background-color:#bbccff;
+	
 }
+
+.combo-box-popup .list-view .list-cell:filled:hover 
+{
+    -fx-background-color:#bbccff;
+}
+
+
 
 .border{
 	-fx-padding:5;
-	-fx-background-color: lightblue;
+	-fx-background-color: #bbccff;
 }
 
 .label{
-	-fx-font-size:30px;
+	-fx-font-size:50px;
 }
