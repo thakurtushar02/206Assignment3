@@ -118,9 +118,7 @@ public class Home {
 			playHeading.setFitWidth(playHeading.getFitWidth() - 50);
 			arrow3.setFitWidth(50);
 			});
-		playBox.setOnMouseClicked(arg0 -> {
-			//TODO Learn tab
-		});
+		playBox.setOnMouseClicked(arg0 -> {tabPane.getSelectionModel().select(3);});
 		
 		VBox text = new VBox(20, createBox, viewBox, playBox);
 		text.setMinWidth(viewBox.getWidth() + 650);

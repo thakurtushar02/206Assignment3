@@ -6,10 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -25,7 +28,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
@@ -41,7 +43,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
 /**
  * Represents the Create tab of the WikiSpeak application
@@ -73,6 +74,8 @@ public class Create {
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
+	private final String FESTIVAL = "Human";
+	private final String ESPEAK = "Robot";
 
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
@@ -93,32 +96,31 @@ public class Create {
 			_main = main;
 		}
 		create.setText("Enter word: ");
-		
+
 		BooleanBinding searchBinding = search.textProperty().isEmpty();
-		
-		  File file = new File(".resources/search/badWords.txt"); 
-		  try {
+
+		File file = new File(".resources/search/badWords.txt"); 
+		try {
 			BufferedReader br = new BufferedReader(new FileReader(file)); 
-			  String st; 
-			  while ((st = br.readLine()) != null) {
-			    searchBinding = searchBinding.or(search.textProperty().isEqualToIgnoreCase(st));
-			  }
-			  br.close();
+			String st; 
+			while ((st = br.readLine()) != null) {
+				searchBinding = searchBinding.or(search.textProperty().isEqualToIgnoreCase(st));
+			}
+			br.close();
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		
+
 
 		searchButton = new Button("Search ↳");
 		searchButton.disableProperty().bind(searchBinding);
-		
+
 		pbSearch.setVisible(false);
 		searchBar = new HBox(create, search, searchButton, pbSearch);
 		searchBar.setSpacing(15);
 
-		search.setFont(new Font("Arial", 30));
 		search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) searchButton.fire();});
 
 		searchButton.setOnAction(e -> searchTerm(search.getText()));
@@ -206,8 +208,8 @@ public class Create {
 							} else {
 								message.setText("");
 								_term = term;
-								getPics(10, term);
 								deleteFiles();
+								getPics(10, term);
 								displayLines(term);
 							}
 						} catch (IOException e) {
@@ -234,7 +236,6 @@ public class Create {
 		TextArea textArea = new TextArea();
 		textArea.setEditable(true);
 		textArea.setWrapText(true);
-		textArea.setFont(new Font("Arial", 20));
 
 		// Populate TextArea with text file contents
 		BufferedReader fileContent;
@@ -268,10 +269,10 @@ public class Create {
 		views.setSpacing(10);
 
 		// combo box to select voice
-		ObservableList<String> voices = FXCollections.observableArrayList("Real", "Robot");
+		ObservableList<String> voices = FXCollections.observableArrayList(FESTIVAL, ESPEAK);
 		final ComboBox<String> combobox = new ComboBox<String>(voices);
-		combobox.setValue("Real");
-		
+		combobox.setValue(FESTIVAL);
+
 
 		// buttons
 		Label lblVoice = new Label("Voice: ");
@@ -281,7 +282,7 @@ public class Create {
 		BooleanBinding playSaveBinding = textArea.selectedTextProperty().isEmpty();
 		butPlay.disableProperty().bind(playSaveBinding);
 		combobox.prefHeightProperty().bind(butPlay.prefHeightProperty());
-		
+
 		Button butSave = new Button(" Save ✔");
 		butSave.disableProperty().bind(playSaveBinding);
 
@@ -293,7 +294,7 @@ public class Create {
 
 		Button butDelete = new Button("Delete ✘");
 		butDelete.disableProperty().bind(list.getSelectionModel().selectedItemProperty().isNull());
-		
+
 		Button butCombine = new Button("Combine ↳");
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
@@ -360,7 +361,7 @@ public class Create {
 					protected Void call() throws Exception {				
 						String voice;
 						String selection = combobox.getSelectionModel().getSelectedItem();
-						if ( selection.equals("Real")) {
+						if ( selection.equals(FESTIVAL)) {
 							voice = "festival --tts";
 						} else {
 							voice = "espeak";
@@ -433,7 +434,7 @@ public class Create {
 		});
 
 		//nameField.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) butCombine.fire();});
-		
+
 		butCombine.setOnAction(e -> {
 			displayImages();
 			//String name = nameField.getText();
@@ -474,7 +475,7 @@ public class Create {
 		});
 
 	}
-	
+
 	/**
 	 * Displays images for user to choose
 	 */
@@ -488,15 +489,15 @@ public class Create {
 		GridPane imgPane = new GridPane();
 		TextField nameField = new TextField();
 		Button btnCreate = new Button("Create ↳");
-    
-    String potentialName = reply;
+
+		String potentialName = _term;
 		int count = 1;
 		while (checkName(potentialName).equals(DUPLICATE)) {
-			potentialName = reply + "-" + count;
+			potentialName = _term + "-" + count;
 			count++;
 		}
 		nameField.setText(potentialName);
-		
+
 		// Does not allow characters to be typed into text field
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
 			String[] badCharacters = {"/", "?", "%", "*", ":", "|", "\"", "<", ">", "\0",
@@ -545,6 +546,7 @@ public class Create {
 		BooleanBinding combBinding = Bindings.size(oToDelete).isEqualTo(10).or(nameField.textProperty().isEmpty());
 		btnCreate.disableProperty().bind(combBinding);
 		btnCreate.setOnAction(arg0 -> {
+			numberOfPictures = 10 - oToDelete.size();
 			for(File imFile: oToDelete){
 				imFile.delete();
 			}
@@ -555,11 +557,10 @@ public class Create {
 				nameField.setPromptText("Nothing entered.");
 				btnCreate.requestFocus();
 			} else if (validity.equals(VALID)) {
-				numberOfPictures = 10 - oToDelete.size();
 				nameField.setPromptText("");
-        btnCreate.disableProperty().unbind();
+				btnCreate.disableProperty().unbind();
 				btnCreate.setDisable(true);
-        nameField.setDisable(true);
+				nameField.setDisable(true);
 				combineAudioFiles(); // Site of creation creation
 			} else if (validity.equals(DUPLICATE)) {
 				nameField.clear();
@@ -671,7 +672,7 @@ public class Create {
 
 				// Combine list of audio files into in one if there are multiple, otherwise rename the one audio file
 				if (listLines.size() == 1) {
-					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/"+ "temp" + ".wav";
+					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/temp.wav";
 				} else {
 					cmd = "ffmpeg";
 					for (String s: listLines) {
@@ -685,6 +686,8 @@ public class Create {
 					cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" ./AudioFiles/" + "temp" + ".wav &>/dev/null";
 				}
 
+
+
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();
@@ -695,17 +698,26 @@ public class Create {
 					e.printStackTrace();
 				}
 
+				File file = new File("./AudioFiles/temp.wav");
+				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
+				AudioFormat format = audioInputStream.getFormat();
+				long audioFileLength = file.length();
+				int frameSize = format.getFrameSize();
+				float frameRate = format.getFrameRate();
+				float durationInSeconds = (audioFileLength / (frameSize * frameRate));
 
 				// Create video with images and text, combine with audio, and remove intermediary output files
 				cmd = "mkdir -p Quizzes ; cat \"" + _term + "\"?.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
-						+ "$(soxi -D \'./AudioFiles/" + "temp" + ".wav\') -i - -c:v libx264 -pix_fmt yuv420p -vf \""
+						+ durationInSeconds + " -i - -c:v libx264 -pix_fmt yuv420p -vf \""
 						+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
-						+ " -r 25 -y \'./Quizzes/" + _name + ".mp4\' ; rm \"" + _term + "\"?.jpg ; ffmpeg -i "
-								+ "\'./Quizzes/" + _name + ".mp4\' -vf "
+						+ " -r 25 -y \'./Quizzes/" + _name + ".mp4\' ; rm -f \"" + _term + "\"?.jpg ; ffmpeg -i "
+						+ "\'./Quizzes/" + _name + ".mp4\' -vf "
 						+ "\"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)"
 						+ "/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i"
 						+ " \'./AudioFiles/" + "temp" + ".wav\' -c:v copy -c:a aac -strict experimental"
-						+ " -y \'./Creations/" + _name + ".mp4\' &>/dev/null ; rm out.mp4";
+						+ " -y \'./Creations/" + _name + ".mp4\' &>/dev/null ; rm -f out.mp4";
+
+
 
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
@@ -716,7 +728,6 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
 				Platform.runLater(new Runnable() {
 
 					@Override
@@ -746,7 +757,8 @@ public class Create {
 
 			@Override
 			protected Void call() throws Exception {
-				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi";
+
+				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi; rm -f *.jpg; ";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();

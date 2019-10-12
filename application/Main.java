@@ -1,6 +1,11 @@
 package application;
 	
+import java.io.IOException;
+
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -49,12 +54,20 @@ public class Main extends Application {
 		view = new View(viewTab, popup);
 		view.setContents();
 		
+		tabPane.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				view.setContents();
+			}
+		}); 
+		
 		create.setView(view);
 		popup.setViewCreate(view, create);
 		
-		Tab learnTab = new Tab("Review");
+		Tab learnTab = new Tab("REVIEW");
 		learn = new Learn(learnTab);
-		
+		learn.setContents();
 		
 		tabPane.getTabs().addAll(homeTab, viewTab, createTab, learnTab);
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
@@ -68,6 +81,29 @@ public class Main extends Application {
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.show();
+		
+		primaryStage.setOnCloseRequest(arg0 -> {
+			create.deleteFiles();
+			Task<Void> task = new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {
+					
+					String cmd = "rm -f text.txt";
+					ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+					try {
+						Process process = builder.start();
+						process.waitFor();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					return null;
+				}
+
+			};
+			new Thread(task).start();
+		});
 	}
 
 	public static void main(String[] args) {

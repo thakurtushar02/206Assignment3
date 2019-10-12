@@ -17,9 +17,10 @@
 }
 
 .root{
-	-fx-font-family:'CatholicSchoolGirls BB';
-	-fx-font-size:18px;
-	-fx-background-color:ghostwhite;
+	-fx-font-family:'GoodDog Plain';
+	-fx-font-size:25px;
+	-fx-font-color:white;
+	-fx-background-color:#BBEEFF;
 }
 
 .list-cell{
@@ -37,7 +38,11 @@
 
 .button{
 	-fx-font-size:30px;
-	-fx-background-color:lightgrey;
+	-fx-text-fill:white;
+	-fx-background-color:#bbccff;
+	-fx-font-weight: bold;
+	-fx-background-radius: 30;
+
 }
 
 .combo-box{
