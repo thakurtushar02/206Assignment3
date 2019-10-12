@@ -54,6 +54,7 @@ public class Main extends Application {
 		
 		Tab learnTab = new Tab("Review");
 		learn = new Learn(learnTab);
+		learn.setContents();
 		
 		
 		tabPane.getTabs().addAll(homeTab, viewTab, createTab, learnTab);

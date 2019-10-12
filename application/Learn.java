@@ -129,16 +129,21 @@ public class Learn {
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 		
 		HBox options = new HBox();
-		options.getChildren().addAll(option1, option2,option3,option4,option5, spacer, submit);
+		options.getChildren().addAll(option1, option2,option3,option4,option5);
 		options.setSpacing(10);
+		options.setAlignment(Pos.CENTER);
 		
 		VBox main = new VBox();
 		main.getChildren().addAll(video, options);
 		main.setSpacing(20);
 		
+		HBox check = new HBox();
+		check.getChildren().addAll(spacer, submit);
+		
 		content.setRight(qNumbers);
 		content.setCenter(main);
 		content.setTop(quiz);
+		content.setBottom(check);
 		
 		BorderPane.setMargin(quiz, new Insets(10, 10, 10, 0));
 		BorderPane.setMargin(main, new Insets(0, 20, 10, 0));
