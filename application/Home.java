@@ -3,8 +3,10 @@ package application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -20,10 +22,13 @@ public class Home {
 	private Tab _tab;
 	private int _titleNumber = (int) (6*Math.random());
 	private String[] colour = {"#ff4040", "#ff92c9", "#40e0d0", "#ffff66", "#ff7373", "#b967ff"};
-	private final int SMALL_SIZE = 65;
-	private final int BIG_SIZE = 80;
-	private final String BIG = "-fx-font-size:" + BIG_SIZE + "px;";
-	private final String SMALL = "-fx-font-size:" + SMALL_SIZE + "px;";
+	private final static int SMALL_SIZE = 65;
+	private final static int BIG_SIZE = 80;
+	private final static String BIG = "-fx-font-size:" + BIG_SIZE + "px;";
+	private final static String SMALL = "-fx-font-size:" + SMALL_SIZE + "px;";
+	protected final static String BASIC = "Choose mode: Basic!";
+	protected final static String ADVANCED = "Choose mode: Advanced";
+	protected final static Label mode = new Label(BASIC);
 
 	public Home(Tab tab) {
 		_tab = tab;
@@ -40,7 +45,7 @@ public class Home {
 				+ "-fx-text-fill:" + colour[_titleNumber]);
 
 		HBox titleBox = new HBox(titleView);
-		titleBox.setMinHeight(100);
+		titleBox.setMinHeight(80);
 		titleBox.setOnMouseEntered(arg0 -> titleView.setStyle("-fx-font-family:'Grinched'; -fx-font-size:140px;"
 				+ "-fx-text-fill:" + colour[_titleNumber]));
 
@@ -74,8 +79,24 @@ public class Home {
 		image.setPreserveRatio(true);
 		image.setFitWidth(500);
 
-		Label logo = new Label("Learning Through Fun");
-		logo.setStyle("-fx-font-size:65px");
+		mode.setStyle(SMALL);
+
+		HBox modeBox = new HBox(mode);
+		modeBox.setAlignment(Pos.CENTER);
+		modeBox.setMinHeight(BIG_SIZE + 20);
+		modeBox.setOnMouseEntered(arg0 -> {
+			mode.setStyle(BIG);
+		});
+		modeBox.setOnMouseExited(arg0 -> {
+			mode.setStyle(SMALL);
+		});
+		modeBox.setOnMouseClicked(arg0 -> {
+			if (mode.getText().equals(BASIC)) {
+				mode.setText(ADVANCED);
+			} else {
+				mode.setText(BASIC);
+			}
+		});
 
 		Label createHeading = new Label("Create new Creation!");
 		createHeading.setStyle(SMALL);
@@ -89,7 +110,7 @@ public class Home {
 			createHeading.setStyle(SMALL);
 			arrow.setFitWidth(SMALL_SIZE);
 		});
-		createBox.setOnMouseClicked(arg0 -> {tabPane.getSelectionModel().select(2);});
+		createBox.setOnMouseClicked(arg0 -> tabPane.getSelectionModel().select(2));
 
 
 		Label viewHeading = new Label("See Past Creations");
@@ -104,7 +125,7 @@ public class Home {
 			viewHeading.setStyle(SMALL);
 			arrow2.setFitWidth(SMALL_SIZE);
 		});
-		viewBox.setOnMouseClicked(arg0 -> {tabPane.getSelectionModel().select(1);});
+		viewBox.setOnMouseClicked(arg0 -> tabPane.getSelectionModel().select(1));
 
 
 		Label playHeading = new Label("Play & Learn");
@@ -119,13 +140,13 @@ public class Home {
 			playHeading.setStyle(SMALL);
 			arrow3.setFitWidth(SMALL_SIZE);
 		});
-		playBox.setOnMouseClicked(arg0 -> {tabPane.getSelectionModel().select(3);});
+		playBox.setOnMouseClicked(arg0 -> tabPane.getSelectionModel().select(3));
 
-		
-		VBox text = new VBox(20, createBox, viewBox, playBox);
+
+		VBox text = new VBox(createBox, viewBox, playBox);
 		text.setMinWidth(viewBox.getWidth() + 650);
 		HBox headings = new HBox(20, text, image);
-		VBox contents = new VBox(titleBox, logo, headings);
+		VBox contents = new VBox(titleBox, modeBox, headings);
 		contents.setPadding(new Insets(30,30,30,30));
 		contents.setSpacing(30);
 		contents.setAlignment(Pos.CENTER);
