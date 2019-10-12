@@ -293,7 +293,7 @@ public class Create {
 		Button butDelete = new Button("Delete ✘");
 		butDelete.disableProperty().bind(list.getSelectionModel().selectedItemProperty().isNull());
 
-		Button butCombine = new Button("Combine ↳");
+		Button butNext = new Button("Next ↳");
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
@@ -302,7 +302,7 @@ public class Create {
 		lineOptions.setAlignment(Pos.BOTTOM_CENTER);
 
 		BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0);
-		butCombine.disableProperty().bind(combBinding);
+		butNext.disableProperty().bind(combBinding);
 
 		final Pane spacer2 = new Pane();
 		spacer2.setMinSize(10, 1);
@@ -312,7 +312,7 @@ public class Create {
 		HBox.setHgrow(spacer2, Priority.ALWAYS);
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 		pbSaveCombine.setVisible(false);
-		HBox nameLayout = new HBox(10, pbSaveCombine, spacer2, butCombine);
+		HBox nameLayout = new HBox(10, pbSaveCombine, spacer2, butNext);
 		nameLayout.setAlignment(Pos.BOTTOM_CENTER);
 
 		VBox layout = new VBox(views, lineOptions, nameLayout);
@@ -406,7 +406,7 @@ public class Create {
 			}
 		});
 
-		butCombine.setOnAction(e -> {
+		butNext.setOnAction(e -> {
 			displayImages();
 		});
 

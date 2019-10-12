@@ -17,7 +17,7 @@ import javafx.scene.layout.VBox;
  */
 public class Home {
 	private Tab _tab;
-	private int _titleNumber = 3;
+	private int _titleNumber = (int) (6*Math.random());
 	private final int TITLE_SIZE = 1000;
 	
 	public Home(Tab tab) {

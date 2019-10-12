@@ -25,6 +25,8 @@
 	-fx-font-size:25px;
 	-fx-font-color:white;
 	-fx-background-color:#BBEEFF;
+	-fx-focus-color: transparent;
+	-fx-faint-focus-color: transparent;
 }
 
 .list-cell{
@@ -74,16 +76,42 @@
 
 .combo-box-popup .list-view .list-cell:filled:hover 
 {
-    -fx-background-color:#bbccff;
+	-fx-background-color:#D5DFFF;
 }
 
+.combo-box-base {
+	-fx-background-radius:30px;
+}
 
+.combo-box-base:focused {
+	-fx-background-radius:30px;
+}
 
 .border{
-	-fx-padding:5;
+	-fx-padding:5px;
 	-fx-background-color: #bbccff;
 }
 
 .label{
 	-fx-font-size:50px;
 }
+
+.text-area {
+	-fx-highlight-fill: #bbccff;
+	-fx-highlight-text-fill: black;
+	-fx-background-color: white;
+}
+
+.text-field {
+	-fx-background-color: white;
+	-fx-font-size: 30px;
+	-fx-background-radius: 30px;
+	-fx-border-color: #bbccff;
+	-fx-border-radius: 20px;
+	-fx-border-width: 3 3 3 3;
+	-fx-highlight-fill: #bbccff;
+	-fx-highlight-text-fill: black;
+}
+
+
+
