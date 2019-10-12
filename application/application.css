@@ -92,6 +92,15 @@
 	-fx-background-color: #bbccff;
 }
 
+.blackBorder {
+	-fx-border-color: black;
+	-fx-border-width: 2,2,2,2
+}
+
+.clearBorder {
+	-fx-border-style: none;
+}
+
 .label{
 	-fx-font-size:50px;
 }

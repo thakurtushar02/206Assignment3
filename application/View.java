@@ -55,7 +55,7 @@ public class View {
 			@Override
 			public void handle(ActionEvent e) {
 				String item = creations.getSelectionModel().getSelectedItem();
-				_popup.showStage(item, "Are you sure you want to delete " + item + "?", "Yes", "No", true);
+				_popup.showStage(item, "Delete " + item + "?", "✔", "✘", true);
 			}
 		});
 

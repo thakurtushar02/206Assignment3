@@ -438,7 +438,7 @@ public class Create {
 	public void displayImages() {
 		ObservableList<File> oToDelete = FXCollections.observableArrayList();
 		VBox chooseImages;
-		Label prompt = new Label("Choose 1 to 10 pictures you want in your creation:");
+		Label prompt = new Label("Choose pictures you like!");
 		prompt.setFont(new Font("Arial", 20));
 		prompt.setPadding(new Insets(15,10,10,15));
 		GridPane imgPane = new GridPane();
@@ -464,7 +464,7 @@ public class Create {
 			}
 		});
 		for(int i = 0; i < 10; i++) {
-			File file = new File(_term + i + ".jpg");
+			File file = new File("." + _term + i + ".jpg");
 			Image im = new Image(file.toURI().toString());
 			oToDelete.add(file);
 			ImageView imv = new ImageView(im);
@@ -521,10 +521,10 @@ public class Create {
 				nameField.clear();
 				nameField.setPromptText("");
 				btnCreate.requestFocus();
-				_popup.showStage(_name, "Creation name already exists.\nWould you like to rename or overwrite?", "Rename", "Overwrite", false);
+				_popup.showStage(_name, "Name already exists. Overwrite?", "✘", "✔", false);
 			}
 		});
-		HBox nameAndCreate = new HBox(nameField, btnCreate);
+		HBox nameAndCreate = new HBox(nameField, btnCreate, pbSaveCombine);
 		nameAndCreate.setPadding(new Insets(10,10,10,10));
 		nameAndCreate.setSpacing(10);
 		chooseImages = new VBox(prompt, imgPane, nameAndCreate);
@@ -573,7 +573,7 @@ public class Create {
 				numberOfAudioFiles++;
 				String nameOfFile = "AudioFile" + numberOfAudioFiles;
 
-				if (voice.equals("Real")) {
+				if (voice.equals(FESTIVAL)) {
 					cmd = "cat " + _file.toString() + " | text2wave -o \"./AudioFiles/" + nameOfFile + ".wav\"";
 				} else {
 					cmd = "espeak -f " + _file.toString() + " --stdout > \"./AudioFiles/" + nameOfFile + ".wav\"";
@@ -666,10 +666,10 @@ public class Create {
 				float durationInSeconds = (audioFileLength / (frameSize * frameRate));
 
 				// Create video with images and text, combine with audio, and remove intermediary output files
-				cmd = "rm -f out.mp4; mkdir -p Quizzes ; cat \"" + _term + "\"?.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
+				cmd = "rm -f out.mp4; mkdir -p Quizzes ; cat \"." + _term + "\"?.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
 						+ durationInSeconds + " -i - -c:v libx264 -pix_fmt yuv420p -vf \""
 						+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
-						+ " -r 25 -y \'./Quizzes/" + _name + ".mp4\' ; rm -f \"" + _term + "\"?.jpg ; ffmpeg -i "
+						+ " -r 25 -y \'./Quizzes/" + _name + ".mp4\' ; rm -f \"." + _term + "\"?.jpg ; ffmpeg -i "
 						+ "\'./Quizzes/" + _name + ".mp4\' -vf "
 						+ "\"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)"
 						+ "/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i"

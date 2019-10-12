@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * Represents Pop-ups windows that may be called during the use of the Wiki-Speak application 
@@ -22,6 +23,12 @@ public class Popup {
 	private Stage _popup = new Stage();
 	private Stage _confirmPopup = new Stage();
 	private Stage _tooManyWords = new Stage();
+
+	{
+		_popup.initStyle(StageStyle.TRANSPARENT);
+		_confirmPopup.initStyle(StageStyle.TRANSPARENT);
+		_tooManyWords.initStyle(StageStyle.TRANSPARENT);
+	}
 
 
 	public void setViewCreate(View view, Create create) {
@@ -38,14 +45,15 @@ public class Popup {
 	 * @param isView	boolean of whether the popup is being called from the View tab
 	 */
 	public void showStage(String name, String output, String button1, String button2, boolean isView){
-		if(isView) {
-			_popup.setTitle("Delete Creation");
-		}else {
-			_popup.setTitle("Invalid Input");
-		}
-		BorderPane comp;
 
-		Button cont = new Button(button1);
+		BorderPane comp;
+		Button cont;
+		Button cancel;
+
+		cont = new Button(button1);
+		cancel = new Button(button2);
+
+
 		cont.setMinWidth(100);
 		cont.setOnAction(e -> {
 			if(isView) {
@@ -54,7 +62,6 @@ public class Popup {
 			_popup.close();
 		});
 
-		Button cancel = new Button(button2);
 		cancel.setMinWidth(100);
 		cancel.setOnAction(e -> {
 			if(!isView) {
@@ -62,8 +69,13 @@ public class Popup {
 			}
 			_popup.close();
 		});
+		HBox buttonBox;
 
-		HBox buttonBox = new HBox(cont, cancel);
+		if (isView) {
+			buttonBox = new HBox(cont, cancel); 
+		} else {
+			buttonBox = new HBox(cancel, cont);
+		}
 		buttonBox.setPadding(new Insets(5,10,5,10));
 		buttonBox.setSpacing(20);
 		buttonBox.setAlignment(Pos.BOTTOM_CENTER);
@@ -78,7 +90,9 @@ public class Popup {
 		comp.setBottom(buttonBox);
 		comp.setPadding(new Insets(10,10,10,10));
 
-		Scene stageScene = new Scene(comp, 400, 100);
+		Scene stageScene = new Scene(comp, 600, 200);
+		stageScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		comp.getStyleClass().add("blackBorder");
 		_popup.setScene(stageScene);
 		_popup.show();
 	}
@@ -96,15 +110,11 @@ public class Popup {
 			//delete creation, refresh tab and display confirmation popup
 			_create.removeCreation(fullName);
 			_view.setContents();
-			showFeedback(name, true);
 		}else {
-			if(nxtAction.equals("Overwrite")) {
-				//delete creation of the same name and create new creation
-				_create.removeCreation(fullName);
-				_create.combineAudioFiles();
-			}else {
-				_create.setContents(null);
-			}
+			//delete creation of the same name and create new creation
+			_create.removeCreation(fullName);
+			_create.combineAudioFiles();
+
 		}
 	}
 
@@ -115,11 +125,7 @@ public class Popup {
 	 */
 	public void showFeedback(String name, boolean isView) {
 		Label confirmation = new Label();
-		if(isView) {
-			_confirmPopup.setTitle("Creation Deleted");
-		}else {
-			_confirmPopup.setTitle("Creation Created");
-		}
+		_confirmPopup.setTitle("Creation Created");
 		BorderPane comp;
 
 		Button cont = new Button("OK");
@@ -135,11 +141,7 @@ public class Popup {
 		confirmation.setLineSpacing(5);
 		confirmation.setPrefHeight(100);
 
-		if(isView) {
-			confirmation.setText("Creation " + name + " successfully deleted");
-		}else {
-			confirmation.setText("Creation " + name + " successfully created");
-		}
+		confirmation.setText(name + " made!");
 
 		comp = new BorderPane();
 		comp.setCenter(confirmation);
@@ -147,7 +149,9 @@ public class Popup {
 		BorderPane.setAlignment(cont, Pos.BOTTOM_CENTER);
 		comp.setPadding(new Insets(10,10,10,10));
 
-		Scene stageScene = new Scene(comp, 400, 100);
+		Scene stageScene = new Scene(comp, 600, 200);
+		stageScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		comp.getStyleClass().add("blackBorder");
 		_confirmPopup.setScene(stageScene);
 		_confirmPopup.show();
 	}
@@ -157,15 +161,19 @@ public class Popup {
 	 */
 	public void tooManyWordsHighlighted() {
 		_tooManyWords.setTitle("Too many words");
-		
+
 		Label text = new Label("Preview between 1 and 30 words.");
 		Button butOK = new Button("OK");
 		butOK.setOnAction(e -> _tooManyWords.close());
 		VBox vbox = new VBox(10, text, butOK);
 		vbox.setAlignment(Pos.CENTER);
-		_tooManyWords.setScene(new Scene(vbox, 275, 75));
+		Scene scene = new Scene(vbox, 600, 200);
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		vbox.getStyleClass().add("blackBorder");
+		_tooManyWords.setScene(scene);
+
 		_tooManyWords.show();
-		
+
 	}
 
 }
