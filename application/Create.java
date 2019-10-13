@@ -86,7 +86,7 @@ public class Create {
 		pbCombine.setPrefHeight(25);
 		pbCombine.setPrefWidth(700);
 		pbSave.setPrefHeight(25);
-		pbSave.setPrefWidth(1000);
+		pbSave.setPrefWidth(700);
 		pbSearch.setPrefHeight(25);
 		pbSearch.setPrefWidth(200);
 	}
@@ -431,7 +431,11 @@ public class Create {
 		});
 
 		butNext.setOnAction(e -> {
-			_music = musicComb.getSelectionModel().getSelectedItem();
+			if (Home.mode.getText().equals(Home.ADVANCED)) {
+				_music = musicComb.getSelectionModel().getSelectedItem();
+			} else {
+				_music = CLASSICAL;
+			}
 			pbCombine.setVisible(false);
 			displayImages();
 		});
