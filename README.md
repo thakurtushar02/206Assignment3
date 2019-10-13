@@ -20,6 +20,8 @@ files --> Apply and close --> Make sure library is ticked --> Finish
 - **Step 4**: Go to Main.java --> Run. The application should now be running.  Enjoy!
 
 ## Attributions
-- **Classical.mp4:** Moonlight Sonata (Shifting Sun Mix) by Speck (c) copyright 2018 Licensed under a Creative Commons Attribution (3.0) license. http://dig.ccmixter.org/files/speck/57884 Ft: Snowflake    
+- **Classical.mp4:** Moonlight Sonata (Shifting Sun Mix) by Speck (c) copyright 2018 Licensed under a Creative Commons Attribution (3.0) license. http://dig.ccmixter.org/files/speck/57884 Ft: Snowflake   
+
 - **Electronic.mp4:** yellow by cyba (c) copyright 2019 Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. http://dig.ccmixter.org/files/cyba/60166     
+
 - **Light.mp4:** Light by onlymeith (c) copyright 2018 Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. http://dig.ccmixter.org/files/onlymeith/58693 Ft: airtone    
