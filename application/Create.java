@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
@@ -69,7 +68,8 @@ public class Create {
 	private ObservableList<String> listLines = FXCollections.observableArrayList();
 	private int numberOfAudioFiles = 0;
 	private int numberOfPictures;
-	private ProgressBar pbSaveCombine = new ProgressBar();
+	private ProgressBar pbCombine = new ProgressBar();
+	private ProgressBar pbSave = new ProgressBar();
 	private ProgressBar pbSearch = new ProgressBar();
 	private String _music;
 	private final String EMPTY = "Empty";
@@ -81,6 +81,15 @@ public class Create {
 	private final String CLASSICAL = "Classical";
 	private final String YELLOW = "Electronic";
 	private final String LIGHT = "Light";
+	
+	{
+		pbCombine.setPrefHeight(25);
+		pbCombine.setPrefWidth(700);
+		pbSave.setPrefHeight(25);
+		pbSave.setPrefWidth(1000);
+		pbSearch.setPrefHeight(25);
+		pbSearch.setPrefWidth(200);
+	}
 
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
@@ -96,7 +105,8 @@ public class Create {
 	 * Sets the contents of the Create tab
 	 * @param main
 	 */
-	public void setContents(Main main) {		
+	public void setContents(Main main) {	
+		
 		if (_main == null) {
 			_main = main;
 		}
@@ -117,7 +127,6 @@ public class Create {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-
 
 		searchButton = new Button("Search ↳");
 		searchButton.disableProperty().bind(searchBinding);
@@ -203,19 +212,18 @@ public class Create {
 				Platform.runLater(new Runnable(){
 					// Progress bar is hidden and GUI is updated by reading the text file 
 					@Override public void run() {
-						pbSearch.setVisible(false);
 						try(BufferedReader fileReader = new BufferedReader(new FileReader(_file.toString()))){
 							String line = fileReader.readLine();
 							// Display contents if there are results, otherwise prompt user to search again
 							if(line.contains("not found :^(")) {
 								message.setText("Did you misspell? Try again!");
+								pbSearch.setVisible(false);
 								setContents(_main);
 							} else {
 								message.setText("");
 								_term = term;
 								deleteFiles();
-								getPics(10, term);
-								displayLines(term);
+								getPics(10, _term);
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -233,6 +241,7 @@ public class Create {
 	 * @param reply	the search term
 	 */
 	public void displayLines(String reply) {
+		pbSearch.setVisible(false);
 		ListView<String> list = new ListView<String>(); // List displaying audio files
 
 		list.setItems(listLines);
@@ -248,7 +257,7 @@ public class Create {
 			fileContent = new BufferedReader(new FileReader(_file));
 			String line;
 			int numberOfLines = 0;
-			while (((line = fileContent.readLine()) != null) && (numberOfLines < 4)) {
+			while (((line = fileContent.readLine()) != null) && (numberOfLines < 5)) {
 				textArea.appendText(line + "\n\n");
 				numberOfLines++;
 			}
@@ -256,7 +265,8 @@ public class Create {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		textArea.setText(textArea.getText().substring(2));
+		textArea.setText(textArea.getText().substring(2,textArea.getText().length()-3));
+		textArea.setStyle("-fx-font-size:30");
 
 		Label info = new Label("Reorder audio below!");
 		VBox text = new VBox(searchBar, textArea);
@@ -293,7 +303,7 @@ public class Create {
 		combobox.prefHeightProperty().bind(butPlay.prefHeightProperty());
 
 		Button butSave = new Button(" Save ✔");
-		butSave.disableProperty().bind(playSaveBinding);
+		
 
 		Button butUp = new Button("Move ↑");
 		BooleanBinding upDownBinding = Bindings.size(listLines).lessThan(2).or(list.getSelectionModel().selectedItemProperty().isNull());
@@ -312,8 +322,7 @@ public class Create {
 		lineOptions.setSpacing(15);
 		lineOptions.setAlignment(Pos.BOTTOM_CENTER);
 
-		BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0);
-		butNext.disableProperty().bind(combBinding);
+		
 
 		final Pane spacer2 = new Pane();
 		spacer2.setMinSize(10, 1);
@@ -322,17 +331,16 @@ public class Create {
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 		HBox.setHgrow(spacer2, Priority.ALWAYS);
 		VBox.setVgrow(textArea, Priority.ALWAYS);
-		pbSaveCombine.setVisible(false);
-		HBox nameLayout = new HBox(10, lblMusic, musicComb, pbSaveCombine, spacer2, butNext);
+    
+		pbSave.setVisible(false);
+		HBox nameLayout = new HBox(10, lblMusic, musicComb, pbSave, spacer2, butNext);
 		nameLayout.setAlignment(Pos.BOTTOM_CENTER);
 
 		VBox layout = new VBox(views, lineOptions, nameLayout);
 		layout.setPadding(new Insets(15,30,30,30));
 		layout.setSpacing(10);
-
-		_tab.setContent(layout);
-		_tabPane.requestLayout();
-
+		
+		
 		butPlay.setOnAction(e -> {
 			String selectedText = textArea.getSelectedText();
 			// Display pop-up if number of highlighted words > 30
@@ -376,7 +384,12 @@ public class Create {
 
 		// Save selected text as an audio file  
 		butSave.setOnAction(e -> {
-			String selectedText = textArea.getSelectedText();
+			String selectedText;
+			if (Home.mode.getText().equals(Home.ADVANCED)) {
+				selectedText = textArea.getSelectedText();
+			} else {
+				selectedText = textArea.getText();
+			}
 			try {
 				String fileName = _file.getName();
 				FileWriter fw = new FileWriter(fileName, false);
@@ -419,6 +432,7 @@ public class Create {
 
 		butNext.setOnAction(e -> {
 			_music = musicComb.getSelectionModel().getSelectedItem();
+			pbCombine.setVisible(false);
 			displayImages();
 		});
 
@@ -441,6 +455,19 @@ public class Create {
 			}
 
 		});
+		
+		if (Home.mode.getText().equals(Home.ADVANCED)) {
+			butSave.disableProperty().bind(playSaveBinding);
+			BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0);
+			butNext.disableProperty().bind(combBinding);
+			
+			_tab.setContent(layout);
+			_tabPane.requestLayout();
+			
+		} else {
+			butSave.fire();
+			butNext.fire();
+		}
 
 	}
 
@@ -536,7 +563,7 @@ public class Create {
 				_popup.showStage(_name, "Name already exists. Overwrite?", "✘", "✔", false);
 			}
 		});
-		HBox nameAndCreate = new HBox(nameField, btnCreate, pbSaveCombine);
+		HBox nameAndCreate = new HBox(nameField, btnCreate, pbCombine);
 		nameAndCreate.setPadding(new Insets(10,10,10,10));
 		nameAndCreate.setSpacing(10);
 		chooseImages = new VBox(prompt, imgPane, nameAndCreate);
@@ -567,7 +594,9 @@ public class Create {
 	 * @param voice	voice selected by user
 	 */
 	public void addCreation(String voice) {
-		pbSaveCombine.setVisible(true);
+		if (Home.mode.getText().equals(Home.ADVANCED)) {
+			pbSave.setVisible(true);
+		}
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
 
@@ -604,7 +633,7 @@ public class Create {
 					@Override public void run() {
 						_view.setContents();
 						listLines.add(nameOfFile);
-						pbSaveCombine.setVisible(false);
+						pbSave.setVisible(false);
 					}
 				});
 				return null;
@@ -633,7 +662,7 @@ public class Create {
 	 * one mp4 video file
 	 */
 	public void combineAudioFiles() {
-		pbSaveCombine.setVisible(true);
+		pbCombine.setVisible(true);
 		Task<Void> task = new Task<Void>() {
 
 			@Override
@@ -706,7 +735,7 @@ public class Create {
 						_view.setContents();
 						_main.refreshGUI(null);
 						_popup.showFeedback(_name, false);
-						pbSaveCombine.setVisible(false);
+						pbCombine.setVisible(false);
 
 					}
 				});
@@ -729,7 +758,7 @@ public class Create {
 			@Override
 			protected Void call() throws Exception {
 
-				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi; rm -f *.jpg; ";
+				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi; rm -f .*.jpg; ";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();
@@ -757,6 +786,14 @@ public class Create {
 			@Override
 			protected Void call() throws Exception {
 				_imMan.getImages(reply);
+				
+				Platform.runLater(new Runnable() {
+
+					@Override
+					public void run() {
+						displayLines(_term);
+					}
+				});
 				return null;
 			}
 		};

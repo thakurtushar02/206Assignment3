@@ -162,7 +162,7 @@ public class Popup {
 	public void tooManyWordsHighlighted() {
 		_tooManyWords.setTitle("Too many words");
 
-		Label text = new Label("Preview between 1 and 30 words.");
+		Label text = new Label("Play only 1-30 words at a time!");
 		Button butOK = new Button("OK");
 		butOK.setOnAction(e -> _tooManyWords.close());
 		VBox vbox = new VBox(10, text, butOK);
