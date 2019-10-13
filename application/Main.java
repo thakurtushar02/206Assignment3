@@ -24,6 +24,7 @@ public class Main extends Application {
 	private Create create;
 	private Learn learn;
 	private Stage currentStage;
+	private Questions set = new Questions();
 	
 	/**
 	 * Creates the three tabs, Home, View, and Create Creation.
@@ -45,7 +46,7 @@ public class Main extends Application {
 		home.setContents(tabPane);
 		Tab createTab = new Tab("Create");
 		createTab.getStyleClass().add("create_style");
-		create = new Create(createTab, popup);
+		create = new Create(createTab, popup, set);
 		create.setContents(this);
 		
 		Tab viewTab = new Tab("View");
@@ -66,7 +67,8 @@ public class Main extends Application {
 		
 		Tab learnTab = new Tab("Learn");
 		learnTab.getStyleClass().add("learn_style");
-		learn = new Learn(learnTab);
+		learn = new Learn(learnTab, set);
+
 		learn.setContents();
 		
 		tabPane.getTabs().addAll(homeTab, viewTab, createTab, learnTab);
