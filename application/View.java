@@ -18,7 +18,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 
 /**
  * This class is related to the View Creations tab and provides viewing,
@@ -36,7 +35,7 @@ public class View {
 	private VBox contents;
 	private Tab _tab;
 	private Popup _popup;
-	public final static int ROW_HEIGHT = 75;
+	public final static int ROW_HEIGHT = 50;
 	public final static int SPACING = 20;
 
 	public View(Tab tab, Popup popup) {
@@ -55,7 +54,7 @@ public class View {
 			@Override
 			public void handle(ActionEvent e) {
 				String item = creations.getSelectionModel().getSelectedItem();
-				_popup.showStage(item, "Are you sure you want to delete " + item + "?", "Yes", "No", true);
+				_popup.showStage(item, "Delete " + item + "?", "✔", "✘", true);
 			}
 		});
 
@@ -70,7 +69,6 @@ public class View {
 		});
 
 		title.setText("Creations:");
-		title.setFont(new Font("Arial", 20));
 
 		try {
 			findCreations();
@@ -80,7 +78,7 @@ public class View {
 		}
 		creations.setItems(list);
 		creations.setPrefSize(1000, list.size() * ROW_HEIGHT + SPACING);
-		creations.setMaxHeight(800);
+		creations.setMaxHeight(500);
 
 		sideOptions = new VBox(delete, play);
 		sideOptions.setPadding(new Insets(10,10,10,10));
@@ -94,7 +92,7 @@ public class View {
 		spacer.setMinSize(10, 1);
 		VBox.setVgrow(spacer, Priority.ALWAYS);
 		contents = new VBox(title, optionBox, spacer);
-		contents.setPadding(new Insets(10,10,10,10));
+		contents.setPadding(new Insets(10,30,30,30));
 		contents.setSpacing(10);
 		_tab.setContent(contents);
 		
