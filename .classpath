@@ -7,6 +7,10 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX13"/>
 	<classpathentry kind="src" path=""/>
+
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/libs"/>
+
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Flickr"/>
+
 	<classpathentry kind="output" path=""/>
 </classpath>

@@ -75,6 +75,9 @@ public class Create {
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
+
+	private final Questions _set;
+
 	private final String FESTIVAL = "Human";
 	private final String ESPEAK = "Robot";
 	private final String NOMUSIC = "None";
@@ -91,11 +94,14 @@ public class Create {
 		pbSearch.setPrefWidth(200);
 	}
 
-	public Create(Tab tab, Popup popup) {
+
+	public Create(Tab tab, Popup popup, Questions set) {
 		_tab = tab;
 		_popup = popup;
 		_imMan = new ImageManager();
+		_set = set;
 	}
+
 
 	public void setView(View view) {
 		_view = view;
@@ -487,8 +493,9 @@ public class Create {
 		GridPane imgPane = new GridPane();
 		TextField nameField = new TextField();
 		Button btnCreate = new Button("Create ↳");
+    
+    String potentialName = _term;
 
-		String potentialName = _term;
 		int count = 1;
 		while (checkName(potentialName).equals(DUPLICATE)) {
 			potentialName = _term + "-" + count;
@@ -716,12 +723,14 @@ public class Create {
 				cmd = "rm -f out.mp4; mkdir -p Quizzes ; cat \"." + _term + "\"?.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
 						+ durationInSeconds + " -i - -c:v libx264 -pix_fmt yuv420p -vf \""
 						+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
-						+ " -r 25 -y \'./Quizzes/" + _name + ".mp4\' ; rm -f \"." + _term + "\"?.jpg ; ffmpeg -i "
-						+ "\'./Quizzes/" + _name + ".mp4\' -vf "
+						+ " -r 25 -y \'./Quizzes/" + _term + ".mp4\' ; rm \"" + _term + "\"?.jpg ; ffmpeg -i "
+								+ "\'./Quizzes/" + _term + ".mp4\' -vf "
 						+ "\"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)"
 						+ "/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i"
-						+ " \'./AudioFiles/temp.wav\' -c:v copy -c:a aac -strict experimental"
-						+ " -y \'./Creations/" + _name + ".mp4\' &>/dev/null ; rm -f out.mp4";
+						+ " \'./AudioFiles/" + "temp" + ".wav\' -c:v copy -c:a aac -strict experimental"
+						+ " -y \'./Creations/" + _name + ".mp4\' &>/dev/null ; rm out.mp4";
+				
+
 
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
@@ -732,6 +741,13 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+
+				//create question 
+				
+				Question question = new Question(new File("Quizzes/"+_name+".mp4"), _term);
+				_set.addQuestion(question);
+				
+				
 				Platform.runLater(new Runnable() {
 
 					@Override
