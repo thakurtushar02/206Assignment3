@@ -57,4 +57,8 @@ public class Questions {
 		
 		return questions.get(index);
 	}
+	
+	public int numberOfQuestions() {
+		return questions.size();
+	}
 }

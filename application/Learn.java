@@ -60,8 +60,7 @@ public class Learn {
 	}
 	
 	public void setContents() {
-		File file = new File("Quizzes");
-		if(file.list().length == 0) {
+		if(qSet.numberOfQuestions() == 0) {
 			learn.setText("You don't have any creations yet!");
 			content.setTop(learn);
 		}else {
@@ -73,9 +72,9 @@ public class Learn {
 			start.setOnAction(e -> quizStart());
 			content.setTop(learn);
 			learn.setAlignment(Pos.CENTER);
-			content.setCenter(start);
-			
+			content.setCenter(start);	
 		}
+		
 		learn.setFont(new Font("Arial", 16));
 		learn.setPadding(new Insets(20));
 		content.setPadding(new Insets(20));
