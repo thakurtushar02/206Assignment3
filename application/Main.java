@@ -12,7 +12,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 /**
  * Class containing the main method used to run the entire application.
@@ -44,7 +43,6 @@ public class Main extends Application {
 		homeTab.getStyleClass().add("home_style");
 		home = new Home(homeTab);
 		home.setContents(tabPane);
-		
 		Tab createTab = new Tab("Create");
 		createTab.getStyleClass().add("create_style");
 		create = new Create(createTab, popup);
