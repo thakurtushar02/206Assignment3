@@ -165,6 +165,9 @@ public class Learn {
 		
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
+		
+		final Pane spacer2 = new Pane();
+		spacer2.setMinSize(10, 1);
 
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 		
@@ -173,6 +176,7 @@ public class Learn {
 		
 		VBox main = new VBox();
 		main.getChildren().addAll(mView, options);
+		main.setAlignment(Pos.CENTER);
 		main.setSpacing(20);
 		
 		HBox check = new HBox();
