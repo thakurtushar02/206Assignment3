@@ -1,8 +1,6 @@
 package application;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,14 +25,12 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import jdk.javadoc.internal.doclets.formats.html.Contents;
 
 public class Learn {
 	
@@ -76,8 +72,6 @@ public class Learn {
 		content.setTop(learn);
 		learn.setAlignment(Pos.CENTER);
 		content.setCenter(start);
-		
-		content.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(3))));
 		content.setPadding(new Insets(20));
 		
 		tab.setContent(content);
@@ -112,7 +106,6 @@ public class Learn {
 		
 		qNumbers.setAlignment(Pos.CENTER_LEFT);
 		qNumbers.setSpacing(10);
-		
 		
 		
 		for (int i = 0; i < 4; i++) {
@@ -208,7 +201,13 @@ public class Learn {
 		player = new MediaPlayer(media);
 		player.setAutoPlay(true);
 		player.setCycleCount(MediaPlayer.INDEFINITE);
-		mView = new MediaView(player);
+		
+		if (mView == null) {
+			mView = new MediaView(player);
+		} else {
+			mView.setMediaPlayer(player);
+		}
+		
 	}
 	
 	public boolean isCorrect(Question question) {
