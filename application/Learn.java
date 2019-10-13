@@ -1,5 +1,6 @@
 package application;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,21 +60,25 @@ public class Learn {
 	}
 	
 	public void setContents() {
-		learn.setText("Time to review what you have learned!");
+		File file = new File("Quizzes");
+		if(file.list().length == 0) {
+			learn.setText("You don't have any creations yet!");
+			content.setTop(learn);
+		}else {
+			learn.setText("Time to review what you have learned!");
+			start.setText("Start Quiz");
+			start.setLayoutX(100);
+			start.setLayoutY(100);
+			
+			start.setOnAction(e -> quizStart());
+			content.setTop(learn);
+			learn.setAlignment(Pos.CENTER);
+			content.setCenter(start);
+			
+		}
 		learn.setFont(new Font("Arial", 16));
 		learn.setPadding(new Insets(20));
-		
-		start.setText("Start Quiz");
-		start.setLayoutX(100);
-		start.setLayoutY(100);
-		
-		start.setOnAction(e -> quizStart());
-		
-		content.setTop(learn);
-		learn.setAlignment(Pos.CENTER);
-		content.setCenter(start);
 		content.setPadding(new Insets(20));
-		
 		tab.setContent(content);
 		
 	}
