@@ -37,7 +37,6 @@ public class Questions {
 				}
 			}
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -45,7 +44,6 @@ public class Questions {
 	
 	public void addQuestion(Question question) {
 		questions.add(question);
-		System.out.println("question added!");
 	}
 	
 	public Question getQuestion() {
