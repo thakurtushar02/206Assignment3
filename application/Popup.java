@@ -105,7 +105,7 @@ public class Popup {
 	 * @param isView	boolean of whether popup is being called from View tab
 	 */
 	public void action(String name, String nxtAction, boolean isView) {
-		String fullName = "Creations/" + name + ".mp4";
+		String fullName = name + ".mp4";
 		if(isView) {
 			//delete creation, refresh tab and display confirmation popup
 			_create.removeCreation(fullName);
