@@ -174,7 +174,7 @@ public class Learn {
 		VBox main = new VBox();
 		main.getChildren().addAll(mView, options);
 		main.setSpacing(20);
-		
+
 		HBox check = new HBox();
 		check.getChildren().addAll(spacer, submit);
 		
