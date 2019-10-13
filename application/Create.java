@@ -71,11 +71,16 @@ public class Create {
 	private int numberOfPictures;
 	private ProgressBar pbSaveCombine = new ProgressBar();
 	private ProgressBar pbSearch = new ProgressBar();
+	private String _music;
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
 	private final String FESTIVAL = "Human";
 	private final String ESPEAK = "Robot";
+	private final String NOMUSIC = "None";
+	private final String CLASSICAL = "Classical";
+	private final String YELLOW = "Electronic";
+	private final String LIGHT = "Light";
 
 	public Create(Tab tab, Popup popup) {
 		_tab = tab;
@@ -273,8 +278,14 @@ public class Create {
 
 
 		// buttons
-		Label lblVoice = new Label("Voice: ");
+		Label lblVoice = new Label("Voice:  ");
 		lblVoice.setFont(new Font("Arial", 20));
+
+		ObservableList<String> music = FXCollections.observableArrayList(NOMUSIC, CLASSICAL, YELLOW, LIGHT);
+		final ComboBox<String> musicComb = new ComboBox<String>(music);
+		musicComb.setValue(NOMUSIC);
+
+		Label lblMusic = new Label("Music: ");
 
 		Button butPlay = new Button(" Play ►");
 		BooleanBinding playSaveBinding = textArea.selectedTextProperty().isEmpty();
@@ -312,7 +323,7 @@ public class Create {
 		HBox.setHgrow(spacer2, Priority.ALWAYS);
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 		pbSaveCombine.setVisible(false);
-		HBox nameLayout = new HBox(10, pbSaveCombine, spacer2, butNext);
+		HBox nameLayout = new HBox(10, lblMusic, musicComb, pbSaveCombine, spacer2, butNext);
 		nameLayout.setAlignment(Pos.BOTTOM_CENTER);
 
 		VBox layout = new VBox(views, lineOptions, nameLayout);
@@ -407,6 +418,7 @@ public class Create {
 		});
 
 		butNext.setOnAction(e -> {
+			_music = musicComb.getSelectionModel().getSelectedItem();
 			displayImages();
 		});
 
@@ -591,7 +603,6 @@ public class Create {
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
 						_view.setContents();
-						//_popup.showFeedback(nameOfFile, false);
 						listLines.add(nameOfFile);
 						pbSaveCombine.setVisible(false);
 					}
@@ -607,8 +618,10 @@ public class Create {
 	 * @param name name of the file to be deleted
 	 */
 	public void removeCreation(String name) {
-		File file = new File(name);
+		File file = new File("./Creations/" + name);
 		file.delete();
+		File file1 = new File("./Quizzes/" + name);
+		file1.delete();
 	}
 
 	public void storeTabs(TabPane tabPane) {
@@ -621,17 +634,15 @@ public class Create {
 	 */
 	public void combineAudioFiles() {
 		pbSaveCombine.setVisible(true);
-		//numberOfPictures = (int)slider.getValue();
 		Task<Void> task = new Task<Void>() {
 
 			@Override
 			protected Void call() throws Exception {
-				//getPics(numberOfPictures, _term);
 				String cmd;
 
 				// Combine list of audio files into in one if there are multiple, otherwise rename the one audio file
 				if (listLines.size() == 1) {
-					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/temp.wav";
+					cmd = "mv ./AudioFiles/AudioFile1.wav ./AudioFiles/audio.wav";
 				} else {
 					cmd = "ffmpeg";
 					for (String s: listLines) {
@@ -642,10 +653,14 @@ public class Create {
 					for (int i = 0; i < listLines.size(); i++) {
 						cmd += "[" + i + ":0]";
 					}
-					cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" ./AudioFiles/" + "temp" + ".wav &>/dev/null";
+					cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" ./AudioFiles/" + "audio" + ".wav &>/dev/null";
 				}
 
-
+				if(_music == NOMUSIC) {
+					cmd += "; mv ./AudioFiles/audio.wav ./AudioFiles/temp.wav";
+				}else {
+					cmd += "; ffmpeg -i ./AudioFiles/audio.wav -i ./Music/" + _music + ".mp3 -filter_complex amix=inputs=2:duration=shortest ./AudioFiles/temp.wav";
+				}
 
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
@@ -665,7 +680,6 @@ public class Create {
 				float frameRate = format.getFrameRate();
 				float durationInSeconds = (audioFileLength / (frameSize * frameRate));
 
-				// Create video with images and text, combine with audio, and remove intermediary output files
 				cmd = "rm -f out.mp4; mkdir -p Quizzes ; cat \"." + _term + "\"?.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
 						+ durationInSeconds + " -i - -c:v libx264 -pix_fmt yuv420p -vf \""
 						+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
@@ -673,10 +687,8 @@ public class Create {
 						+ "\'./Quizzes/" + _name + ".mp4\' -vf "
 						+ "\"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)"
 						+ "/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i"
-						+ " \'./AudioFiles/" + "temp" + ".wav\' -c:v copy -c:a aac -strict experimental"
+						+ " \'./AudioFiles/temp.wav\' -c:v copy -c:a aac -strict experimental"
 						+ " -y \'./Creations/" + _name + ".mp4\' &>/dev/null ; rm -f out.mp4";
-
-
 
 				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
@@ -748,10 +760,10 @@ public class Create {
 				return null;
 			}
 		};
-		
+
 		new Thread(task).start();
 	}
-	
+
 }
 
 
