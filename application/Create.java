@@ -703,7 +703,7 @@ public class Create {
 				cmd = "mkdir -p Quizzes ; cat \"" + _term + "\"?.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
 						+ "$(soxi -D \'./AudioFiles/" + "temp" + ".wav\') -i - -c:v libx264 -pix_fmt yuv420p -vf \""
 						+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
-						+ " -r 25 -y \'./Quizzes/" + _name + ".mp4\' ; rm \"" + _term + "\"?.jpg ; ffmpeg -i "
+						+ " -r 25 -y \'./Quizzes/" + _term + ".mp4\' ; rm \"" + _term + "\"?.jpg ; ffmpeg -i "
 								+ "\'./Quizzes/" + _name + ".mp4\' -vf "
 						+ "\"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)"
 						+ "/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i"
