@@ -173,6 +173,7 @@ public class Learn {
 		
 		VBox main = new VBox();
 		main.getChildren().addAll(mView, options);
+		main.setAlignment(Pos.CENTER);
 		main.setSpacing(20);
 
 		HBox check = new HBox();
