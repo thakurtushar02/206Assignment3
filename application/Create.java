@@ -281,10 +281,12 @@ public class Create {
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 
 		VBox listView = new VBox(info, list);
+		list.setPrefHeight(490);
 
 		listView.setAlignment(Pos.CENTER_LEFT);
 
 		views.getChildren().addAll(text, listView);
+		views.setPrefHeight(550);
 		views.setSpacing(10);
 
 		// combo box to select voice

@@ -175,7 +175,7 @@ public class Learn {
 		main.getChildren().addAll(mView, options);
 		main.setAlignment(Pos.CENTER);
 		main.setSpacing(20);
-		
+
 		HBox check = new HBox();
 		check.getChildren().addAll(spacer, submit);
 		

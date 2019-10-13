@@ -75,7 +75,7 @@ public class Home {
 		ImageView image = new ImageView();
 		image.setImage(new Image(".resources/home/book.png"));
 		image.setPreserveRatio(true);
-		image.setFitWidth(500);
+		image.setFitWidth(400);
 
 		mode.setStyle(SMALL);
 
