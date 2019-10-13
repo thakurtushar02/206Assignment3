@@ -68,6 +68,7 @@ public class Main extends Application {
 		Tab learnTab = new Tab("Learn");
 		learnTab.getStyleClass().add("learn_style");
 		learn = new Learn(learnTab, set);
+
 		learn.setContents();
 		
 		tabPane.getTabs().addAll(homeTab, viewTab, createTab, learnTab);
