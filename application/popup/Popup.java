@@ -1,7 +1,7 @@
-package application;
+package application.popup;
 
-import gui.create.Create;
-import gui.view.View;
+import application.create.Create;
+import application.view.View;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;

@@ -1,4 +1,4 @@
-package gui.learn;
+package application.learn;
 
 import java.util.ArrayList;
 import java.util.Collections;

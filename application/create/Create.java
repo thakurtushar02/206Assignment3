@@ -1,4 +1,4 @@
-package gui.create;
+package application.create;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,12 +13,12 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import application.Main;
-import application.Popup;
-import gui.home.Home;
-import gui.learn.Question;
-import gui.learn.Questions;
-import gui.view.View;
+import application.home.Home;
+import application.learn.Question;
+import application.learn.Questions;
+import application.main.Main;
+import application.popup.Popup;
+import application.view.View;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
