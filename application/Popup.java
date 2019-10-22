@@ -1,5 +1,7 @@
 package application;
 
+import gui.create.Create;
+import gui.view.View;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;

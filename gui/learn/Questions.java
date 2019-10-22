@@ -1,4 +1,4 @@
-package application;
+package gui.learn;
 
 import java.io.BufferedReader;
 import java.io.File;

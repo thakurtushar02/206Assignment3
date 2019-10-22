@@ -1,4 +1,4 @@
-package application;
+package gui.view;
 
 import java.io.File;
 

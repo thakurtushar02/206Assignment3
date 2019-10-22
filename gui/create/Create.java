@@ -1,4 +1,4 @@
-package application;
+package gui.create;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,6 +13,12 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
+import application.Main;
+import application.Popup;
+import gui.home.Home;
+import gui.learn.Question;
+import gui.learn.Questions;
+import gui.view.View;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -393,7 +399,7 @@ public class Create {
 		// Save selected text as an audio file  
 		butSave.setOnAction(e -> {
 			String selectedText;
-			if (Home.mode.getText().equals(Home.ADVANCED)) {
+			if (Home.MODE.getText().equals(Home.ADVANCED)) {
 				selectedText = textArea.getSelectedText();
 			} else {
 				selectedText = textArea.getText();
@@ -439,7 +445,7 @@ public class Create {
 		});
 
 		butNext.setOnAction(e -> {
-			if (Home.mode.getText().equals(Home.ADVANCED)) {
+			if (Home.MODE.getText().equals(Home.ADVANCED)) {
 				_music = musicComb.getSelectionModel().getSelectedItem();
 			} else {
 				_music = CLASSICAL;
@@ -468,7 +474,7 @@ public class Create {
 
 		});
 		
-		if (Home.mode.getText().equals(Home.ADVANCED)) {
+		if (Home.MODE.getText().equals(Home.ADVANCED)) {
 			butSave.disableProperty().bind(playSaveBinding);
 			BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0);
 			butNext.disableProperty().bind(combBinding);
@@ -607,7 +613,7 @@ public class Create {
 	 * @param voice	voice selected by user
 	 */
 	public void addCreation(String voice) {
-		if (Home.mode.getText().equals(Home.ADVANCED)) {
+		if (Home.MODE.getText().equals(Home.ADVANCED)) {
 			pbSave.setVisible(true);
 		}
 		Task<Void> task = new Task<Void>() {
@@ -701,7 +707,7 @@ public class Create {
 				if(_music == NOMUSIC) {
 					cmd += "; mv ./AudioFiles/audio.wav ./AudioFiles/temp.wav";
 				}else {
-					cmd += "; ffmpeg -i ./AudioFiles/audio.wav -i ./Music/" + _music + ".mp3 -filter_complex amix=inputs=2:duration=shortest ./AudioFiles/temp.wav";
+					cmd += "; ffmpeg -i ./AudioFiles/audio.wav -i ./.resources/Music/" + _music + ".mp3 -filter_complex amix=inputs=2:duration=shortest ./AudioFiles/temp.wav";
 				}
 
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);

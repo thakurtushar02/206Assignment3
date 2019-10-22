@@ -2,6 +2,11 @@ package application;
 	
 import java.io.IOException;
 
+import gui.create.Create;
+import gui.home.Home;
+import gui.learn.Learn;
+import gui.learn.Questions;
+import gui.view.View;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
