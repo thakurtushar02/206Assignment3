@@ -27,3 +27,4 @@ files --> Apply and close --> Make sure library is ticked --> Finish
 
 - **Light.mp3:** Light by onlymeith (c) copyright 2018 Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. http://dig.ccmixter.org/files/onlymeith/58693 Ft: airtone  
 
+- **book.png:** Tkgd2007 (https://en.wikipedia.org/wiki/File:Question_book-new.svg), "Question book-new“, https://creativecommons.org/licenses/by-sa/3.0/legalcode
