@@ -669,8 +669,6 @@ public class Create {
 	public void removeCreation(String name) {
 		File file = new File("./Creations/" + name);
 		file.delete();
-		File file1 = new File("./Quizzes/" + name);
-		file1.delete();
 	}
 
 	public void storeTabs(TabPane tabPane) {
