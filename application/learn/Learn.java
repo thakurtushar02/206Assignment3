@@ -101,9 +101,6 @@ public class Learn {
 			Button btn = new Button();
 			btn.setText(""+i);
 			btn.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-			
-//			btn.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-//			btn.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 			qNums.add(btn);
 			qNumbers.getChildren().add(btn);
 		}
@@ -147,8 +144,6 @@ public class Learn {
 					btn.setStyle("	-fx-font-size:30px;-fx-text-fill:white;-fx-background-color:green;"
 							+ "-fx-font-weight: bold;-fx-background-radius: 30;-fx-border-color: white;"
 							+ "-fx-border-radius: 27;-fx-border-width: 3 3 3 3; ");
-//					btn.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-//					btn.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 					correct++;
 				} else {
 					btn.setStyle("	-fx-font-size:30px;-fx-text-fill:white;-fx-background-color:red;"
