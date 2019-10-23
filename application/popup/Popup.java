@@ -1,5 +1,7 @@
-package application;
+package application.popup;
 
+import application.create.Create;
+import application.view.View;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -91,7 +93,7 @@ public class Popup {
 		comp.setPadding(new Insets(10,10,10,10));
 
 		Scene stageScene = new Scene(comp, 600, 200);
-		stageScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		stageScene.getStylesheets().add(getClass().getResource("../main/application.css").toExternalForm());
 		comp.getStyleClass().add("blackBorder");
 		_popup.setScene(stageScene);
 		_popup.show();
@@ -150,7 +152,7 @@ public class Popup {
 		comp.setPadding(new Insets(10,10,10,10));
 
 		Scene stageScene = new Scene(comp, 600, 200);
-		stageScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		stageScene.getStylesheets().add(getClass().getResource("../main/application.css").toExternalForm());
 		comp.getStyleClass().add("blackBorder");
 		_confirmPopup.setScene(stageScene);
 		_confirmPopup.show();
@@ -168,7 +170,7 @@ public class Popup {
 		VBox vbox = new VBox(10, text, butOK);
 		vbox.setAlignment(Pos.CENTER);
 		Scene scene = new Scene(vbox, 600, 200);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		scene.getStylesheets().add(getClass().getResource("../main/application.css").toExternalForm());
 		vbox.getStyleClass().add("blackBorder");
 		_tooManyWords.setScene(scene);
 

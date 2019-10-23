@@ -1,7 +1,13 @@
-package application;
+package application.main;
 	
 import java.io.IOException;
 
+import application.create.Create;
+import application.home.Home;
+import application.learn.Learn;
+import application.learn.Questions;
+import application.popup.Popup;
+import application.view.View;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
