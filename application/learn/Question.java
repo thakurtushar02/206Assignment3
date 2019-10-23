@@ -19,7 +19,7 @@ public class Question {
 		while (answers.size() < 4) {
 			Random rand = new Random();
 			int index = rand.nextInt(dummy.length);
-			if (! dummy[index].equals(correct)) {
+			if (! dummy[index].equals(correct) && ! answers.contains(dummy[index])) {
 				answers.add(dummy[index]);
 			}
 		}
