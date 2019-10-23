@@ -29,6 +29,6 @@ files --> Apply and close --> Make sure library is ticked --> Finish
 
 - **book.png:** Tkgd2007 (https://en.wikipedia.org/wiki/File:Question_book-new.svg), "Question book-new“, https://creativecommons.org/licenses/by-sa/3.0/legalcode  
 
--**.titleFont.otf:** Read .titleFontreadme.txt in the main package for more details  
+- **.titleFont.otf:** Read .titleFontreadme.txt in the main package for more details  
 
--**.myFont.ttf:** Read .myFontreadme.txt in main package for more details
+- **.myFont.ttf:** Read .myFontreadme.txt in main package for more details
