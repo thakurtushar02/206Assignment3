@@ -142,15 +142,23 @@ public class Learn {
 		submit.setOnAction(e -> {
 			if (submit.getText() == "Check Answer") {
 				Button btn = qNums.get(current - 1);
+				ToggleButton selection = (ToggleButton) ops.getSelectedToggle();
+				ToggleButton correctAnswer = null;
+				for (ToggleButton t : answer) {
+					if (t.getText().equals(question.getCorrectAnswer())) {
+						correctAnswer = t;
+						break;
+					}
+				}
+				
 				if (isCorrect(question)) {
-					btn.setStyle("	-fx-font-size:30px;-fx-text-fill:white;-fx-background-color:green;"
-							+ "-fx-font-weight: bold;-fx-background-radius: 30;-fx-border-color: white;"
-							+ "-fx-border-radius: 27;-fx-border-width: 3 3 3 3; ");
+					btn.setStyle("-fx-background-color:green");
+					selection.setStyle("-fx-background-color:green");
 					correct++;
 				} else {
-					btn.setStyle("	-fx-font-size:30px;-fx-text-fill:white;-fx-background-color:red;"
-							+ "-fx-font-weight: bold;-fx-background-radius: 30;-fx-border-color: white;"
-							+ "-fx-border-radius: 27;-fx-border-width: 3 3 3 3; ");
+					btn.setStyle("-fx-background-color:red");
+					selection.setStyle("-fx-background-color:red");
+					correctAnswer.setStyle("-fx-background-color:green");
 				}
 				
 				if (current < 5) {
@@ -160,6 +168,9 @@ public class Learn {
 				}
 			} else if (submit.getText() == "Next") {
 				nextQuestion();
+				for (ToggleButton toggle : answer) {
+					toggle.setStyle(null);
+				}
 				current++;
 				submit.setText("Check Answer");
 			} else if (submit.getText() == "Finish") {
