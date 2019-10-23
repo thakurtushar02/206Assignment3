@@ -1,5 +1,7 @@
 package application.learn;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +16,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
@@ -52,6 +56,7 @@ public class Learn {
 	private MediaView mView;
 	private Media media;
 	private MediaPlayer player;
+	private ImageView image = new ImageView();
 	
 	public Learn(Tab tab, Questions set) {
 		this.tab = tab;
@@ -245,11 +250,26 @@ public class Learn {
 		content.getChildren().removeAll(content.getChildren());
 		end.setText("You got "+correct+"/5!");
 		
+		Image i = null;
+		try {
+			i = new Image(new File(".resources/learn/thumb.gif").toURI().toURL().toString());
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		image.setImage(i);
+		image.setPreserveRatio(true);
+		image.setFitWidth(400);
+		
 		playAgain.setText("Play Again!");
 		playAgain.setOnAction(e -> quizStart());
 		
 		content.setTop(end);
-		content.setCenter(playAgain);
+		content.setCenter(image);
+		content.setBottom(playAgain);
+		BorderPane.setAlignment(end, Pos.CENTER);
+		BorderPane.setAlignment(playAgain, Pos.CENTER);
+		
 		
 	}
 	
