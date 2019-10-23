@@ -751,7 +751,7 @@ public class Create {
 
 				//create question 
 				
-				Question question = new Question(new File("Quizzes/"+_name+".mp4"), _term);
+				Question question = new Question(new File("Quizzes/"+ _term + ".mp4"), _term);
 				_set.addQuestion(question);
 				
 				
