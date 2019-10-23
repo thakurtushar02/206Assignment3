@@ -40,7 +40,7 @@ public class VideoPlayer {
 		vidStage.setTitle(name + ".mp4");
 		BorderPane vidPane = new BorderPane();
 		Scene scene = new Scene(vidPane, 500, 400);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		scene.getStylesheets().add(getClass().getResource("../main/application.css").toExternalForm());
 
 		Media video = new Media(fileURL.toURI().toString());
 		MediaPlayer player = new MediaPlayer(video);
