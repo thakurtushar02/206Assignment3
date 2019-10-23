@@ -59,6 +59,7 @@ public class Learn {
 	}
 	
 	public void setContents() {
+		content.getChildren().removeAll(content.getChildren());
 		if(qSet.numberOfQuestions() == 0) {
 			learn.setText("You don't have any quizzes!");
 			content.setTop(learn);
@@ -77,6 +78,7 @@ public class Learn {
 		learn.setFont(new Font("Arial", 16));
 		learn.setPadding(new Insets(20));
 		content.setPadding(new Insets(20));
+		content.setAlignment(learn, Pos.CENTER);
 		tab.setContent(content);
 		
 	}
@@ -186,6 +188,7 @@ public class Learn {
 		content.setRight(qNumbers);
 		content.setCenter(main);
 		content.setBottom(check);
+		content.setAlignment(quiz, Pos.CENTER);
 		
 		BorderPane.setMargin(quiz, new Insets(10, 10, 10, 0));
 		BorderPane.setMargin(main, new Insets(0, 20, 10, 0));
