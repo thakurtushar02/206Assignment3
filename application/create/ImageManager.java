@@ -1,4 +1,4 @@
-package application;
+package application.create;
 
 import java.awt.image.BufferedImage;
 

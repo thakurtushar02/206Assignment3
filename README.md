@@ -6,7 +6,7 @@ VARpedia creates video files of words you search on Wikipedia, with images from 
 ## Directions to easily execute the runnable .jar file provided in the repository
 - **Step 1**: Navigate to the directory of the .jar file, and open a terminal there.  
 
-- **Step 2**: Type into the terminal the following: ***java -jar VARpedia.jar***  
+- **Step 2**: Type into the terminal the following: ***java -jar VARpedia.jar*** if you are running this in the virtual box type in ***java --module-path /home/student/Downloads/openjfx-13-rc+2_linux-x64_bin-sdk/javafx-sdk-13/lib  --add-modules=javafx.media --add-modules=javafx.controls -jar VARpedia.jar***
 - **Step 3**: Press enter. The application should now be running. Enjoy!  
 
 ## Directions on how to run the project through Eclipse
@@ -15,13 +15,14 @@ VARpedia creates video files of words you search on Wikipedia, with images from 
 that Wiki_Speak Folder is ticked --> Finish  
 
 - **Step 3**: Right click Wiki_Speak from Package Explorer --> Build Paths --> Add Libraries --> User Library --> User
-libraries --> New... --> name it whatever you want --> Add JARs --> Browse to WikiSpeak/libs --> Highlight all .jar
+libraries --> New... --> name it whatever you want --> Add JARs --> Browse to WikiSpeak/.resources/libs --> Highlight all .jar
 files --> Apply and close --> Make sure library is ticked --> Finish  
 - **Step 4**: Go to Main.java --> Run. The application should now be running.  Enjoy!
 
 ## Attributions
-- **Classical.mp4:** Moonlight Sonata (Shifting Sun Mix) by Speck (c) copyright 2018 Licensed under a Creative Commons Attribution (3.0) license. http://dig.ccmixter.org/files/speck/57884 Ft: Snowflake   
+### Note: All files have been trimmed to a length of 1 minute starting from the 30 second mark  
+- **Classical.mp3:** Moonlight Sonata (Shifting Sun Mix) by Speck (c) copyright 2018 Licensed under a Creative Commons Attribution (3.0) license. http://dig.ccmixter.org/files/speck/57884 Ft: Snowflake  
 
-- **Electronic.mp4:** yellow by cyba (c) copyright 2019 Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. http://dig.ccmixter.org/files/cyba/60166     
+- **Electronic.mp3:** yellow by cyba (c) copyright 2019 Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. http://dig.ccmixter.org/files/cyba/60166   
 
-- **Light.mp4:** Light by onlymeith (c) copyright 2018 Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. http://dig.ccmixter.org/files/onlymeith/58693 Ft: airtone    
+- **Light.mp3:** Light by onlymeith (c) copyright 2018 Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. http://dig.ccmixter.org/files/onlymeith/58693 Ft: airtone  
