@@ -6,7 +6,7 @@ VARpedia creates video files of words you search on Wikipedia, with images from 
 ## Directions to easily execute the runnable .jar file provided in the repository
 - **Step 1**: Navigate to the directory of the .jar file, and open a terminal there.  
 
-- **Step 2**: Type into the terminal the following: ***java -jar VARpedia.jar***  
+- **Step 2**: Type into the terminal the following: ***java -jar VARpedia.jar*** if you are running this in the virtual box type in ***java --module-path /home/student/Downloads/openjfx-13-rc+2_linux-x64_bin-sdk/javafx-sdk-13/lib  --add-modules=javafx.media --add-modules=javafx.controls -jar VARpedia.jar***
 - **Step 3**: Press enter. The application should now be running. Enjoy!  
 
 ## Directions on how to run the project through Eclipse
