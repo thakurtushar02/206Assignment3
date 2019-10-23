@@ -9,7 +9,7 @@ public class Question {
 	private File video;
 	private List<String> answers = new ArrayList<String>();
 	private String correct;
-	private String[] dummy = {"tree", "dog", "potato", "grass", "snail", "cat", "sky", "ocean"};
+	private String[] dummy = {"tree", "dog", "potato", "grass", "snail", "cat", "sky", "ocean", "chess", "sea", "pie", "cloud"};
 	
 	public Question(File video, String term) {
 		this.video = video;
