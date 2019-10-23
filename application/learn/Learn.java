@@ -78,7 +78,7 @@ public class Learn {
 		learn.setFont(new Font("Arial", 16));
 		learn.setPadding(new Insets(20));
 		content.setPadding(new Insets(20));
-		content.setAlignment(learn, Pos.CENTER);
+		BorderPane.setAlignment(learn, Pos.CENTER);
 		tab.setContent(content);
 		
 	}
@@ -153,12 +153,12 @@ public class Learn {
 				
 				if (isCorrect(question)) {
 					btn.setStyle("-fx-background-color:green");
-					selection.setStyle("-fx-background-color:green");
+					selection.setStyle("-fx-border-color:green; ");
 					correct++;
 				} else {
 					btn.setStyle("-fx-background-color:red");
-					selection.setStyle("-fx-background-color:red");
-					correctAnswer.setStyle("-fx-background-color:green");
+					selection.setStyle("-fx-border-color:red");
+					correctAnswer.setStyle("-fx-border-color:green");
 				}
 				
 				if (current < 5) {
@@ -199,7 +199,7 @@ public class Learn {
 		content.setRight(qNumbers);
 		content.setCenter(main);
 		content.setBottom(check);
-		content.setAlignment(quiz, Pos.CENTER);
+		BorderPane.setAlignment(quiz, Pos.CENTER);
 		
 		BorderPane.setMargin(quiz, new Insets(10, 10, 10, 0));
 		BorderPane.setMargin(main, new Insets(0, 20, 10, 0));
