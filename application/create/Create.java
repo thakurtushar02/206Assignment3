@@ -313,6 +313,7 @@ public class Create {
 
 		Button butPlay = new Button(" Play ►");
 		BooleanBinding playSaveBinding = textArea.selectedTextProperty().isEmpty();
+		
 		butPlay.disableProperty().bind(playSaveBinding);
 		combobox.prefHeightProperty().bind(butPlay.prefHeightProperty());
 
@@ -514,7 +515,7 @@ public class Create {
 		// Does not allow characters to be typed into text field
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
 			String[] badCharacters = {"/", "?", "%", "*", ":", "|", "\"", "<", ">", "\0",
-					"\\", "(", ")", "$", "@", "!", "#", "^", "&", "+"};
+					"\\", "(", ")", "$", "@", "!", "#", "^", "&", "+", "="};
 			for (String s: badCharacters) {
 				if (newValue.contains(s)) {
 					nameField.setText(oldValue);
