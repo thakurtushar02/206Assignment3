@@ -11,13 +11,13 @@ VARpedia creates video files of words you search on Wikipedia, with images from 
 
 ## Directions on how to run the project through Eclipse
 - **Step 1**: Download/Clone the repository and save in Documents  
-- **Step 2**: On Eclipse, select File &larr; Open project from file system --> Navigate to "Wiki_Speak" directory --> Make sure
-that Wiki_Speak Folder is ticked --> Finish  
+- **Step 2**: On Eclipse, select File &rarr; Open project from file system &rarr; Navigate to "Wiki_Speak" directory &rarr; Make sure
+that Wiki_Speak Folder is ticked &rarr; Finish  
 
-- **Step 3**: Right click Wiki_Speak from Package Explorer --> Build Paths --> Add Libraries --> User Library --> User
-libraries --> New... --> name it whatever you want --> Add JARs --> Browse to WikiSpeak/.resources/libs --> Highlight all .jar
-files --> Apply and close --> Make sure library is ticked --> Finish  
-- **Step 4**: Go to Main.java --> Run. The application should now be running.  Enjoy!
+- **Step 3**: Right click Wiki_Speak from Package Explorer &rarr; Build Paths &rarr; Add Libraries &rarr; User Library &rarr; User
+libraries &rarr; New... &rarr; name it whatever you want &rarr; Add JARs &rarr; Browse to WikiSpeak/.resources/libs &rarr; Highlight all .jar
+files &rarr; Apply and close &rarr; Make sure library is ticked &rarr; Finish  
+- **Step 4**: Go to Main.java &rarr; Run. The application should now be running.  Enjoy!
 
 ## Attributions
 ### Note: All mp3 files have been trimmed to a length of 1 minute starting from the 30 second mark  
