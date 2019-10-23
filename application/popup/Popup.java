@@ -93,7 +93,7 @@ public class Popup {
 		comp.setPadding(new Insets(10,10,10,10));
 
 		Scene stageScene = new Scene(comp, 600, 200);
-		stageScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		stageScene.getStylesheets().add(getClass().getResource("../main/application.css").toExternalForm());
 		comp.getStyleClass().add("blackBorder");
 		_popup.setScene(stageScene);
 		_popup.show();
