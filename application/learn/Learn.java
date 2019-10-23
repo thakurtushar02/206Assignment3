@@ -60,7 +60,7 @@ public class Learn {
 	
 	public void setContents() {
 		if(qSet.numberOfQuestions() == 0) {
-			learn.setText("You don't have any creations yet!");
+			learn.setText("You don't have any quizzes!");
 			content.setTop(learn);
 		}else {
 			learn.setText("Time to review what you have learned!");
@@ -101,8 +101,9 @@ public class Learn {
 			Button btn = new Button();
 			btn.setText(""+i);
 			btn.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-			btn.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-			btn.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+			
+//			btn.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
+//			btn.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 			qNums.add(btn);
 			qNumbers.getChildren().add(btn);
 		}
@@ -143,12 +144,16 @@ public class Learn {
 			if (submit.getText() == "Check Answer") {
 				Button btn = qNums.get(current - 1);
 				if (isCorrect(question)) {
-					btn.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-					btn.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+					btn.setStyle("	-fx-font-size:30px;-fx-text-fill:white;-fx-background-color:green;"
+							+ "-fx-font-weight: bold;-fx-background-radius: 30;-fx-border-color: white;"
+							+ "-fx-border-radius: 27;-fx-border-width: 3 3 3 3; ");
+//					btn.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
+//					btn.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 					correct++;
 				} else {
-					btn.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-					btn.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+					btn.setStyle("	-fx-font-size:30px;-fx-text-fill:white;-fx-background-color:red;"
+							+ "-fx-font-weight: bold;-fx-background-radius: 30;-fx-border-color: white;"
+							+ "-fx-border-radius: 27;-fx-border-width: 3 3 3 3; ");
 				}
 				
 				if (current < 5) {
