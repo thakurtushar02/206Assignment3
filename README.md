@@ -11,7 +11,7 @@ VARpedia creates video files of words you search on Wikipedia, with images from 
 
 ## Directions on how to run the project through Eclipse
 - **Step 1**: Download/Clone the repository and save in Documents  
-- **Step 2**: On Eclipse, select File --> Open project from file system --> Navigate to "Wiki_Speak" directory --> Make sure
+- **Step 2**: On Eclipse, select File &larr; Open project from file system --> Navigate to "Wiki_Speak" directory --> Make sure
 that Wiki_Speak Folder is ticked --> Finish  
 
 - **Step 3**: Right click Wiki_Speak from Package Explorer --> Build Paths --> Add Libraries --> User Library --> User
