@@ -9,7 +9,7 @@ public class Question {
 	private File video;
 	private List<String> answers = new ArrayList<String>();
 	private String correct;
-	private String[] dummy = {"tree", "dog", "potato", "grass", "snail", "cat", "sky", "ocean"};
+	private String[] dummy = {"tree", "dog", "potato", "grass", "snail", "cat", "sky", "ocean", "chess", "sea", "pie", "cloud"};
 	
 	public Question(File video, String term) {
 		this.video = video;
@@ -19,7 +19,7 @@ public class Question {
 		while (answers.size() < 4) {
 			Random rand = new Random();
 			int index = rand.nextInt(dummy.length);
-			if (! dummy[index].equals(correct)) {
+			if (! dummy[index].equals(correct) && ! answers.contains(dummy[index])) {
 				answers.add(dummy[index]);
 			}
 		}

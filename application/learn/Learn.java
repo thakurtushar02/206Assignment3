@@ -1,5 +1,7 @@
 package application.learn;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +16,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
@@ -52,6 +56,7 @@ public class Learn {
 	private MediaView mView;
 	private Media media;
 	private MediaPlayer player;
+	private ImageView image = new ImageView();
 	
 	public Learn(Tab tab, Questions set) {
 		this.tab = tab;
@@ -59,8 +64,9 @@ public class Learn {
 	}
 	
 	public void setContents() {
+		content.getChildren().removeAll(content.getChildren());
 		if(qSet.numberOfQuestions() == 0) {
-			learn.setText("You don't have any creations yet!");
+			learn.setText("You don't have any quizzes!");
 			content.setTop(learn);
 		}else {
 			learn.setText("Time to review what you have learned!");
@@ -77,6 +83,7 @@ public class Learn {
 		learn.setFont(new Font("Arial", 16));
 		learn.setPadding(new Insets(20));
 		content.setPadding(new Insets(20));
+		BorderPane.setAlignment(learn, Pos.CENTER);
 		tab.setContent(content);
 		
 	}
@@ -101,8 +108,6 @@ public class Learn {
 			Button btn = new Button();
 			btn.setText(""+i);
 			btn.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-			btn.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-			btn.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 			qNums.add(btn);
 			qNumbers.getChildren().add(btn);
 		}
@@ -142,13 +147,23 @@ public class Learn {
 		submit.setOnAction(e -> {
 			if (submit.getText() == "Check Answer") {
 				Button btn = qNums.get(current - 1);
+				ToggleButton selection = (ToggleButton) ops.getSelectedToggle();
+				ToggleButton correctAnswer = null;
+				for (ToggleButton t : answer) {
+					if (t.getText().equals(question.getCorrectAnswer())) {
+						correctAnswer = t;
+						break;
+					}
+				}
+				
 				if (isCorrect(question)) {
-					btn.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-					btn.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+					btn.setStyle("-fx-background-color:green");
+					selection.setStyle("-fx-border-color:green; ");
 					correct++;
 				} else {
-					btn.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(1))));
-					btn.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+					btn.setStyle("-fx-background-color:red");
+					selection.setStyle("-fx-border-color:red");
+					correctAnswer.setStyle("-fx-border-color:green");
 				}
 				
 				if (current < 5) {
@@ -158,6 +173,9 @@ public class Learn {
 				}
 			} else if (submit.getText() == "Next") {
 				nextQuestion();
+				for (ToggleButton toggle : answer) {
+					toggle.setStyle(null);
+				}
 				current++;
 				submit.setText("Check Answer");
 			} else if (submit.getText() == "Finish") {
@@ -186,6 +204,7 @@ public class Learn {
 		content.setRight(qNumbers);
 		content.setCenter(main);
 		content.setBottom(check);
+		BorderPane.setAlignment(quiz, Pos.CENTER);
 		
 		BorderPane.setMargin(quiz, new Insets(10, 10, 10, 0));
 		BorderPane.setMargin(main, new Insets(0, 20, 10, 0));
@@ -231,11 +250,26 @@ public class Learn {
 		content.getChildren().removeAll(content.getChildren());
 		end.setText("You got "+correct+"/5!");
 		
+		Image i = null;
+		try {
+			i = new Image(new File(".resources/learn/thumb.gif").toURI().toURL().toString());
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		image.setImage(i);
+		image.setPreserveRatio(true);
+		image.setFitWidth(400);
+		
 		playAgain.setText("Play Again!");
 		playAgain.setOnAction(e -> quizStart());
 		
 		content.setTop(end);
-		content.setCenter(playAgain);
+		content.setCenter(image);
+		content.setBottom(playAgain);
+		BorderPane.setAlignment(end, Pos.CENTER);
+		BorderPane.setAlignment(playAgain, Pos.CENTER);
+		
 		
 	}
 	

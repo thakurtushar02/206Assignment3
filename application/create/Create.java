@@ -313,6 +313,7 @@ public class Create {
 
 		Button butPlay = new Button(" Play ►");
 		BooleanBinding playSaveBinding = textArea.selectedTextProperty().isEmpty();
+		
 		butPlay.disableProperty().bind(playSaveBinding);
 		combobox.prefHeightProperty().bind(butPlay.prefHeightProperty());
 
@@ -514,7 +515,7 @@ public class Create {
 		// Does not allow characters to be typed into text field
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
 			String[] badCharacters = {"/", "?", "%", "*", ":", "|", "\"", "<", ">", "\0",
-					"\\", "(", ")", "$", "@", "!", "#", "^", "&", "+"};
+					"\\", "(", ")", "$", "@", "!", "#", "^", "&", "+", "="};
 			for (String s: badCharacters) {
 				if (newValue.contains(s)) {
 					nameField.setText(oldValue);
@@ -668,8 +669,6 @@ public class Create {
 	public void removeCreation(String name) {
 		File file = new File("./Creations/" + name);
 		file.delete();
-		File file1 = new File("./Quizzes/" + name);
-		file1.delete();
 	}
 
 	public void storeTabs(TabPane tabPane) {
@@ -752,7 +751,7 @@ public class Create {
 
 				//create question 
 				
-				Question question = new Question(new File("Quizzes/"+_name+".mp4"), _term);
+				Question question = new Question(new File("Quizzes/"+ _term + ".mp4"), _term);
 				_set.addQuestion(question);
 				
 				
