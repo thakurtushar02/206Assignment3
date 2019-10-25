@@ -6,10 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-
 import application.home.Home;
 import application.learn.Question;
 import application.learn.Questions;
@@ -353,36 +349,10 @@ public class Create {
 			protected Void call() throws Exception {
 				AudioManager audMan = new AudioManager();
 				audMan.combineAudio(_music, _listLines);
-				String cmd;
-
-				File file = new File("./AudioFiles/temp.wav");
-				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
-				AudioFormat format = audioInputStream.getFormat();
-				long audioFileLength = file.length();
-				int frameSize = format.getFrameSize();
-				float frameRate = format.getFrameRate();
-				float durationInSeconds = (audioFileLength / (frameSize * frameRate));
-
-				cmd = "rm -f out.mp4; mkdir -p Quizzes ; cat \"." + _term + "\"?.jpg | ffmpeg -f image2pipe -framerate $((" + _numberOfPictures + "))/"
-						+ durationInSeconds + " -i - -c:v libx264 -pix_fmt yuv420p -vf \""
-						+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""
-						+ " -r 25 -y \'./Quizzes/" + _term + ".mp4\' ; rm \"" + _term + "\"?.jpg ; ffmpeg -i "
-						+ "\'./Quizzes/" + _term + ".mp4\' -vf "
-						+ "\"drawtext=fontsize=50:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)"
-						+ "/2:borderw=5:text=\'" + _term + "\'\" out.mp4 ; ffmpeg -i out.mp4 -i"
-						+ " \'./AudioFiles/" + "temp" + ".wav\' -c:v copy -c:a aac -strict experimental"
-						+ " -y \'./Creations/" + _name + ".mp4\' &>/dev/null ; rm out.mp4";
-
-				ProcessBuilder builderr = new ProcessBuilder("/bin/bash", "-c", cmd);
-				try {
-					Process vidProcess = builderr.start();
-					vidProcess.waitFor();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-
+				
+				VideoMaker vidMaker = new VideoMaker();
+				vidMaker.makeVideo(_term, _name, _numberOfPictures);
+				
 				//create question 
 				Question question = new Question(new File("Quizzes/"+_name+".mp4"), _term);
 				_set.addQuestion(question);
