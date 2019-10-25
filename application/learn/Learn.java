@@ -3,7 +3,6 @@ package application.learn;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -33,22 +32,21 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class Learn {
-	
 	private Tab tab;
-	private Label learn = new Label();
-	private Button start = new Button();
 	private BorderPane content = new BorderPane();
-	private final double BUTTON_WIDTH = 75;
-	private final double BUTTON_HEIGHT = 75;
-	private List<ToggleButton> answer = new ArrayList<ToggleButton>();
-	private List<Button> qNums = new ArrayList<Button>();
-	private ToggleGroup ops = new ToggleGroup();
 	private int current;
+	private int correct;
+	private Label learn = new Label();
+	private Label end = new Label();
 	private Question question;
 	private Questions qSet = new Questions();
-	private Label end = new Label();
-	private int correct;
+	private Button start = new Button();
 	private Button playAgain = new Button();
+	private final double BUTTON_WIDTH = 75;
+	private final double BUTTON_HEIGHT = 75;
+	private List<Button> qNums = new ArrayList<Button>();
+	private List<ToggleButton> answer = new ArrayList<ToggleButton>();
+	private ToggleGroup ops = new ToggleGroup();
 	private MediaView mView;
 	private Media media;
 	private MediaPlayer player;
@@ -73,12 +71,10 @@ public class Learn {
 			learn.setAlignment(Pos.CENTER);
 			content.setCenter(start);	
 		}
-		
 		learn.setFont(new Font("Arial", 16));
 		learn.setPadding(new Insets(20));
 		content.setPadding(new Insets(20));
 		tab.setContent(content);
-		
 	}
 	
 	public void quizStart() {
@@ -109,7 +105,6 @@ public class Learn {
 		
 		qNumbers.setAlignment(Pos.CENTER_LEFT);
 		qNumbers.setSpacing(10);
-		
 		
 		for (int i = 0; i < 4; i++) {
 			ToggleButton btn = new ToggleButton();

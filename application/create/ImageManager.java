@@ -1,15 +1,21 @@
 package application.create;
 
 import java.awt.image.BufferedImage;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-
 import javax.imageio.ImageIO;
-
 import com.flickr4java.flickr.*;
 import com.flickr4java.flickr.photos.*;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 /**
  * This class downloads images from Flickr using an API Key.
@@ -18,6 +24,8 @@ import com.flickr4java.flickr.photos.*;
  */
 public class ImageManager {
 
+	ObservableList<File> oToDelete = FXCollections.observableArrayList();
+	
 	/**
 	 * This method gets the API Key from the text file where the API Key is stored for further use when getting the images.
 	 * The method throws a Runtime Exception if it cannot find an API Key.
@@ -88,5 +96,49 @@ public class ImageManager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public GridPane getImagePane(String term) {
+		GridPane imgPane = new GridPane();
+		
+		for(int i = 0; i < 10; i++) {
+			File file = new File("." + term + i + ".jpg");
+			Image im = new Image(file.toURI().toString());
+			oToDelete.add(file);
+			ImageView imv = new ImageView(im);
+			BorderPane bp = new BorderPane(imv);
+			HBox imBox = new HBox(bp);
+			imBox.setMinHeight(220);
+			imBox.setMinWidth(220);
+			imv.setPreserveRatio(true);
+			imv.setFitHeight(200);
+			imv.setFitWidth(200);
+			imv.setOnMouseEntered(arg0 -> {
+				imv.setFitHeight(210);
+				imv.setFitWidth(210);
+			});
+			imv.setOnMouseExited(arg0 -> {
+				imv.setFitHeight(200);
+				imv.setFitWidth(200);
+			});
+			imv.setOnMouseClicked(arg0 -> {
+				if(oToDelete.contains(file)) {
+					bp.getStyleClass().add("border");
+					oToDelete.remove(file);
+				}else {
+					bp.getStyleClass().clear();
+					oToDelete.add(file);
+				}
+			});
+			imgPane.add(imBox, i%5, i/5);
+		}
+		imgPane.setPadding(new Insets(10,10,10,10));
+		imgPane.setHgap(10);
+		imgPane.setVgap(10);
+		return imgPane;
+	}
+	
+	public ObservableList<File> getToDelete(){
+		return oToDelete;
 	}
 }
