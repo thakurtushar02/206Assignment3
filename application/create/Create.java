@@ -56,6 +56,8 @@ import javafx.scene.text.Font;
  */
 public class Create {
 	private Button searchButton;
+	private BooleanBinding searchBinding;
+	private Button helpButton;
 	private TextField search = new TextField();
 	private Label create = new Label();
 	private HBox searchBar;
@@ -97,7 +99,7 @@ public class Create {
 		pbSave.setPrefHeight(25);
 		pbSave.setPrefWidth(700);
 		pbSearch.setPrefHeight(25);
-		pbSearch.setPrefWidth(200);
+		pbSearch.setPrefWidth(125);
 	}
 
 
@@ -124,7 +126,7 @@ public class Create {
 		}
 		create.setText("Enter word: ");
 
-		BooleanBinding searchBinding = search.textProperty().isEmpty();
+		searchBinding = search.textProperty().isEmpty();
 
 		File file = new File(".resources/search/badWords.txt"); 
 		try {
@@ -142,14 +144,21 @@ public class Create {
 
 		searchButton = new Button("Search ↳");
 		searchButton.disableProperty().bind(searchBinding);
+		
+		helpButton = new Button("?");
+		helpButton.setVisible(false);
 
 		pbSearch.setVisible(false);
-		searchBar = new HBox(create, search, searchButton, pbSearch);
+		searchBar = new HBox(create, search, searchButton, pbSearch, helpButton);
 		searchBar.setSpacing(10);
 
 		search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) searchButton.fire();});
 
-		searchButton.setOnAction(e -> searchTerm(search.getText()));
+		searchButton.setOnAction(e -> {
+			searchButton.disableProperty().unbind();
+			searchButton.setDisable(true);
+			searchTerm(search.getText());
+		});
 
 		contents = new VBox(searchBar, message);
 		contents.setPadding(new Insets(15,30,30,30));
@@ -254,6 +263,8 @@ public class Create {
 	 */
 	public void displayLines(String reply) {
 		pbSearch.setVisible(false);
+		searchButton.disableProperty().bind(searchBinding);
+		helpButton.setVisible(true);
 		ListView<String> list = new ListView<String>(); // List displaying audio files
 
 		list.setItems(listLines);
@@ -330,6 +341,7 @@ public class Create {
 		butDelete.disableProperty().bind(list.getSelectionModel().selectedItemProperty().isNull());
 
 		Button butNext = new Button("Next ↳");
+		
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 

@@ -244,7 +244,7 @@ public class Learn {
 		
 		Image i = null;
 		try {
-			i = new Image(new File(".resources/learn/thumb.gif").toURI().toURL().toString());
+			i = new Image(new File(".resources/learn/thumb.png").toURI().toURL().toString());
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
