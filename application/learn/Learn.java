@@ -47,7 +47,7 @@ public class Learn {
 	private ToggleGroup ops = new ToggleGroup();
 	private int current;
 	private Question question;
-	private Questions qSet = new Questions();
+	private QuestionSet qSet = new QuestionSet();
 	private Label end = new Label();
 	private int correct;
 	private Button playAgain = new Button();
@@ -56,8 +56,9 @@ public class Learn {
 	private MediaPlayer player;
 	private ImageView image = new ImageView();
 	private Button submit = new Button();
+	private final String CURRENT_STYLE = "-fx-background-color: #6F93FF";
 
-	public Learn(Tab tab, Questions set) {
+	public Learn(Tab tab, QuestionSet set) {
 		this.tab = tab;
 		qSet = set;
 	}
@@ -143,13 +144,13 @@ public class Learn {
 					submit.setText("Finish");
 				}
 			} else if (submit.getText() == "Next") {
+				current++;
 				nextQuestion();
 				
 				// Reset the styling of the answer buttons after it has been checked
 				for (ToggleButton toggle : answer) {
 					toggle.setStyle(null);
 				}
-				current++;
 				submit.setText("Check Answer");
 			} else if (submit.getText() == "Finish") {
 				endScreen();
@@ -163,6 +164,8 @@ public class Learn {
 	 * @param question Question to be asked
 	 */
 	public void setQuestion(Question question) {
+		
+		qNums.get(current-1).setStyle(CURRENT_STYLE);
 
 		// Shuffles and sets the text for the answer buttons
 		Collections.shuffle(answer);
@@ -182,6 +185,8 @@ public class Learn {
 		} else {
 			mView.setMediaPlayer(player);
 		}
+		
+		
 	}
 
 	/**
@@ -266,6 +271,7 @@ public class Learn {
 			qNums.add(btn);
 			qNumbers.getChildren().add(btn);
 		}
+		
 
 		// Generate answer toggle buttons
 		for (int i = 0; i < 4; i++) {
