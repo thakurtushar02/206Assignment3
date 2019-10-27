@@ -158,10 +158,8 @@
     -fx-background-radius: 5em;
 }
 
-.progress-bar {
-	-fx-text-box-border: transparent;
-	-fx-control-inner-background: transparent;
-	-fx-accent: #D5DFFF;
+.progress-indicator {
+	-fx-accent: white;
 }
 
 

@@ -19,13 +19,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.geometry.Side;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -120,8 +121,8 @@ public class Create {
 		_helpButton = new Button("?");
 		_helpButton.setVisible(true);
 		Help helpContents = new Help();
-		Tooltip ttp = helpContents.getToolTip();
-		_helpButton.setTooltip(ttp);
+		ContextMenu cm = helpContents.getContextMenu();
+		_helpButton.setContextMenu(cm);
 
 		_pbSearch.setVisible(false);
 		_searchBar = new HBox(_create, _search, _searchButton, _pbSearch, spacer, _helpButton);
@@ -133,6 +134,10 @@ public class Create {
 			_searchButton.disableProperty().unbind();
 			_searchButton.setDisable(true);
 			searchTerm(_search.getText());
+		});
+		
+		_helpButton.setOnAction(e -> {
+			cm.show(_helpButton, Side.BOTTOM, 0, 0);
 		});
 
 		_contents = new VBox(_searchBar, _message);
@@ -163,6 +168,8 @@ public class Create {
 							if(line.contains("not found :^(")) {
 								_message.setText("Did you misspell? Try again!");
 								_pbSearch.setVisible(false);
+								_searchButton.setDisable(false);
+								_searchButton.disableProperty().bind(_searchBinding);
 								setContents(_main);
 							} else {
 								_message.setText("");
@@ -189,6 +196,8 @@ public class Create {
 		_pbSearch.setVisible(false);
 		_selLines = new SelectLines();
 		_selLines.setScreen(_tab, _tabPane, this, _pbCombine, _pbSave, _listLines, _searchBar);
+		_searchButton.setDisable(false);
+		_searchButton.disableProperty().bind(_searchBinding);
 	}
 
 	/**
