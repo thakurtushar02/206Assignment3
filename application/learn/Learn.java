@@ -37,25 +37,31 @@ import javafx.scene.text.Font;
 public class Learn {
 
 	private Tab tab;
-	private Label learn = new Label();
-	private Button start = new Button();
 	private BorderPane content = new BorderPane();
-	private final double BUTTON_WIDTH = 75;
-	private final double BUTTON_HEIGHT = 75;
-	private List<ToggleButton> answer = new ArrayList<ToggleButton>();
-	private List<Button> qNums = new ArrayList<Button>();
-	private ToggleGroup ops = new ToggleGroup();
+	
+	private Label learn = new Label();
+	private Label end = new Label();
+	
+	private Button start = new Button();
+	private Button playAgain = new Button();
+	private Button submit = new Button();
+	
 	private int current;
+	private int correct;
 	private Question question;
 	private QuestionSet qSet = new QuestionSet();
-	private Label end = new Label();
-	private int correct;
-	private Button playAgain = new Button();
+	
+	private ToggleGroup ops = new ToggleGroup();
+	private List<ToggleButton> answer = new ArrayList<ToggleButton>();
+	private List<Button> qNums = new ArrayList<Button>();
+	
 	private MediaView mView;
 	private Media media;
 	private MediaPlayer player;
 	private ImageView image = new ImageView();
-	private Button submit = new Button();
+	
+	private final double BUTTON_WIDTH = 75;
+	private final double BUTTON_HEIGHT = 75;
 	private final String CURRENT_STYLE = "-fx-background-color: #6F93FF";
 
 	public Learn(Tab tab, QuestionSet set) {
@@ -76,19 +82,21 @@ public class Learn {
 			content.setTop(learn);
 		}else {
 			learn.setText("Time to review what you have learned!");
+			
 			start.setText("Start Quiz");
-			start.setLayoutX(100);
-			start.setLayoutY(100);
-
 			start.setOnAction(e -> quizStart());
+			
 			content.setTop(learn);
 			learn.setAlignment(Pos.CENTER);
+			
 			content.setCenter(start);	
 		}
 
 		learn.setFont(new Font("Arial", 16));
 		learn.setPadding(new Insets(20));
+		
 		content.setPadding(new Insets(20));
+		
 		BorderPane.setAlignment(learn, Pos.CENTER);
 		tab.setContent(content);
 	}
@@ -126,7 +134,6 @@ public class Learn {
 						break;
 					}
 				}
-				
 				// Set the colour of the question number and answer buttons whether it is correct or not
 				if (isCorrect(question)) {
 					btn.setStyle("-fx-background-color:green");
@@ -137,7 +144,7 @@ public class Learn {
 					selection.setStyle("-fx-border-color:red");
 					correctAnswer.setStyle("-fx-border-color:green");
 				}
-
+				// Set button text to finish on the last question
 				if (current < 5) {
 					submit.setText("Next");
 				} else if (current == 5) {
@@ -185,8 +192,6 @@ public class Learn {
 		} else {
 			mView.setMediaPlayer(player);
 		}
-		
-		
 	}
 
 	/**
@@ -222,7 +227,6 @@ public class Learn {
 		try {
 			i = new Image(new File(".resources/learn/thumb.gif").toURI().toURL().toString());
 		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		image.setImage(i);
@@ -237,7 +241,6 @@ public class Learn {
 		content.setBottom(playAgain);
 		BorderPane.setAlignment(end, Pos.CENTER);
 		BorderPane.setAlignment(playAgain, Pos.CENTER);
-
 	}
 	
 	/**
@@ -272,7 +275,6 @@ public class Learn {
 			qNumbers.getChildren().add(btn);
 		}
 		
-
 		// Generate answer toggle buttons
 		for (int i = 0; i < 4; i++) {
 			ToggleButton btn = new ToggleButton();
