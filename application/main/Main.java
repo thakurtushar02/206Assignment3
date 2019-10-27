@@ -33,7 +33,7 @@ public class Main extends Application {
 	private QuestionSet set = new QuestionSet();
 	
 	/**
-	 * Creates the three tabs, Home, View, and Create Creation.
+	 * Creates the four tabs, Home, View, Create, and Learn.
 	 */
 	@Override
 	public void start(Stage primaryStage) {
@@ -95,6 +95,7 @@ public class Main extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		
+		// deleting unnecessary files in case of exiting while making a creation
 		primaryStage.setOnCloseRequest(arg0 -> {
 			create.deleteFiles();
 			Task<Void> task = new Task<Void>() {
