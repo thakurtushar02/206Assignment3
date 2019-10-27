@@ -31,6 +31,8 @@ files &rarr; Apply and close &rarr; Make sure library is ticked &rarr; Finish
 
 - **arrow.png:** Masur (https://commons.wikimedia.org/wiki/File:Red_Arrow_Right.svg), "Red Arrow Right", marked as public domain, more details on Wikimedia Commons: https://commons.wikimedia.org/wiki/Template:PD-shape  
 
+- **thumb.png:** Image by <a href="https://pixabay.com/users/DarkAthena-5167878/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4007573">DarkAthena</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4007573">Pixabay</a>
+
 - **.titleFont.otf:** Read .titleFontreadme.txt in the main package for more details  
 
 - **.myFont.ttf:** Read .myFontreadme.txt in main package for more details
