@@ -229,7 +229,8 @@ public class SelectLines {
 				list.getItems().remove(list.getSelectionModel().getSelectedIndex());
 			}
 		});
-
+		
+		//Basic mode has music set classic 
 		butNext.setOnAction(e -> {
 			if (Home.MODE.getText().equals(Home.ADVANCED)) {
 				_music = musicComb.getSelectionModel().getSelectedItem();
