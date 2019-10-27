@@ -1,5 +1,5 @@
 package application.main;
-	
+
 import java.io.IOException;
 
 import application.create.Create;
@@ -31,7 +31,7 @@ public class Main extends Application {
 	private Learn learn;
 	private Stage currentStage;
 	private QuestionSet set = new QuestionSet();
-	
+
 	/**
 	 * Creates the four tabs, Home, View, Create, and Learn.
 	 */
@@ -39,13 +39,11 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		currentStage = primaryStage;
 		primaryStage.setTitle("VARpedia");
-		
+
 		BorderPane root = new BorderPane();
-		
 		TabPane tabPane = new TabPane();
-		
 		Popup popup = new Popup();
-		
+
 		Tab homeTab = new Tab("Home");
 		homeTab.getStyleClass().add("home_style");
 		home = new Home(homeTab);
@@ -55,7 +53,6 @@ public class Main extends Application {
 		createTab.getStyleClass().add("create_style");
 		create = new Create(createTab, popup, set);
 		create.setContents(this);
-		
 		Tab viewTab = new Tab("View");
 		viewTab.getStyleClass().add("view_style");
 		view = new View(viewTab, popup);
@@ -68,7 +65,6 @@ public class Main extends Application {
 		
 		// When tab selection changes, update the list in Creations and reset Quiz tab if tab switches from/to
 		tabPane.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				view.setContents();
@@ -78,30 +74,29 @@ public class Main extends Application {
 				}
 			}
 		}); 
-		
+
 		create.setView(view);
 		popup.setViewCreate(view, create);
-		
 		tabPane.getTabs().addAll(homeTab, viewTab, createTab, learnTab);
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 		create.storeTabs(tabPane);
-		
+
 		root.setTop(tabPane);
 		primaryStage.setResizable(false);
-		
+
 		Scene scene = new Scene(root, 1200, 750);
 
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.show();
-		
+
 		// deleting unnecessary files in case of exiting while making a creation
 		primaryStage.setOnCloseRequest(arg0 -> {
 			create.deleteFiles();
 			Task<Void> task = new Task<Void>() {
 				@Override
 				protected Void call() throws Exception {
-					
+
 					String cmd = "rm -f text.txt";
 					ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 					try {
@@ -123,7 +118,7 @@ public class Main extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
-	
+
 	public void refreshGUI(String[] args) {
 		start(currentStage);
 	}
