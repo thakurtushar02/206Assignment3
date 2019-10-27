@@ -77,11 +77,6 @@ public class Main extends Application {
 		create.setView(view);
 		popup.setViewCreate(view, create);
 
-		Tab learnTab = new Tab("Learn");
-		learnTab.getStyleClass().add("learn_style");
-		learn = new Learn(learnTab, set);
-
-		learn.setContents();
 		tabPane.getTabs().addAll(homeTab, viewTab, createTab, learnTab);
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 		create.storeTabs(tabPane);

@@ -20,7 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
@@ -43,7 +43,7 @@ public class SelectLines {
 	private String _music;
 //	private long _pid;
 
-	public void setScreen(Tab tab, TabPane tabPane, Create create, ProgressBar pbCombine, ProgressBar pbSave, ObservableList<String> listLines, HBox searchBar) {
+	public void setScreen(Tab tab, TabPane tabPane, Create create, ProgressIndicator pbCombine, ProgressIndicator pbSave, ObservableList<String> listLines, HBox searchBar) {
 		_file = new File ("text.txt");
 		ListView<String> list = new ListView<String>(); // List displaying audio files
 
@@ -103,7 +103,7 @@ public class SelectLines {
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
-		HBox lineOptions = new HBox(lblVoice, combobox, butPlay, butSave, spacer, butUp, butDown, butDelete);
+		HBox lineOptions = new HBox(lblVoice, combobox, butPlay, butSave, pbSave, spacer, butUp, butDown, butDelete);
 		lineOptions.setSpacing(15);
 		lineOptions.setAlignment(Pos.BOTTOM_CENTER);
 
@@ -116,7 +116,7 @@ public class SelectLines {
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 
 		pbSave.setVisible(false);
-		HBox nameLayout = new HBox(10, lblMusic, musicComb, pbSave, spacer2, butNext);
+		HBox nameLayout = new HBox(10, lblMusic, musicComb, spacer2, butNext);
 		nameLayout.setAlignment(Pos.BOTTOM_CENTER);
 
 		VBox layout = new VBox(views, lineOptions, nameLayout);
