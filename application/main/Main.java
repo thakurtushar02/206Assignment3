@@ -56,11 +56,21 @@ public class Main extends Application {
 		viewTab.getStyleClass().add("view_style");
 		view = new View(viewTab, popup);
 		view.setContents();
+		
+		Tab learnTab = new Tab("Learn");
+		learnTab.getStyleClass().add("learn_style");
+		learn = new Learn(learnTab, set);
+
+		learn.setContents();
 
 		tabPane.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				view.setContents();
+				
+				if (newValue == (Number) 3) {
+					learn.setContents();
+				}
 			}
 		}); 
 
@@ -72,7 +82,6 @@ public class Main extends Application {
 		learn = new Learn(learnTab, set);
 
 		learn.setContents();
-
 		tabPane.getTabs().addAll(homeTab, viewTab, createTab, learnTab);
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 		create.storeTabs(tabPane);
