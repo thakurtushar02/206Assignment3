@@ -9,6 +9,7 @@ import application.learn.QuestionSet;
 import application.popup.Popup;
 import application.view.View;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -107,6 +108,7 @@ public class Main extends Application {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
+					Platform.exit();
 					return null;
 				}
 

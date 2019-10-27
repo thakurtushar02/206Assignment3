@@ -1,29 +1,48 @@
 package application.create;
 
+import application.popup.HelpPopup;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 
+/**
+ * This class facilitates the help function in the app
+ * @author Jacinta, Lynette, Tushar
+ *
+ */
 public class Help {
 
+	/**
+	 * This is the help function for the Create tab
+	 * @return
+	 */
 	public ContextMenu getContextMenu() {
 		final ContextMenu contextMenu = new ContextMenu();
-		MenuItem item1 = new MenuItem("To Play/Save Text");
-		item1.setOnAction(new EventHandler<ActionEvent>() {
+		HelpPopup hp = new HelpPopup();
+		
+		MenuItem playSaveText = new MenuItem("To Play/Save Text");
+		playSaveText.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				System.out.println("To Play/Save Text");
+				hp.showCreateHelp("Highlight the piece of text you\n"
+						+ "want to Play or Save and select the\n"
+						+ "voice you want, then press the\n"
+						+ "Play/Save button.");
 			}
 		});
-		MenuItem item2 = new MenuItem("To Play AudioFiles");
-		item2.setOnAction(new EventHandler<ActionEvent>() {
+		
+		MenuItem playAudio = new MenuItem("To Play AudioFiles");
+		playAudio.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 		    public void handle(ActionEvent e) {
-		        System.out.println("To Play AudioFiles");
+				hp.showCreateHelp("Double click on the AudioFiles\n"
+						+ "you have already saved from the list\n"
+						+ "on the right.");
 		    }
 		});
-		contextMenu.getItems().addAll(item1, item2);
+		
+		contextMenu.getItems().addAll(playSaveText, playAudio);
 		return contextMenu;
 	}
 }

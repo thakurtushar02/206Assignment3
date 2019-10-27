@@ -2,10 +2,14 @@ package application.create;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 
 import application.home.Home;
 import javafx.beans.binding.Bindings;
@@ -40,11 +44,24 @@ public class SelectLines {
 	private final String YELLOW = "Electronic";
 	private final String LIGHT = "Light";
 	private File _file;
+	private File _tempFile;
 	private String _music;
-//	private long _pid;
 
-	public void setScreen(Tab tab, TabPane tabPane, Create create, ProgressIndicator pbCombine, ProgressIndicator pbSave, ObservableList<String> listLines, HBox searchBar) {
+	public void setScreen(Tab tab, TabPane tabPane, Create create, ProgressIndicator pbCombine, ProgressIndicator pbSave, ObservableList<String> listLines, HBox searchBar, boolean backwards) {
 		_file = new File ("text.txt");
+		
+		_tempFile = new File("tempText.txt");
+		try {
+			if(backwards) {
+				copyFile(_tempFile, _file);
+			}else {
+				_tempFile.createNewFile();
+				copyFile(_file, _tempFile);
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
 		ListView<String> list = new ListView<String>(); // List displaying audio files
 
 		list.setItems(listLines);
@@ -146,7 +163,6 @@ public class SelectLines {
 						ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
 						try {
 							Process p = pb.start();
-//							findPID(p);
 							BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 							int exitStatus = p.waitFor();
 							if (exitStatus != 0) {
@@ -255,28 +271,6 @@ public class SelectLines {
 			butNext.fire();
 		}
 	}
-	
-//	public void findPID(Process p) {
-//		long pid = -1;
-//		java.lang.reflect.Field f;
-//		try {
-//			f = p.getClass().getDeclaredField("pid");
-//			f.setAccessible(true);
-//			pid = f.getLong(p);
-//			f.setAccessible(false);
-//		} catch (NoSuchFieldException | SecurityException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}catch (IllegalArgumentException | IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		_pid=pid;
-//	}
-//	
-//	public long getPID() {
-//		return _pid;
-//	}
 
 	public TextArea getText() {
 		TextArea textArea= new TextArea();
@@ -300,5 +294,18 @@ public class SelectLines {
 		textArea.setText(textArea.getText().substring(2,textArea.getText().length()-3));
 		textArea.setStyle("-fx-font-size:30");
 		return textArea;
+	}
+	
+	@SuppressWarnings("resource")
+	public static void copyFile( File from, File to ) throws IOException {
+
+	    if ( !to.exists() ) { to.createNewFile(); }
+
+	    try (
+	        FileChannel in = new FileInputStream( from ).getChannel();
+	        FileChannel out = new FileOutputStream( to ).getChannel() ) {
+
+	        out.transferFrom( in, 0, in.size() );
+	    }
 	}
 }

@@ -162,6 +162,14 @@
 	-fx-accent: white;
 }
 
+.menu-item:focused{
+	-fx-background-color: #D5DFFF;
+}
+
+.menu-item .label{
+	-fx-font-size: 30px;
+}
+
 
 
 

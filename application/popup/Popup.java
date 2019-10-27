@@ -10,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -22,14 +21,11 @@ import javafx.stage.StageStyle;
 public class Popup {
 	private Create _create;
 	private View _view;
-	private Stage _popup = new Stage();
-	private Stage _confirmPopup = new Stage();
-	private Stage _tooManyWords = new Stage();
+	protected Stage _popup = new Stage();
 
 	{
 		_popup.initStyle(StageStyle.TRANSPARENT);
-		_confirmPopup.initStyle(StageStyle.TRANSPARENT);
-		_tooManyWords.initStyle(StageStyle.TRANSPARENT);
+		_popup.setAlwaysOnTop(true);
 	}
 
 
@@ -47,14 +43,11 @@ public class Popup {
 	 * @param isView	boolean of whether the popup is being called from the View tab
 	 */
 	public void showStage(String name, String output, String button1, String button2, boolean isView){
-
 		BorderPane comp;
 		Button cont;
 		Button cancel;
-
 		cont = new Button(button1);
 		cancel = new Button(button2);
-
 
 		cont.setMinWidth(100);
 		cont.setOnAction(e -> {
@@ -71,8 +64,8 @@ public class Popup {
 			}
 			_popup.close();
 		});
+		
 		HBox buttonBox;
-
 		if (isView) {
 			buttonBox = new HBox(cont, cancel); 
 		} else {
@@ -83,7 +76,6 @@ public class Popup {
 		buttonBox.setAlignment(Pos.BOTTOM_CENTER);
 
 		Label confirmation = new Label(output);
-		confirmation.setFont(new Font("Arial", 14));
 		confirmation.setTextAlignment(TextAlignment.CENTER);
 		confirmation.setLineSpacing(5);
 		confirmation.setPrefHeight(100);
@@ -94,7 +86,7 @@ public class Popup {
 
 		Scene stageScene = new Scene(comp, 600, 200);
 		stageScene.getStylesheets().add(getClass().getResource("../main/application.css").toExternalForm());
-		comp.getStyleClass().add("blackBorder");
+		getBorder(comp);
 		_popup.setScene(stageScene);
 		_popup.show();
 	}
@@ -127,7 +119,7 @@ public class Popup {
 	 */
 	public void showFeedback(String name, boolean isView) {
 		Label confirmation = new Label();
-		_confirmPopup.setTitle("Creation Created");
+		_popup.setTitle("Creation Created");
 		BorderPane comp;
 
 		Button cont = new Button("OK");
@@ -135,10 +127,9 @@ public class Popup {
 		cont.setPadding(new Insets(5,10,5,10));
 
 		cont.setOnAction(e -> {
-			_confirmPopup.close();
+			_popup.close();
 		});
 
-		confirmation.setFont(new Font("Arial", 14));
 		confirmation.setTextAlignment(TextAlignment.CENTER);
 		confirmation.setLineSpacing(5);
 		confirmation.setPrefHeight(100);
@@ -153,29 +144,38 @@ public class Popup {
 
 		Scene stageScene = new Scene(comp, 600, 200);
 		stageScene.getStylesheets().add(getClass().getResource("../main/application.css").toExternalForm());
-		comp.getStyleClass().add("blackBorder");
-		_confirmPopup.setScene(stageScene);
-		_confirmPopup.show();
+		getBorder(comp);
+		_popup.setScene(stageScene);
+		_popup.show();
 	}
 
 	/**
 	 * Creates and displays a warning popup when user highlights too many words
 	 */
 	public void tooManyWordsHighlighted() {
-		_tooManyWords.setTitle("Too many words");
+		_popup.setTitle("Too many words");
 
 		Label text = new Label("Play only 1-30 words at a time!");
 		Button butOK = new Button("OK");
-		butOK.setOnAction(e -> _tooManyWords.close());
+		
+		butOK.setOnAction(e -> _popup.close());
+		
 		VBox vbox = new VBox(10, text, butOK);
 		vbox.setAlignment(Pos.CENTER);
+		
 		Scene scene = new Scene(vbox, 600, 200);
 		scene.getStylesheets().add(getClass().getResource("../main/application.css").toExternalForm());
 		vbox.getStyleClass().add("blackBorder");
-		_tooManyWords.setScene(scene);
-
-		_tooManyWords.show();
-
+		_popup.setScene(scene);
+		_popup.show();
+	}
+	
+	/**
+	 * Gets the css black border for the border pane.
+	 * @param bp
+	 */
+	public void getBorder(BorderPane bp) {
+		bp.getStyleClass().add("blackBorder");
 	}
 
 }

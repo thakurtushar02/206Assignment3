@@ -194,10 +194,11 @@ public class Create {
 	 * Displays the wiki search results into the TextArea
 	 * @param reply	the search term
 	 */
-	public void displayLines(String reply) {
+	public void displayLines(boolean isBackwards) {
 		_pbSearch.setVisible(false);
 		_selLines = new SelectLines();
-		_selLines.setScreen(_tab, _tabPane, this, _pbCombine, _pbSave, _listLines, _searchBar);
+		_selLines.setScreen(_tab, _tabPane, this, _pbCombine, _pbSave, _listLines, _searchBar, isBackwards);
+		_searchButton.disableProperty().unbind();
 		_searchButton.setDisable(false);
 		_searchButton.disableProperty().bind(_searchBinding);
 	}
@@ -232,7 +233,14 @@ public class Create {
 				}
 			}
 		});
-		HBox nameAndCreate = new HBox(nameField, btnCreate, _pbCombine);
+		Button back = new Button("< Back");
+		back.setOnAction(e -> {
+			displayLines(true);
+		});
+		Pane spacer = new Pane();
+		spacer.setMinSize(1, 1);
+		HBox nameAndCreate = new HBox(back, spacer, _pbCombine, nameField, btnCreate);
+		HBox.setHgrow(spacer, Priority.ALWAYS);
 		nameAndCreate.setPadding(new Insets(10,10,10,10));
 		nameAndCreate.setSpacing(10);
 		chooseImages = new VBox(prompt, imgPane, nameAndCreate);
@@ -432,7 +440,7 @@ public class Create {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						displayLines(_term);
+						displayLines(false);
 					}
 				});
 				return null;
