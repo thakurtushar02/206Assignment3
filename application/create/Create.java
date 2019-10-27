@@ -41,34 +41,43 @@ import javafx.scene.text.Font;
  *@author Jacinta, Lynette, Tushar
  */
 public class Create {
-	private BooleanBinding _searchBinding;
-	private Button _helpButton;
-	private Main _main;
+	
 	private TabPane _tabPane;
 	private Tab _tab;
 	private View _view;
-	private Popup _popup;
+	private Main _main;
+	
 	private ImageManager _imMan;
 	private SelectLines _selLines;
+	private Popup _popup;
+	
+	private BooleanBinding _searchBinding;
+	
+	private Button _helpButton;
+	private Button _searchButton;
+	
 	private HBox _searchBar;
 	private VBox _contents;
-	private Button _searchButton;
+	
 	private TextField _search = new TextField();
+	
 	private Label _message = new Label();
 	private Label _create = new Label();
+	
 	private ProgressIndicator _pbCombine = new ProgressIndicator();
 	private ProgressIndicator _pbSave = new ProgressIndicator();
 	private ProgressIndicator _pbSearch = new ProgressIndicator();
 	private File _file;
+	
 	private int _numberOfAudioFiles = 0;
 	private int _numberOfPictures;
 	private ObservableList<String> _listLines = FXCollections.observableArrayList();
+	
 	private String _term;
 	private String _name;
 	private String _music;
 
 	private final QuestionSet _set;
-
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
@@ -114,7 +123,7 @@ public class Create {
 		}
 
 		_searchButton = new Button("Search ↳");
-		_searchButton.disableProperty().bind(_searchBinding); // disable button if search field is empty or contains bad word
+		_searchButton.disableProperty().bind(_searchBinding); // Disable button if search field is empty/contains bad word
 		
 		final Pane spacer = new Pane();
 		spacer.setMinSize(1, 1);
@@ -130,11 +139,12 @@ public class Create {
 		_searchBar = new HBox(_create, _search, _searchButton, _pbSearch, spacer, _helpButton);
 		_searchBar.setSpacing(10);
 
+		// Allow user to search by pressing enter key
 		_search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) _searchButton.fire();});
 
 		_searchButton.setOnAction(e -> {
 			_searchButton.disableProperty().unbind();
-			_searchButton.setDisable(true);
+			_searchButton.setDisable(true); // Disable the search button while search is processed
 			searchTerm(_search.getText());
 		});
 		
@@ -195,7 +205,7 @@ public class Create {
 	 * @param reply	the search term
 	 */
 	public void displayLines(String reply) {
-		_pbSearch.setVisible(false);
+//		_pbSearch.setVisible(false);
 		_selLines = new SelectLines();
 		_selLines.setScreen(_tab, _tabPane, this, _pbCombine, _pbSave, _listLines, _searchBar);
 		_searchButton.setDisable(false);
@@ -217,11 +227,13 @@ public class Create {
 		TextField nameField = new TextField();
 		Button btnCreate = new Button("Create ↳");
 		int count = 1;
+		// Generate new name if it already exists
 		while (checkName(potentialName).equals(DUPLICATE)) {
 			potentialName = _term + "-" + count;
 			count++;
 		}
 		nameField.setText(potentialName);
+		
 		// Does not allow characters to be typed into text field
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
 			String[] badCharacters = {"/", "?", "%", "*", ":", "|", "\"", "<", ">", "\0",
@@ -232,6 +244,9 @@ public class Create {
 				}
 			}
 		});
+		// Allow user to create by pressing enter key
+		nameField.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) btnCreate.fire();});
+		
 		HBox nameAndCreate = new HBox(nameField, btnCreate, _pbCombine);
 		nameAndCreate.setPadding(new Insets(10,10,10,10));
 		nameAndCreate.setSpacing(10);
@@ -239,17 +254,21 @@ public class Create {
 		chooseImages.setPadding(new Insets(15,30,30,30));
 		
 		ObservableList<File> oToDelete = _imMan.getToDelete();
-		nameField.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) btnCreate.fire();});
+		// Create button is disabled unless images are chosen
 		BooleanBinding combBinding = Bindings.size(oToDelete).isEqualTo(10).or(nameField.textProperty().isEmpty());
 		btnCreate.disableProperty().bind(combBinding);
+		
 		btnCreate.setOnAction(arg0 -> {
 			_numberOfPictures = 10 - oToDelete.size();
 			for(File imFile: oToDelete){
-				imFile.delete();
+				imFile.delete(); // Delete unused images
 			}
+			
 			String name = nameField.getText();
 			String validity = checkName(name);
 			_name = name;
+			
+			// Error checking creation name
 			if (validity.equals(EMPTY)) {
 				nameField.setPromptText("Nothing entered.");
 				btnCreate.requestFocus();
@@ -266,6 +285,7 @@ public class Create {
 				_popup.showStage(_name, "Name already exists. Overwrite?", "✘", "✔", false);
 			}
 		});
+		
 		_tab.setContent(chooseImages);
 	}
 
@@ -295,6 +315,7 @@ public class Create {
 		if (Home.MODE.getText().equals(Home.ADVANCED)) {
 			_pbSave.setVisible(true);
 		}
+		
 		Task<Void> task = new Task<Void>() {
 			@Override public Void call() {
 
@@ -309,14 +330,17 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				
 				_numberOfAudioFiles++;
 				String nameOfFile = "AudioFile" + _numberOfAudioFiles;
 
+				// Build command based on voice selection
 				if (voice.equals(FESTIVAL)) {
 					cmd = "cat " + _file.toString() + " | text2wave -o \"./AudioFiles/" + nameOfFile + ".wav\"";
 				} else {
 					cmd = "espeak -f " + _file.toString() + " --stdout > \"./AudioFiles/" + nameOfFile + ".wav\"";
 				}
+				
 				builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();
@@ -327,6 +351,7 @@ public class Create {
 					e.printStackTrace();
 				}
 
+				// Update listview of audio files 
 				Platform.runLater(new Runnable(){
 					@Override public void run() {
 						_view.setContents();
@@ -372,6 +397,7 @@ public class Create {
 				VideoMaker vidMaker = new VideoMaker();
 				vidMaker.makeVideo(_term, _name, _numberOfPictures);
 				
+				// Create question based on the creation and add it to the set
 				Question question = new Question(new File("Quizzes/"+ _term + ".mp4"), _term);
 				_set.addQuestion(question);
 
@@ -396,8 +422,6 @@ public class Create {
 	 * Deletes supporting files from working directory
 	 */
 	public void deleteFiles() {
-		_listLines = FXCollections.observableArrayList();
-		_numberOfAudioFiles = 0;
 		Task<Void> task = new Task<Void>() {
 
 			@Override
