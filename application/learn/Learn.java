@@ -37,7 +37,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class Learn {
-	
+
 	private Tab tab;
 	private Label learn = new Label();
 	private Button start = new Button();
@@ -57,12 +57,13 @@ public class Learn {
 	private Media media;
 	private MediaPlayer player;
 	private ImageView image = new ImageView();
-	
+	private Button submit = new Button();
+
 	public Learn(Tab tab, Questions set) {
 		this.tab = tab;
 		qSet = set;
 	}
-	
+
 	public void setContents() {
 		content.getChildren().removeAll(content.getChildren());
 		if(qSet.numberOfQuestions() == 0) {
@@ -73,77 +74,80 @@ public class Learn {
 			start.setText("Start Quiz");
 			start.setLayoutX(100);
 			start.setLayoutY(100);
-			
+
 			start.setOnAction(e -> quizStart());
 			content.setTop(learn);
 			learn.setAlignment(Pos.CENTER);
 			content.setCenter(start);	
 		}
-		
+
 		learn.setFont(new Font("Arial", 16));
 		learn.setPadding(new Insets(20));
 		content.setPadding(new Insets(20));
 		BorderPane.setAlignment(learn, Pos.CENTER);
 		tab.setContent(content);
-		
+
 	}
-	
+
 	public void quizStart() {
-		qNums.clear();
-		answer.clear();
+		//		qNums.clear();
+		//		answer.clear();
+		//		
+		//		content.getChildren().removeAll(content.getChildren());
+		//		question = qSet.getQuestion();
+		//		
+		//		HBox options = new HBox();
+		//		VBox qNumbers = new VBox();
 		
-		content.getChildren().removeAll(content.getChildren());
-		question = qSet.getQuestion();
 		
-		HBox options = new HBox();
-		VBox qNumbers = new VBox();
-		
+
 		correct = 0;
 		current = 1;
+		quizSetContent();
 		
-		Label quiz = new Label("What is this?");
-		quiz.setFont(new Font("Arial", 16));
-		
-		for (int i = 1; i < 6; i ++) {
-			Button btn = new Button();
-			btn.setText(""+i);
-			btn.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-			qNums.add(btn);
-			qNumbers.getChildren().add(btn);
-		}
-		
-		qNumbers.setAlignment(Pos.CENTER_LEFT);
-		qNumbers.setSpacing(10);
-		
-		
-		for (int i = 0; i < 4; i++) {
-			ToggleButton btn = new ToggleButton();
-			btn.setToggleGroup(ops);
-			answer.add(btn);
-			options.getChildren().add(btn);
-		}
-		
-		setQuestion(question);
-		
-		mView.setFitHeight(400);
-		mView.setPreserveRatio(true);
-		
-		Button submit = new Button("Check Answer");
-		submit.setVisible(false);
-		
+		//		Label quiz = new Label("What is this?");
+		//		quiz.setFont(new Font("Arial", 16));
+		//		
+		//		for (int i = 1; i < 6; i ++) {
+		//			Button btn = new Button();
+		//			btn.setText(""+i);
+		//			btn.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		//			qNums.add(btn);
+		//			qNumbers.getChildren().add(btn);
+		//		}
+		//		
+		//		qNumbers.setAlignment(Pos.CENTER_LEFT);
+		//		qNumbers.setSpacing(10);
+		//		
+		//		
+		//		for (int i = 0; i < 4; i++) {
+		//			ToggleButton btn = new ToggleButton();
+		//			btn.setToggleGroup(ops);
+		//			answer.add(btn);
+		//			options.getChildren().add(btn);
+		//		}
+
+		//		setQuestion(question);
+		//		
+		//		mView.setFitHeight(400);
+		//		mView.setPreserveRatio(true);
+		//		
+		//		Button submit = new Button("Check Answer");
+		//		submit.setVisible(false);
+
 		// Button only appears if an answer is selected
 		ops.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 			@Override
 			public void changed(ObservableValue<? extends Toggle> arg0, Toggle arg1, Toggle arg2) {
-				  if (ops.getSelectedToggle() != null) {
-		            	submit.setVisible(true);
-		            } else {
-		            	submit.setVisible(false);
-		            }
+				if (ops.getSelectedToggle() != null) {
+					submit.setVisible(true);
+				} else {
+					submit.setVisible(false);
+				}
 			}
 		});
-		
-		
+
+
 		submit.setOnAction(e -> {
 			if (submit.getText() == "Check Answer") {
 				Button btn = qNums.get(current - 1);
@@ -155,7 +159,7 @@ public class Learn {
 						break;
 					}
 				}
-				
+
 				if (isCorrect(question)) {
 					btn.setStyle("-fx-background-color:green");
 					selection.setStyle("-fx-border-color:green; ");
@@ -165,7 +169,7 @@ public class Learn {
 					selection.setStyle("-fx-border-color:red");
 					correctAnswer.setStyle("-fx-border-color:green");
 				}
-				
+
 				if (current < 5) {
 					submit.setText("Next");
 				} else if (current == 5) {
@@ -181,58 +185,34 @@ public class Learn {
 			} else if (submit.getText() == "Finish") {
 				endScreen();
 			}
-			
+
 		});
-		
-		final Pane spacer = new Pane();
-		spacer.setMinSize(10, 1);
 
-		HBox.setHgrow(spacer, Priority.ALWAYS);
 		
-		options.setSpacing(10);
-		options.setAlignment(Pos.CENTER);
-		
-		VBox main = new VBox();
-		main.getChildren().addAll(mView, options);
-		main.setAlignment(Pos.CENTER);
-		main.setSpacing(20);
 
-		HBox check = new HBox();
-		check.getChildren().addAll(spacer, submit);
-		
-		content.setTop(quiz);
-		content.setRight(qNumbers);
-		content.setCenter(main);
-		content.setBottom(check);
-		BorderPane.setAlignment(quiz, Pos.CENTER);
-		
-		BorderPane.setMargin(quiz, new Insets(10, 10, 10, 0));
-		BorderPane.setMargin(main, new Insets(0, 20, 10, 0));
-		BorderPane.setMargin(qNumbers, new Insets(0,10,10,0));
-		
 	}
-	
+
 	public void setQuestion(Question question) {
-		
+
 		Collections.shuffle(answer);
 		for (int i = 0; i < 4; i++) {
 			answer.get(i).setText(question.getAnswers().get(i));
 			answer.get(i).setSelected(false);
 		}
-		
+
 		media = new Media(question.getVideo());
 		player = new MediaPlayer(media);
 		player.setAutoPlay(true);
 		player.setCycleCount(MediaPlayer.INDEFINITE);
-		
+
 		if (mView == null) {
 			mView = new MediaView(player);
 		} else {
 			mView.setMediaPlayer(player);
 		}
-		
+
 	}
-	
+
 	public boolean isCorrect(Question question) {
 		ToggleButton selected = (ToggleButton) ops.getSelectedToggle();
 		if (selected.getText() == question.getCorrectAnswer()) {
@@ -240,16 +220,16 @@ public class Learn {
 		}
 		return false;
 	}
-	
+
 	public void nextQuestion() {
 		question = qSet.getQuestion();
 		setQuestion(question);
 	}
-	
+
 	public void endScreen() {
 		content.getChildren().removeAll(content.getChildren());
 		end.setText("You got "+correct+"/5!");
-		
+
 		Image i = null;
 		try {
 			i = new Image(new File(".resources/learn/thumb.gif").toURI().toURL().toString());
@@ -260,17 +240,81 @@ public class Learn {
 		image.setImage(i);
 		image.setPreserveRatio(true);
 		image.setFitWidth(400);
-		
+
 		playAgain.setText("Play Again!");
 		playAgain.setOnAction(e -> quizStart());
-		
+
 		content.setTop(end);
 		content.setCenter(image);
 		content.setBottom(playAgain);
 		BorderPane.setAlignment(end, Pos.CENTER);
 		BorderPane.setAlignment(playAgain, Pos.CENTER);
-		
-		
+
 	}
-	
+
+	public void quizSetContent() {
+		qNums.clear();
+		answer.clear();
+
+		content.getChildren().removeAll(content.getChildren());
+		question = qSet.getQuestion();
+
+		HBox options = new HBox();
+		HBox check = new HBox();
+		VBox qNumbers = new VBox();
+		VBox main = new VBox();
+
+		Label quiz = new Label("What is this?");
+		quiz.setFont(new Font("Arial", 16));
+		
+		final Pane spacer = new Pane();
+		
+		submit.setText("Check Answer");
+		submit.setVisible(false);
+
+		for (int i = 1; i < 6; i ++) {
+			Button btn = new Button();
+			btn.setText(""+i);
+			btn.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+			qNums.add(btn);
+			qNumbers.getChildren().add(btn);
+		}
+
+		for (int i = 0; i < 4; i++) {
+			ToggleButton btn = new ToggleButton();
+			btn.setToggleGroup(ops);
+			answer.add(btn);
+			options.getChildren().add(btn);
+		}
+		setQuestion(question);
+
+		mView.setFitHeight(400);
+		mView.setPreserveRatio(true);
+
+		spacer.setMinSize(10, 1);
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+
+		options.setSpacing(10);
+		options.setAlignment(Pos.CENTER);
+
+		main.getChildren().addAll(mView, options);
+		main.setAlignment(Pos.CENTER);
+		main.setSpacing(20);
+
+		check.getChildren().addAll(spacer, submit);
+		
+		qNumbers.setAlignment(Pos.CENTER_LEFT);
+		qNumbers.setSpacing(10);
+
+		content.setTop(quiz);
+		content.setRight(qNumbers);
+		content.setCenter(main);
+		content.setBottom(check);
+		BorderPane.setAlignment(quiz, Pos.CENTER);
+
+		BorderPane.setMargin(quiz, new Insets(10, 10, 10, 0));
+		BorderPane.setMargin(main, new Insets(0, 20, 10, 0));
+		BorderPane.setMargin(qNumbers, new Insets(0,10,10,0));
+	}
+
 }
