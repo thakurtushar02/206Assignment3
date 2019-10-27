@@ -8,12 +8,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Questions {
+/**
+ * Represents a set of questions. Stores questions based on the creations made in the VARpedia app
+ * @author Lynette
+ *
+ */
+public class QuestionSet {
 
 	private List<Question> questions = new ArrayList<Question>();
 	
-	public Questions() {
-		
+	/**
+	 * Creates a QuestionSet object. Upon creation, questions are created and added to the set
+	 * if there are any existing quiz videos
+	 */
+	public QuestionSet() {
+		// Check for any existing quiz videos
 		List<String> qVideos = new ArrayList<String>();
 		String command = "ls Quizzes/ | grep mp4$";
 		
@@ -30,6 +39,7 @@ public class Questions {
 				}
 			}
 			
+			// Create questions using the quiz videos
 			if (! qVideos.isEmpty()) {
 				for (String q: qVideos) {
 					Question term = new Question(new File("Quizzes/"+q), q.substring(0, q.length()-4));
@@ -42,10 +52,18 @@ public class Questions {
 		
 	}
 	
+	/**
+	 * Adds given question to the set
+	 * @param question Question to be added
+	 */
 	public void addQuestion(Question question) {
 		questions.add(question);
 	}
 	
+	/**
+	 * Returns a question randomly from the set
+	 * @return random Question
+	 */
 	public Question getQuestion() {
 		int index;
 		if (questions.size() == 1) {
@@ -58,6 +76,10 @@ public class Questions {
 		return questions.get(index);
 	}
 	
+	/**
+	 * Returns the size of the set
+	 * @return set size (int)
+	 */
 	public int numberOfQuestions() {
 		return questions.size();
 	}

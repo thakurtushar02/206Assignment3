@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import application.home.Home;
 import application.learn.Question;
-import application.learn.Questions;
+import application.learn.QuestionSet;
 import application.main.Main;
 import application.popup.Popup;
 import application.view.View;
@@ -67,14 +67,14 @@ public class Create {
 	private String _name;
 	private String _music;
 
-	private final Questions _set;
+	private final QuestionSet _set;
 
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
 	private final String FESTIVAL = "Human";
 
-	public Create(Tab tab, Popup popup, Questions set) {
+	public Create(Tab tab, Popup popup, QuestionSet set) {
 		_tab = tab;
 		_popup = popup;
 		_imMan = new ImageManager();
@@ -96,7 +96,9 @@ public class Create {
 		_create.setText("Enter word: ");
 
 		_searchBinding = _search.textProperty().isEmpty();
-
+    
+    // Safe search to prevent users from searching inappropriate terms
+    
 		File file = new File(".resources/search/badWords.txt"); 
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file)); 
@@ -112,7 +114,7 @@ public class Create {
 		}
 
 		_searchButton = new Button("Search ↳");
-		_searchButton.disableProperty().bind(_searchBinding);
+		_searchButton.disableProperty().bind(_searchBinding); // disable button if search field is empty or contains bad word
 		
 		final Pane spacer = new Pane();
 		spacer.setMinSize(1, 1);

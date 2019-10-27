@@ -1,6 +1,7 @@
 package application.learn;
 
 import java.io.File;
+
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,123 +27,113 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.text.Font;
-
+/**
+ * This class represents the Learn tab in the VARpedia application. Here the user completes a quiz based
+ * on the creations they have made using the app. 
+ * @author Lynette
+ *
+ */
 public class Learn {
+
 	private Tab tab;
 	private BorderPane content = new BorderPane();
-	private int current;
-	private int correct;
+	
 	private Label learn = new Label();
 	private Label end = new Label();
-	private Question question;
-	private Questions qSet = new Questions();
+	
 	private Button start = new Button();
 	private Button playAgain = new Button();
-	private final double BUTTON_WIDTH = 75;
-	private final double BUTTON_HEIGHT = 75;
-	private List<Button> qNums = new ArrayList<Button>();
-	private List<ToggleButton> answer = new ArrayList<ToggleButton>();
+	private Button submit = new Button();
+	
+	private int current;
+	private int correct;
+	private Question question;
+	private QuestionSet qSet = new QuestionSet();
+	
 	private ToggleGroup ops = new ToggleGroup();
+	private List<ToggleButton> answer = new ArrayList<ToggleButton>();
+	private List<Button> qNums = new ArrayList<Button>();
+	
 	private MediaView mView;
 	private Media media;
 	private MediaPlayer player;
 	private ImageView image = new ImageView();
 	
-	public Learn(Tab tab, Questions set) {
+	private final double BUTTON_WIDTH = 75;
+	private final double BUTTON_HEIGHT = 75;
+	private final String CURRENT_STYLE = "-fx-background-color: #6F93FF";
+
+	public Learn(Tab tab, QuestionSet set) {
 		this.tab = tab;
 		qSet = set;
 	}
-	
+
+	/**
+	 * Sets the contents of the tab when it is first selected (i.e. the quiz start screen)
+	 */
 	public void setContents() {
-		content.getChildren().removeAll(content.getChildren());
+		content.getChildren().removeAll(content.getChildren()); // remove any nodes that may have been set previously
+		
+		// Quiz unable to start if there are no questions to display
 		if(qSet.numberOfQuestions() == 0) {
-			learn.setText("You don't have any quizzes!");
+			learn.setText("You don't have any quizzes! Head over to the Create tab"
+					+ "and make some creations first");
 			content.setTop(learn);
 		}else {
 			learn.setText("Time to review what you have learned!");
-			start.setText("Start Quiz");
-			start.setLayoutX(100);
-			start.setLayoutY(100);
 			
+			start.setText("Start Quiz");
 			start.setOnAction(e -> quizStart());
+			
 			content.setTop(learn);
 			learn.setAlignment(Pos.CENTER);
+			
 			content.setCenter(start);	
 		}
+
 		learn.setFont(new Font("Arial", 16));
 		learn.setPadding(new Insets(20));
+		
 		content.setPadding(new Insets(20));
+		
 		BorderPane.setAlignment(learn, Pos.CENTER);
 		tab.setContent(content);
 	}
-	
+
+	/**
+	 * Starts the quiz 
+	 */
 	public void quizStart() {
-		qNums.clear();
-		answer.clear();
-		
-		content.getChildren().removeAll(content.getChildren());
-		question = qSet.getQuestion();
-		
-		HBox options = new HBox();
-		VBox qNumbers = new VBox();
-		
 		correct = 0;
 		current = 1;
+		quizSetContent();
 		
-		Label quiz = new Label("What is this?");
-		quiz.setFont(new Font("Arial", 16));
-		
-		for (int i = 1; i < 6; i ++) {
-			Button btn = new Button();
-			btn.setText(""+i);
-			btn.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-			qNums.add(btn);
-			qNumbers.getChildren().add(btn);
-		}
-		
-		qNumbers.setAlignment(Pos.CENTER_LEFT);
-		qNumbers.setSpacing(10);
-		
-		for (int i = 0; i < 4; i++) {
-			ToggleButton btn = new ToggleButton();
-			btn.setToggleGroup(ops);
-			answer.add(btn);
-			options.getChildren().add(btn);
-		}
-		
-		setQuestion(question);
-		
-		mView.setFitHeight(400);
-		mView.setPreserveRatio(true);
-		
-		Button submit = new Button("Check Answer");
-		submit.setVisible(false);
-		
-		// Button only appears if an answer is selected
+		// Check button only appears if an answer is selected
 		ops.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 			@Override
 			public void changed(ObservableValue<? extends Toggle> arg0, Toggle arg1, Toggle arg2) {
-				  if (ops.getSelectedToggle() != null) {
-		            	submit.setVisible(true);
-		            } else {
-		            	submit.setVisible(false);
-		            }
+				if (ops.getSelectedToggle() != null) {
+					submit.setVisible(true);
+				} else {
+					submit.setVisible(false);
+				}
 			}
 		});
-		
-		
+
 		submit.setOnAction(e -> {
 			if (submit.getText() == "Check Answer") {
+				
 				Button btn = qNums.get(current - 1);
 				ToggleButton selection = (ToggleButton) ops.getSelectedToggle();
 				ToggleButton correctAnswer = null;
+				
 				for (ToggleButton t : answer) {
 					if (t.getText().equals(question.getCorrectAnswer())) {
 						correctAnswer = t;
 						break;
 					}
 				}
-				
+				// Set the colour of the question number and answer buttons whether it is correct or not
 				if (isCorrect(question)) {
 					btn.setStyle("-fx-background-color:green");
 					selection.setStyle("-fx-border-color:green; ");
@@ -152,74 +143,62 @@ public class Learn {
 					selection.setStyle("-fx-border-color:red");
 					correctAnswer.setStyle("-fx-border-color:green");
 				}
-				
+				// Set button text to finish on the last question
 				if (current < 5) {
 					submit.setText("Next");
 				} else if (current == 5) {
 					submit.setText("Finish");
 				}
 			} else if (submit.getText() == "Next") {
+				current++;
 				nextQuestion();
+				
+				// Reset the styling of the answer buttons after it has been checked
 				for (ToggleButton toggle : answer) {
 					toggle.setStyle(null);
 				}
-				current++;
 				submit.setText("Check Answer");
 			} else if (submit.getText() == "Finish") {
 				endScreen();
 			}
-			
+
 		});
-		
-		final Pane spacer = new Pane();
-		spacer.setMinSize(10, 1);
-
-		HBox.setHgrow(spacer, Priority.ALWAYS);
-		
-		options.setSpacing(10);
-		options.setAlignment(Pos.CENTER);
-		
-		VBox main = new VBox();
-		main.getChildren().addAll(mView, options);
-		main.setAlignment(Pos.CENTER);
-		main.setSpacing(20);
-
-		HBox check = new HBox();
-		check.getChildren().addAll(spacer, submit);
-		
-		content.setTop(quiz);
-		content.setRight(qNumbers);
-		content.setCenter(main);
-		content.setBottom(check);
-		BorderPane.setAlignment(quiz, Pos.CENTER);
-		
-		BorderPane.setMargin(quiz, new Insets(10, 10, 10, 0));
-		BorderPane.setMargin(main, new Insets(0, 20, 10, 0));
-		BorderPane.setMargin(qNumbers, new Insets(0,10,10,0));
-		
 	}
-	
+ 
+	/**
+	 * Retrieves and sets the video and text for answer buttons for each question
+	 * @param question Question to be asked
+	 */
 	public void setQuestion(Question question) {
 		
+		qNums.get(current-1).setStyle(CURRENT_STYLE);
+
+		// Shuffles and sets the text for the answer buttons
 		Collections.shuffle(answer);
 		for (int i = 0; i < 4; i++) {
 			answer.get(i).setText(question.getAnswers().get(i));
 			answer.get(i).setSelected(false);
 		}
-		
+
+		// Retrieve and set the quiz video in the mediaplayer
 		media = new Media(question.getVideo());
 		player = new MediaPlayer(media);
 		player.setAutoPlay(true);
 		player.setCycleCount(MediaPlayer.INDEFINITE);
-		
+
 		if (mView == null) {
 			mView = new MediaView(player);
 		} else {
 			mView.setMediaPlayer(player);
 		}
-		
 	}
-	
+
+	/**
+	 * Checks if the selected answer is correct
+	 * @param	question Question that is being asked
+	 * @return	true if correct, otherwise false
+	 * 		
+	 */
 	public boolean isCorrect(Question question) {
 		ToggleButton selected = (ToggleButton) ops.getSelectedToggle();
 		if (selected.getText() == question.getCorrectAnswer()) {
@@ -227,37 +206,113 @@ public class Learn {
 		}
 		return false;
 	}
-	
+
+	/**
+	 * Gets the next question and sets it in the GUI
+	 */
 	public void nextQuestion() {
 		question = qSet.getQuestion();
 		setQuestion(question);
 	}
-	
+
+	/**
+	 * Sets the end screen once the user has completed all the questions 
+	 */
 	public void endScreen() {
 		content.getChildren().removeAll(content.getChildren());
 		end.setText("You got "+correct+"/5!");
-		
+
 		Image i = null;
 		try {
 			i = new Image(new File(".resources/learn/thumb.png").toURI().toURL().toString());
 		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		image.setImage(i);
 		image.setPreserveRatio(true);
 		image.setFitWidth(400);
-		
-		playAgain.setText("Play Again!");
+
+		playAgain.setText("Play Again");
 		playAgain.setOnAction(e -> quizStart());
-		
+
 		content.setTop(end);
 		content.setCenter(image);
 		content.setBottom(playAgain);
 		BorderPane.setAlignment(end, Pos.CENTER);
 		BorderPane.setAlignment(playAgain, Pos.CENTER);
-		
-		
 	}
 	
+	/**
+	 * Sets the GUI components of the quiz 
+	 */
+	public void quizSetContent() {
+		// clear collections every time quiz starts (in case of replays)
+		qNums.clear();
+		answer.clear();
+
+		content.getChildren().removeAll(content.getChildren());
+
+		HBox options = new HBox();
+		HBox check = new HBox();
+		VBox qNumbers = new VBox();
+		VBox main = new VBox();
+
+		Label quiz = new Label("What is this?");
+		quiz.setFont(new Font("Arial", 16));
+		
+		final Pane spacer = new Pane();
+		
+		submit.setText("Check Answer");
+		submit.setVisible(false);
+		
+		// Generate question numbers to display
+		for (int i = 1; i < 6; i ++) {
+			Button btn = new Button();
+			btn.setText(""+i);
+			btn.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+			qNums.add(btn);
+			qNumbers.getChildren().add(btn);
+		}
+		
+		// Generate answer toggle buttons
+		for (int i = 0; i < 4; i++) {
+			ToggleButton btn = new ToggleButton();
+			btn.setToggleGroup(ops);
+			answer.add(btn);
+			options.getChildren().add(btn);
+		}
+		
+		// Add components to the view
+		content.setTop(quiz);
+		content.setRight(qNumbers);
+		content.setCenter(main);
+		content.setBottom(check);
+		
+		nextQuestion();
+
+		// GUI component configurations
+		mView.setFitHeight(400);
+		mView.setPreserveRatio(true);
+
+		spacer.setMinSize(10, 1);
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+
+		options.setSpacing(10);
+		options.setAlignment(Pos.CENTER);
+
+		main.getChildren().addAll(mView, options);
+		main.setAlignment(Pos.CENTER);
+		main.setSpacing(20);
+
+		check.getChildren().addAll(spacer, submit);
+		
+		qNumbers.setAlignment(Pos.CENTER_LEFT);
+		qNumbers.setSpacing(10);
+
+		BorderPane.setAlignment(quiz, Pos.CENTER);
+		BorderPane.setMargin(quiz, new Insets(10, 10, 10, 0));
+		BorderPane.setMargin(main, new Insets(0, 20, 10, 0));
+		BorderPane.setMargin(qNumbers, new Insets(0,10,10,0));
+	}
+
 }
