@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import application.home.Home;
 import application.learn.Question;
-import application.learn.Questions;
+import application.learn.QuestionSet;
 import application.main.Main;
 import application.popup.Popup;
 import application.view.View;
@@ -19,15 +19,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.geometry.Side;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
@@ -37,29 +41,24 @@ import javafx.scene.text.Font;
  *@author Jacinta, Lynette, Tushar
  */
 public class Create {
-	private Button searchButton;
-	private BooleanBinding searchBinding;
-	private Button helpButton;
-	private TextField search = new TextField();
-	private Label create = new Label();
-	private HBox searchBar;
-	private VBox contents;
-	private Label message = new Label();
+	private BooleanBinding _searchBinding;
+	private Button _helpButton;
 	private Main _main;
 	private TabPane _tabPane;
 	private Tab _tab;
 	private View _view;
 	private Popup _popup;
 	private ImageManager _imMan;
+	private SelectLines _selLines;
 	private HBox _searchBar;
 	private VBox _contents;
 	private Button _searchButton;
 	private TextField _search = new TextField();
 	private Label _message = new Label();
 	private Label _create = new Label();
-	private ProgressBar _pbCombine = new ProgressBar();
-	private ProgressBar _pbSave = new ProgressBar();
-	private ProgressBar _pbSearch = new ProgressBar();
+	private ProgressIndicator _pbCombine = new ProgressIndicator();
+	private ProgressIndicator _pbSave = new ProgressIndicator();
+	private ProgressIndicator _pbSearch = new ProgressIndicator();
 	private File _file;
 	private int _numberOfAudioFiles = 0;
 	private int _numberOfPictures;
@@ -68,24 +67,14 @@ public class Create {
 	private String _name;
 	private String _music;
 
-	private final Questions _set;
+	private final QuestionSet _set;
 
 	private final String EMPTY = "Empty";
 	private final String VALID = "Valid";
 	private final String DUPLICATE = "Duplicate";
 	private final String FESTIVAL = "Human";
-	
 
-	{
-		pbCombine.setPrefHeight(25);
-		pbCombine.setPrefWidth(700);
-		pbSave.setPrefHeight(25);
-		pbSave.setPrefWidth(700);
-		pbSearch.setPrefHeight(25);
-		pbSearch.setPrefWidth(125);
-	}
-
-	public Create(Tab tab, Popup popup, Questions set) {
+	public Create(Tab tab, Popup popup, QuestionSet set) {
 		_tab = tab;
 		_popup = popup;
 		_imMan = new ImageManager();
@@ -106,14 +95,16 @@ public class Create {
 		}
 		_create.setText("Enter word: ");
 
-		searchBinding = search.textProperty().isEmpty();
-
+		_searchBinding = _search.textProperty().isEmpty();
+    
+    // Safe search to prevent users from searching inappropriate terms
+    
 		File file = new File(".resources/search/badWords.txt"); 
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file)); 
 			String st; 
 			while ((st = br.readLine()) != null) {
-				searchBinding = searchBinding.or(_search.textProperty().isEqualToIgnoreCase(st));
+				_searchBinding = _searchBinding.or(_search.textProperty().isEqualToIgnoreCase(st));
 			}
 			br.close();
 		} catch (FileNotFoundException e1) {
@@ -122,22 +113,33 @@ public class Create {
 			e1.printStackTrace();
 		}
 
-		searchButton = new Button("Search ↳");
-		searchButton.disableProperty().bind(searchBinding);
+		_searchButton = new Button("Search ↳");
+		_searchButton.disableProperty().bind(_searchBinding); // disable button if search field is empty or contains bad word
 		
-		helpButton = new Button("?");
-		helpButton.setVisible(false);
+		final Pane spacer = new Pane();
+		spacer.setMinSize(1, 1);
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+		
+		_helpButton = new Button("?");
+		_helpButton.setVisible(true);
+		Help helpContents = new Help();
+		ContextMenu cm = helpContents.getContextMenu();
+		_helpButton.setContextMenu(cm);
 
-		pbSearch.setVisible(false);
-		searchBar = new HBox(create, search, searchButton, pbSearch, helpButton);
-		searchBar.setSpacing(10);
+		_pbSearch.setVisible(false);
+		_searchBar = new HBox(_create, _search, _searchButton, _pbSearch, spacer, _helpButton);
+		_searchBar.setSpacing(10);
 
 		_search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) _searchButton.fire();});
 
-		searchButton.setOnAction(e -> {
-			searchButton.disableProperty().unbind();
-			searchButton.setDisable(true);
-			searchTerm(search.getText());
+		_searchButton.setOnAction(e -> {
+			_searchButton.disableProperty().unbind();
+			_searchButton.setDisable(true);
+			searchTerm(_search.getText());
+		});
+		
+		_helpButton.setOnAction(e -> {
+			cm.show(_helpButton, Side.BOTTOM, 0, 0);
 		});
 
 		_contents = new VBox(_searchBar, _message);
@@ -168,6 +170,8 @@ public class Create {
 							if(line.contains("not found :^(")) {
 								_message.setText("Did you misspell? Try again!");
 								_pbSearch.setVisible(false);
+								_searchButton.setDisable(false);
+								_searchButton.disableProperty().bind(_searchBinding);
 								setContents(_main);
 							} else {
 								_message.setText("");
@@ -192,8 +196,10 @@ public class Create {
 	 */
 	public void displayLines(String reply) {
 		_pbSearch.setVisible(false);
-		SelectLines selLines = new SelectLines();
-		selLines.setScreen(_tab, _tabPane, this, _pbCombine, _pbSave, _listLines, _searchBar);
+		_selLines = new SelectLines();
+		_selLines.setScreen(_tab, _tabPane, this, _pbCombine, _pbSave, _listLines, _searchBar);
+		_searchButton.setDisable(false);
+		_searchButton.disableProperty().bind(_searchBinding);
 	}
 
 	/**

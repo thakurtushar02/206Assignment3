@@ -20,7 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
@@ -41,8 +41,9 @@ public class SelectLines {
 	private final String LIGHT = "Light";
 	private File _file;
 	private String _music;
+//	private long _pid;
 
-	public void setScreen(Tab tab, TabPane tabPane, Create create, ProgressBar pbCombine, ProgressBar pbSave, ObservableList<String> listLines, HBox searchBar) {
+	public void setScreen(Tab tab, TabPane tabPane, Create create, ProgressIndicator pbCombine, ProgressIndicator pbSave, ObservableList<String> listLines, HBox searchBar) {
 		_file = new File ("text.txt");
 		ListView<String> list = new ListView<String>(); // List displaying audio files
 
@@ -102,7 +103,7 @@ public class SelectLines {
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 
-		HBox lineOptions = new HBox(lblVoice, combobox, butPlay, butSave, spacer, butUp, butDown, butDelete);
+		HBox lineOptions = new HBox(lblVoice, combobox, butPlay, butSave, pbSave, spacer, butUp, butDown, butDelete);
 		lineOptions.setSpacing(15);
 		lineOptions.setAlignment(Pos.BOTTOM_CENTER);
 
@@ -115,7 +116,7 @@ public class SelectLines {
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 
 		pbSave.setVisible(false);
-		HBox nameLayout = new HBox(10, lblMusic, musicComb, pbSave, spacer2, butNext);
+		HBox nameLayout = new HBox(10, lblMusic, musicComb, spacer2, butNext);
 		nameLayout.setAlignment(Pos.BOTTOM_CENTER);
 
 		VBox layout = new VBox(views, lineOptions, nameLayout);
@@ -145,16 +146,15 @@ public class SelectLines {
 						ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
 						try {
 							Process p = pb.start();
+//							findPID(p);
 							BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 							int exitStatus = p.waitFor();
-
 							if (exitStatus != 0) {
 								String line2;
 								while ((line2 = stderr.readLine()) != null) {
 									System.err.println(line2);
 								}
 							}
-
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -255,6 +255,28 @@ public class SelectLines {
 			butNext.fire();
 		}
 	}
+	
+//	public void findPID(Process p) {
+//		long pid = -1;
+//		java.lang.reflect.Field f;
+//		try {
+//			f = p.getClass().getDeclaredField("pid");
+//			f.setAccessible(true);
+//			pid = f.getLong(p);
+//			f.setAccessible(false);
+//		} catch (NoSuchFieldException | SecurityException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}catch (IllegalArgumentException | IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		_pid=pid;
+//	}
+//	
+//	public long getPID() {
+//		return _pid;
+//	}
 
 	public TextArea getText() {
 		TextArea textArea= new TextArea();
