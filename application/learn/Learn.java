@@ -82,13 +82,25 @@ public class Learn {
 		}else {
 			learn.setText("Time to review what you have learned!");
 			
+			Image i = null;
+			try {
+				i = new Image(new File(".resources/learn/man.png").toURI().toURL().toString());
+			} catch (MalformedURLException e1) {
+				e1.printStackTrace();
+			}
+			image.setImage(i);
+			image.setPreserveRatio(true);
+			image.setFitWidth(400);
+			
 			start.setText("Start Quiz");
 			start.setOnAction(e -> quizStart());
 			
 			content.setTop(learn);
 			learn.setAlignment(Pos.CENTER);
 			
-			content.setCenter(start);	
+			content.setCenter(image);	
+			content.setBottom(start);
+			BorderPane.setAlignment(start, Pos.CENTER);
 		}
 
 		learn.setFont(new Font("Arial", 16));
