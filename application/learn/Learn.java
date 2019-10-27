@@ -269,7 +269,7 @@ public class Learn {
 		VBox qNumbers = new VBox();
 		VBox main = new VBox();
 
-		Label quiz = new Label("What is this?");
+		Label quiz = new Label("What is being shown in the video? Choose the right answer!");
 		quiz.setFont(new Font("Arial", 16));
 		
 		final Pane spacer = new Pane();
