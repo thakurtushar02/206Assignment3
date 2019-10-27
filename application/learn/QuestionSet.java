@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Questions {
+public class QuestionSet {
 
 	private List<Question> questions = new ArrayList<Question>();
 	
-	public Questions() {
+	public QuestionSet() {
 		
 		List<String> qVideos = new ArrayList<String>();
 		String command = "ls Quizzes/ | grep mp4$";
