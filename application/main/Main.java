@@ -5,7 +5,7 @@ import java.io.IOException;
 import application.create.Create;
 import application.home.Home;
 import application.learn.Learn;
-import application.learn.Questions;
+import application.learn.QuestionSet;
 import application.popup.Popup;
 import application.view.View;
 import javafx.application.Application;
@@ -30,7 +30,7 @@ public class Main extends Application {
 	private Create create;
 	private Learn learn;
 	private Stage currentStage;
-	private Questions set = new Questions();
+	private QuestionSet set = new QuestionSet();
 	
 	/**
 	 * Creates the three tabs, Home, View, and Create Creation.
@@ -50,6 +50,7 @@ public class Main extends Application {
 		homeTab.getStyleClass().add("home_style");
 		home = new Home(homeTab);
 		home.setContents(tabPane);
+		
 		Tab createTab = new Tab("Create");
 		createTab.getStyleClass().add("create_style");
 		create = new Create(createTab, popup, set);
@@ -63,9 +64,9 @@ public class Main extends Application {
 		Tab learnTab = new Tab("Learn");
 		learnTab.getStyleClass().add("learn_style");
 		learn = new Learn(learnTab, set);
-
 		learn.setContents();
 		
+		// When tab selection changes, update the list in Creations and reset Quiz tab if tab switches from/to
 		tabPane.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 
 			@Override
@@ -80,8 +81,6 @@ public class Main extends Application {
 		
 		create.setView(view);
 		popup.setViewCreate(view, create);
-		
-		
 		
 		tabPane.getTabs().addAll(homeTab, viewTab, createTab, learnTab);
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
