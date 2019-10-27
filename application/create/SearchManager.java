@@ -6,8 +6,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-
+/**
+ * This class performs the search process 
+ * @author Jacinta
+ *
+ */
 public class SearchManager {
+	/**
+	 * Retrieves results for the Wikipedia search and writes them to the supplied file
+	 * @param file	file for results to be written to
+	 * @param term	the term to be searched
+	 */
 	public void searchTerm(File file, String term) {
 		ProcessBuilder builder = new ProcessBuilder("wikit", term);
 		try {
