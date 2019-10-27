@@ -37,6 +37,14 @@ import javafx.scene.text.Font;
  *@author Jacinta, Lynette, Tushar
  */
 public class Create {
+	private Button searchButton;
+	private BooleanBinding searchBinding;
+	private Button helpButton;
+	private TextField search = new TextField();
+	private Label create = new Label();
+	private HBox searchBar;
+	private VBox contents;
+	private Label message = new Label();
 	private Main _main;
 	private TabPane _tabPane;
 	private Tab _tab;
@@ -69,12 +77,12 @@ public class Create {
 	
 
 	{
-		_pbCombine.setPrefHeight(25);
-		_pbCombine.setPrefWidth(700);
-		_pbSave.setPrefHeight(25);
-		_pbSave.setPrefWidth(700);
-		_pbSearch.setPrefHeight(25);
-		_pbSearch.setPrefWidth(200);
+		pbCombine.setPrefHeight(25);
+		pbCombine.setPrefWidth(700);
+		pbSave.setPrefHeight(25);
+		pbSave.setPrefWidth(700);
+		pbSearch.setPrefHeight(25);
+		pbSearch.setPrefWidth(125);
 	}
 
 	public Create(Tab tab, Popup popup, Questions set) {
@@ -98,7 +106,7 @@ public class Create {
 		}
 		_create.setText("Enter word: ");
 
-		BooleanBinding searchBinding = _search.textProperty().isEmpty();
+		searchBinding = search.textProperty().isEmpty();
 
 		File file = new File(".resources/search/badWords.txt"); 
 		try {
@@ -114,16 +122,23 @@ public class Create {
 			e1.printStackTrace();
 		}
 
-		_searchButton = new Button("Search ↳");
-		_searchButton.disableProperty().bind(searchBinding);
+		searchButton = new Button("Search ↳");
+		searchButton.disableProperty().bind(searchBinding);
+		
+		helpButton = new Button("?");
+		helpButton.setVisible(false);
 
-		_pbSearch.setVisible(false);
-		_searchBar = new HBox(_create, _search, _searchButton, _pbSearch);
-		_searchBar.setSpacing(10);
+		pbSearch.setVisible(false);
+		searchBar = new HBox(create, search, searchButton, pbSearch, helpButton);
+		searchBar.setSpacing(10);
 
 		_search.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) _searchButton.fire();});
 
-		_searchButton.setOnAction(e -> searchTerm(_search.getText()));
+		searchButton.setOnAction(e -> {
+			searchButton.disableProperty().unbind();
+			searchButton.setDisable(true);
+			searchTerm(search.getText());
+		});
 
 		_contents = new VBox(_searchBar, _message);
 		_contents.setPadding(new Insets(15,30,30,30));
@@ -204,7 +219,7 @@ public class Create {
 		// Does not allow characters to be typed into text field
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
 			String[] badCharacters = {"/", "?", "%", "*", ":", "|", "\"", "<", ">", "\0",
-					"\\", "(", ")", "$", "@", "!", "#", "^", "&", "+"};
+					"\\", "(", ")", "$", "@", "!", "#", "^", "&", "+", "="};
 			for (String s: badCharacters) {
 				if (newValue.contains(s)) {
 					nameField.setText(oldValue);
@@ -326,8 +341,6 @@ public class Create {
 	public void removeCreation(String name) {
 		File file = new File("./Creations/" + name);
 		file.delete();
-		File file1 = new File("./Quizzes/" + name);
-		file1.delete();
 	}
 
 	public void storeTabs(TabPane tabPane) {
@@ -353,8 +366,7 @@ public class Create {
 				VideoMaker vidMaker = new VideoMaker();
 				vidMaker.makeVideo(_term, _name, _numberOfPictures);
 				
-				//create question 
-				Question question = new Question(new File("Quizzes/"+_name+".mp4"), _term);
+				Question question = new Question(new File("Quizzes/"+ _term + ".mp4"), _term);
 				_set.addQuestion(question);
 
 				Platform.runLater(new Runnable() {
