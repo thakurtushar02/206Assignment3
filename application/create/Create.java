@@ -43,6 +43,7 @@ public class Create {
 	private View _view;
 	private Popup _popup;
 	private ImageManager _imMan;
+	private SelectLines _selLines;
 	private HBox _searchBar;
 	private VBox _contents;
 	private Button _searchButton;
@@ -177,8 +178,8 @@ public class Create {
 	 */
 	public void displayLines(String reply) {
 		_pbSearch.setVisible(false);
-		SelectLines selLines = new SelectLines();
-		selLines.setScreen(_tab, _tabPane, this, _pbCombine, _pbSave, _listLines, _searchBar);
+		_selLines = new SelectLines();
+		_selLines.setScreen(_tab, _tabPane, this, _pbCombine, _pbSave, _listLines, _searchBar);
 	}
 
 	/**

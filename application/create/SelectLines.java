@@ -41,6 +41,7 @@ public class SelectLines {
 	private final String LIGHT = "Light";
 	private File _file;
 	private String _music;
+//	private long _pid;
 
 	public void setScreen(Tab tab, TabPane tabPane, Create create, ProgressBar pbCombine, ProgressBar pbSave, ObservableList<String> listLines, HBox searchBar) {
 		_file = new File ("text.txt");
@@ -145,16 +146,15 @@ public class SelectLines {
 						ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
 						try {
 							Process p = pb.start();
+//							findPID(p);
 							BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 							int exitStatus = p.waitFor();
-
 							if (exitStatus != 0) {
 								String line2;
 								while ((line2 = stderr.readLine()) != null) {
 									System.err.println(line2);
 								}
 							}
-
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -255,6 +255,28 @@ public class SelectLines {
 			butNext.fire();
 		}
 	}
+	
+//	public void findPID(Process p) {
+//		long pid = -1;
+//		java.lang.reflect.Field f;
+//		try {
+//			f = p.getClass().getDeclaredField("pid");
+//			f.setAccessible(true);
+//			pid = f.getLong(p);
+//			f.setAccessible(false);
+//		} catch (NoSuchFieldException | SecurityException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}catch (IllegalArgumentException | IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		_pid=pid;
+//	}
+//	
+//	public long getPID() {
+//		return _pid;
+//	}
 
 	public TextArea getText() {
 		TextArea textArea= new TextArea();
