@@ -2,14 +2,10 @@ package application.create;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.channels.FileChannel;
-import java.nio.file.Files;
 
 import application.home.Home;
 import javafx.beans.binding.Bindings;
@@ -44,23 +40,10 @@ public class SelectLines {
 	private final String YELLOW = "Electronic";
 	private final String LIGHT = "Light";
 	private File _file;
-	private File _tempFile;
 	private String _music;
 
-	public void setScreen(Tab tab, TabPane tabPane, Create create, ProgressIndicator pbCombine, ProgressIndicator pbSave, ObservableList<String> listLines, HBox searchBar, boolean backwards) {
+	public void setScreen(Tab tab, TabPane tabPane, Create create, ProgressIndicator pbCombine, ProgressIndicator pbSave, ObservableList<String> listLines, HBox searchBar) {
 		_file = new File ("text.txt");
-		
-		_tempFile = new File("tempText.txt");
-		try {
-			if(backwards) {
-				copyFile(_tempFile, _file);
-			}else {
-				_tempFile.createNewFile();
-				copyFile(_file, _tempFile);
-			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 		
 		ListView<String> list = new ListView<String>(); // List displaying audio files
 
@@ -296,16 +279,5 @@ public class SelectLines {
 		return textArea;
 	}
 	
-	@SuppressWarnings("resource")
-	public static void copyFile( File from, File to ) throws IOException {
 
-	    if ( !to.exists() ) { to.createNewFile(); }
-
-	    try (
-	        FileChannel in = new FileInputStream( from ).getChannel();
-	        FileChannel out = new FileOutputStream( to ).getChannel() ) {
-
-	        out.transferFrom( in, 0, in.size() );
-	    }
-	}
 }
