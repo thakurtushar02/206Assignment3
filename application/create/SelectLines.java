@@ -193,10 +193,10 @@ public class SelectLines {
 			try {
 				String fileName = _file.getName();
 				FileWriter fw = new FileWriter(fileName, false);
-				fw.write("");
+				fw.write(""); //Overwrite the contents of the file
 				fw.close();
 				fw = new FileWriter(fileName, true);
-				fw.write(selectedText);
+				fw.write(selectedText); //Write the selected text into the file
 				create.addCreation(combobox.getSelectionModel().getSelectedItem());
 				fw.close();
 			} catch (IOException ioex) {
