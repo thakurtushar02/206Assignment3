@@ -17,7 +17,8 @@ import javafx.scene.text.TextAlignment;
 public class HelpPopup extends Popup {
 
 	/**
-	 * Shows the help message for the Create tab
+	 * Shows the help message for the Create tab. There are two possible
+	 * help messages.
 	 * @param msg
 	 */
 	public void showCreateHelp(String msg) {

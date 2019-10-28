@@ -114,7 +114,8 @@ public class Learn {
 	}
 
 	/**
-	 * Starts the quiz 
+	 * Starts the quiz. This method gets all the questions (the logic) and sets up what buttons do
+	 * when they are pressed.
 	 */
 	public void quizStart() {
 		correct = 0;
@@ -264,7 +265,8 @@ public class Learn {
 	}
 	
 	/**
-	 * Sets the GUI components of the quiz 
+	 * Sets the GUI components of the quiz after the user decides to start the quiz. It places all
+	 * the necessary buttons required for the quiz tab after clicking "Start quiz".
 	 */
 	public void quizSetContent() {
 		// clear collections every time quiz starts (in case of replays)
