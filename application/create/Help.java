@@ -21,14 +21,16 @@ public class Help {
 	 * on the hard parts of the application, or lets them open the user manual.
 	 * @return
 	 */
+
 	public ContextMenu getContextMenuCreate() {
-		final ContextMenu contextMenu = new ContextMenu();
+		final ContextMenu contextMenu = new ContextMenu(); //Shows multiple options for help
 		HelpPopup hp = new HelpPopup();
 
 		MenuItem playSaveText = new MenuItem("To Play/Save Text");
 		playSaveText.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				//Calls help popup class to create helpful popup
 				hp.showCreateHelp("Highlight the piece of text you\n"
 						+ "want to Play or Save and select the\n"
 						+ "voice you want, then press the\n"
@@ -40,6 +42,7 @@ public class Help {
 		playAudio.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
+				//Calls help popup class to create helpful popup
 				hp.showCreateHelp("Double click on the AudioFiles\n"
 						+ "you have already saved from the list\n"
 						+ "on the right.");

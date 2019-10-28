@@ -34,6 +34,7 @@ public class AudioManager {
 			cmd += "concat=n=" + listLines.size() + ":v=0:a=1[out]\" -map \"[out]\" ./AudioFiles/" + "audio" + ".wav &>/dev/null";
 		}
 
+		//Check if music has been selected and if so, then add music
 		if(music == NOMUSIC) {
 			cmd += "; mv ./AudioFiles/audio.wav ./AudioFiles/temp.wav";
 		}else {
