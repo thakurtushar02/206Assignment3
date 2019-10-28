@@ -17,11 +17,11 @@ import javafx.scene.control.MenuItem;
 public class Help {
 
 	/**
-	 * This is the help function for the Create tab
+	 * This is the help function for the Create tab. It gives user some more information
+	 * on the hard parts of the application, or lets them open the user manual.
 	 * @return
 	 */
-	@SuppressWarnings("all")
-	public ContextMenu getContextMenu() {
+	public ContextMenu getContextMenuCreate() {
 		final ContextMenu contextMenu = new ContextMenu();
 		HelpPopup hp = new HelpPopup();
 
@@ -46,7 +46,30 @@ public class Help {
 			}
 		});
 
+		MenuItem userManual = userManualMenu();
+
+		contextMenu.getItems().addAll(playSaveText, playAudio, userManual);
+		return contextMenu;
+	}
+
+	/**
+	 * This is the context menu for the Help button in Home, View, and Learn
+	 * @return
+	 */
+	public ContextMenu getContextMenu() {
+		final ContextMenu contextMenu = new ContextMenu();
+		MenuItem userManual = userManualMenu();
 		// Opens the user manual 
+		
+		contextMenu.getItems().addAll(userManual);
+		return contextMenu;
+
+	}
+	/**
+	 * Opens the user manual when this menu item is clicked.
+	 * @return
+	 */
+	public MenuItem userManualMenu() {
 		MenuItem userManual = new MenuItem("To User Manual");
 		userManual.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -69,8 +92,6 @@ public class Help {
 				new Thread(task).start();
 			}
 		});
-
-		contextMenu.getItems().addAll(playSaveText, playAudio, userManual);
-		return contextMenu;
+		return userManual;
 	}
 }

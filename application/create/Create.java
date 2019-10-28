@@ -43,7 +43,7 @@ import javafx.scene.text.Font;
  */
 public class Create {
 
-	// GUI fields
+	// GUI fields related to making the Create tab.
 	private TabPane _tabPane;
 	private Tab _tab;
 	private View _view;
@@ -86,19 +86,21 @@ public class Create {
 	private final String DUPLICATE = "Duplicate";
 	private final String FESTIVAL = "Human";
 
-	public Create(Tab tab, Popup popup, QuestionSet set) {
+	/**
+	 * Sets up the Create tab to update View tab etc when a creation is made. Also
+	 * gives Create a popup instance for its popups.
+	 */
+	public Create(Tab tab, Popup popup, QuestionSet set, View view) {
 		_tab = tab;
 		_popup = popup;
 		_imMan = new ImageManager();
 		_set = set;
-	}
-
-	public void setView(View view) {
 		_view = view;
 	}
 
 	/**
-	 * Sets the initial contents of the Create tab.
+	 * Sets the initial contents of the Create tab when the application is first started.
+	 * The user can thus instantly switch to the Create tab when the app begins.
 	 */
 	public void setContents(Main main) {
 		if (_main == null) {
@@ -135,7 +137,7 @@ public class Create {
 		_helpButton = new Button("?");
 		_helpButton.setVisible(true);
 		Help helpContents = new Help();
-		ContextMenu cm = helpContents.getContextMenu();
+		ContextMenu cm = helpContents.getContextMenuCreate();
 		_helpButton.setContextMenu(cm);
 
 		_pbSearch.setVisible(false);
@@ -316,7 +318,7 @@ public class Create {
 	}
 
 	/**
-	 * Creates and saves an audio file into the ListvIew
+	 * Creates and saves an audio file into the ListView
 	 * @param voice	voice selected by user
 	 */
 	public void addCreation(String voice) {
@@ -374,7 +376,8 @@ public class Create {
 	}
 
 	/**
-	 * Deletes a specified file
+	 * Deletes a specified file. Used when the user does not wish to
+	 * keep one of their created creations.
 	 * @param name name of the file to be deleted
 	 */
 	public void removeCreation(String name) {
@@ -427,7 +430,9 @@ public class Create {
 	}
 
 	/**
-	 * Deletes supporting files from working directory
+	 * Deletes supporting files from working directory. Cleans up the
+	 * directory by removing unnecessary files which are no longer needed
+	 * for the application to run.
 	 */
 	public void deleteFiles() {
 		// Reset field values
