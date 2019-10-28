@@ -36,6 +36,7 @@ public class VideoPlayer {
 		File fileURL = new File("Creations/" + name + ".mp4");
 
 		Stage vidStage = new Stage();
+		vidStage.setAlwaysOnTop(true);
 
 		vidStage.setTitle(name + ".mp4");
 		BorderPane vidPane = new BorderPane();
