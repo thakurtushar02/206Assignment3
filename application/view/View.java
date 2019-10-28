@@ -26,7 +26,13 @@ import javafx.scene.layout.VBox;
  * @author Jacinta, Lynette, Tushar
  */
 public class View {
+	/**
+	 * Viewable list in the GUI
+	 */
 	private ListView<String> creations = new ListView<>();
+	/**
+	 * List of names of creations that have been made
+	 */
 	private ObservableList<String> list = FXCollections.observableArrayList();
 	
 	private Label title = new Label();
