@@ -65,7 +65,6 @@ public class SelectLines {
 	 */
 	public void setScreen(Tab tab, TabPane tabPane, Create create, ProgressIndicator pbCombine, ProgressIndicator pbSave, ObservableList<String> listLines, HBox searchBar) {
 		_file = new File ("text.txt");
-
 		list.setItems(listLines);
 
 		HBox views= new HBox();
@@ -298,4 +297,6 @@ public class SelectLines {
 		textArea.setStyle("-fx-font-size:30");
 		return textArea;
 	}
+	
+
 }
