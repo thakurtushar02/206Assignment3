@@ -19,7 +19,7 @@ import javafx.scene.layout.HBox;
 
 /**
  * This class downloads images from Flickr using an API Key.
- * @author Jacinta, Lynette, Tushar
+ * @author Jacinta
  *
  */
 public class ImageManager {

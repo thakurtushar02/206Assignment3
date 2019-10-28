@@ -4,9 +4,18 @@ import java.io.IOException;
 
 import javafx.collections.ObservableList;
 
+/**
+ * Manages the merging of AudioFiles and music
+ * @author Jacinta, Lynette, Tushar
+ *
+ */
 public class AudioManager {
-	
 	private final String NOMUSIC = "None";
+	/**
+	 * Concatenates chosen AudioFiles in order with chosen music into one audio file
+	 * @param music
+	 * @param listLines
+	 */
 	public void combineAudio(String music, ObservableList<String> listLines){
 		String cmd;
 		// Combine list of audio files into in one if there are multiple, otherwise rename the one audio file

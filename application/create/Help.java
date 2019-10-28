@@ -11,7 +11,7 @@ import javafx.scene.control.MenuItem;
 
 /**
  * This class facilitates the help function in the app
- * @author Jacinta, Lynette, Tushar
+ * @author Jacinta
  *
  */
 public class Help {
