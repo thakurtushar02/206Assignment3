@@ -28,14 +28,18 @@ import javafx.scene.layout.VBox;
 public class View {
 	private ListView<String> creations = new ListView<>();
 	private ObservableList<String> list = FXCollections.observableArrayList();
+	
 	private Label title = new Label();
 	private Button delete = new Button("Delete ✘");
 	private Button play = new Button(" Play ►  ");
+	
 	private VBox sideOptions;
 	private HBox optionBox;
 	private VBox contents;
+	
 	private Tab _tab;
 	private Popup _popup;
+	
 	public final static int ROW_HEIGHT = 50;
 	public final static int SPACING = 20;
 
@@ -77,6 +81,7 @@ public class View {
 			System.out.println("There was an IOException thrown :(.");
 			e.printStackTrace();
 		}
+		
 		creations.setItems(list);
 		creations.setPrefSize(1000, list.size() * ROW_HEIGHT + SPACING);
 		creations.setMaxHeight(500);
@@ -92,6 +97,7 @@ public class View {
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
 		VBox.setVgrow(spacer, Priority.ALWAYS);
+		
 		contents = new VBox(title, optionBox, spacer);
 		contents.setPadding(new Insets(10,30,30,30));
 		contents.setSpacing(10);

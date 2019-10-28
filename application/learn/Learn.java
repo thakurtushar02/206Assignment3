@@ -277,7 +277,6 @@ public class Learn {
 		HBox check = new HBox();
 		VBox qNumbers = new VBox();
 		VBox main = new VBox();
-		HBox controls = new HBox();
 
 		Label quiz = new Label("What is being shown in the video? Choose the right answer!");
 		quiz.setFont(new Font("Arial", 16));
