@@ -5,13 +5,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import application.main.Help;
 import application.popup.Popup;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Side;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
@@ -38,10 +41,12 @@ public class View {
 	private Label title = new Label();
 	private Button delete = new Button("Delete ✘");
 	private Button play = new Button(" Play ►  ");
+	private Button _helpButton = new Button("?");
 	
 	private VBox sideOptions;
 	private HBox optionBox;
 	private VBox contents;
+	private HBox titleAndHelp;
 	
 	private Tab _tab;
 	private Popup _popup;
@@ -102,12 +107,25 @@ public class View {
 		
 		final Pane spacer = new Pane();
 		spacer.setMinSize(10, 1);
+		final Pane spacer2 = new Pane();
+		spacer2.setMinSize(10, 1);
 		VBox.setVgrow(spacer, Priority.ALWAYS);
+		HBox.setHgrow(spacer2, Priority.ALWAYS);
 		
-		contents = new VBox(title, optionBox, spacer);
+		titleAndHelp = new HBox(title, spacer2, _helpButton);
+		
+		
+		contents = new VBox(titleAndHelp, optionBox, spacer);
 		contents.setPadding(new Insets(10,30,30,30));
 		contents.setSpacing(10);
 		_tab.setContent(contents);
+		
+		Help helpContents = new Help();
+		ContextMenu cm = helpContents.getContextMenu();
+		_helpButton.setContextMenu(cm);
+		_helpButton.setOnAction(e -> {
+			cm.show(_helpButton, Side.BOTTOM, 0, 0);
+		});
 		
 	}
 

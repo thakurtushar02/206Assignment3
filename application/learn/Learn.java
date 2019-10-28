@@ -6,11 +6,15 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import application.main.Help;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Toggle;
@@ -45,6 +49,7 @@ public class Learn {
 	private Button playAgain = new Button();
 	private Button submit = new Button();
 	private Button back = new Button();
+	private Button _helpButton = new Button("?");
 	
 	private int current;
 	private int correct;
@@ -73,6 +78,19 @@ public class Learn {
 	 * Sets the contents of the tab when it is first selected (i.e. the quiz start screen)
 	 */
 	public void setContents() {
+		final Pane spacer = new Pane();
+		spacer.setMinSize(10, 1);
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+		
+		Help helpContents = new Help();
+		ContextMenu cm = helpContents.getContextMenu();
+		_helpButton.setContextMenu(cm);
+		_helpButton.setOnAction(e -> {
+			cm.show(_helpButton, Side.BOTTOM, 0, 0);
+		});
+		
+		HBox learnPlusHelp = new HBox(learn, spacer, _helpButton);
+		
 		content.getChildren().removeAll(content.getChildren()); // remove any nodes that may have been set previously
 		
 		// Quiz unable to start if there are no questions to display
@@ -96,7 +114,7 @@ public class Learn {
 			start.setText("Start Quiz");
 			start.setOnAction(e -> quizStart());
 			
-			content.setTop(learn);
+			content.setTop(learnPlusHelp);
 			learn.setAlignment(Pos.CENTER);
 			
 			content.setCenter(image);	
@@ -108,6 +126,8 @@ public class Learn {
 		learn.setPadding(new Insets(20));
 		
 		content.setPadding(new Insets(20));
+		
+		
 		
 		BorderPane.setAlignment(learn, Pos.CENTER);
 		tab.setContent(content);
@@ -284,6 +304,10 @@ public class Learn {
 		quiz.setFont(new Font("Arial", 16));
 		
 		final Pane spacer = new Pane();
+		final Pane spacer2 = new Pane();
+		HBox.setHgrow(spacer2, Priority.ALWAYS);
+		
+		HBox quizPlusHelp = new HBox(quiz, spacer2, _helpButton);
 		
 		submit.setText("Check Answer");
 		submit.setVisible(false);
@@ -310,7 +334,7 @@ public class Learn {
 		}
 		
 		// Add components to the view
-		content.setTop(quiz);
+		content.setTop(quizPlusHelp);
 		content.setRight(qNumbers);
 		content.setCenter(main);
 		content.setBottom(check);

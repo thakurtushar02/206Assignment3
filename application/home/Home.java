@@ -1,7 +1,11 @@
 package application.home;
 
+import application.main.Help;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -32,21 +36,24 @@ public class Home {
 	private Tab _tab;
 	private TabPane tabPane;
 	private Label titleView = new Label("Welcome to VARpedia!");
-	private HBox titleBox = new HBox(titleView);
+	private Label createHeading = new Label("New Creation!");
+	private Label viewHeading = new Label("Past Creations");
+	private Label playHeading = new Label("Play & Learn");
 	private ImageView arrow = new ImageView();
 	private ImageView arrow2 = new ImageView();
 	private ImageView arrow3 = new ImageView();
 	private ImageView image = new ImageView();
+	private Button _helpButton = new Button("?");
+	private HBox titleBox = new HBox(titleView);
+	private HBox titlePlusHelp = new HBox(titleBox, _helpButton);
 	private HBox modeBox = new HBox(MODE);
-	private Label createHeading = new Label("New Creation!");
 	private HBox createBox = new HBox(20, arrow, createHeading);
-	private Label viewHeading = new Label("Past Creations");
 	private HBox viewBox = new HBox(20, arrow2, viewHeading);
-	private Label playHeading = new Label("Play & Learn");
 	private HBox playBox = new HBox(20, arrow3, playHeading);
 	private VBox text = new VBox(createBox, viewBox, playBox);
 	private HBox headings = new HBox(20, text, image);
-	private VBox contents = new VBox(titleBox, modeBox, headings);
+	private VBox contents = new VBox(titlePlusHelp, modeBox, headings);
+	
 	
 	/**
 	 * GUI related objects. In this initialiser block, these objects relating to the
@@ -59,6 +66,8 @@ public class Home {
 		
 		titleBox.setMinHeight(80);
 		titleBox.setAlignment(Pos.CENTER);
+		titlePlusHelp.setAlignment(Pos.CENTER);
+		_helpButton.setAlignment(Pos.TOP_RIGHT);
 
 		arrow.setImage(new Image(".resources/home/arrow.png"));
 		arrow.setPreserveRatio(true);
@@ -92,6 +101,14 @@ public class Home {
 		contents.setPadding(new Insets(30,30,30,30));
 		contents.setSpacing(30);
 		contents.setAlignment(Pos.CENTER);
+		
+		_helpButton.setVisible(true);
+		Help helpContents = new Help();
+		ContextMenu cm = helpContents.getContextMenu();
+		_helpButton.setContextMenu(cm);
+		_helpButton.setOnAction(e -> {
+			cm.show(_helpButton, Side.BOTTOM, 0, 0);
+		});
 	}
 
 	public Home(Tab tab) {

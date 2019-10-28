@@ -51,14 +51,15 @@ public class Main extends Application {
 		home = new Home(homeTab);
 		home.setContents(tabPane);
 		
-		Tab createTab = new Tab("Create");
-		createTab.getStyleClass().add("create_style");
-		create = new Create(createTab, popup, set);
-		create.setContents(this);
 		Tab viewTab = new Tab("View");
 		viewTab.getStyleClass().add("view_style");
 		view = new View(viewTab, popup);
 		view.setContents();
+		
+		Tab createTab = new Tab("Create");
+		createTab.getStyleClass().add("create_style");
+		create = new Create(createTab, popup, set, view);
+		create.setContents(this);
 		
 		Tab learnTab = new Tab("Learn");
 		learnTab.getStyleClass().add("learn_style");
@@ -72,8 +73,7 @@ public class Main extends Application {
 				view.setContents();
 			}
 		}); 
-
-		create.setView(view);
+		
 		popup.setViewCreate(view, create);
 		tabPane.getTabs().addAll(homeTab, viewTab, createTab, learnTab);
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
@@ -118,6 +118,12 @@ public class Main extends Application {
 		launch(args);
 	}
 
+	/**
+	 * Refreshing the GUI to initial stage after creating a creation. This resets
+	 * the app to the initial stage but with the new creation. The user can then repeat
+	 * everything they've already done.
+	 * @param args
+	 */
 	public void refreshGUI(String[] args) {
 		start(currentStage);
 	}
