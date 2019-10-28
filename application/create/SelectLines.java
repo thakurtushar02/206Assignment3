@@ -69,21 +69,18 @@ public class SelectLines {
 		_create = create;
 		_file = new File ("text.txt");
 		list.setItems(listLines);
-
-		HBox views= new HBox();
 		textArea = getText();
-
-		Label info = new Label("Reorder audio below!");
-
+		
 		VBox text = new VBox(searchBar, textArea);
 		text.setSpacing(10);
 		VBox.setVgrow(textArea, Priority.ALWAYS);
 
+		Label info = new Label("Reorder audio below!");
 		VBox listView = new VBox(info, list);
 		list.setPrefHeight(490);
-
 		listView.setAlignment(Pos.CENTER_LEFT);
 
+		HBox views= new HBox();
 		views.getChildren().addAll(text, listView);
 		views.setPrefHeight(550);
 		views.setSpacing(10);
