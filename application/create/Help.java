@@ -1,6 +1,9 @@
 package application.create;
 
+import java.io.IOException;
+
 import application.popup.HelpPopup;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
@@ -17,10 +20,11 @@ public class Help {
 	 * This is the help function for the Create tab
 	 * @return
 	 */
+	@SuppressWarnings("all")
 	public ContextMenu getContextMenu() {
 		final ContextMenu contextMenu = new ContextMenu();
 		HelpPopup hp = new HelpPopup();
-		
+
 		MenuItem playSaveText = new MenuItem("To Play/Save Text");
 		playSaveText.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -31,18 +35,41 @@ public class Help {
 						+ "Play/Save button.");
 			}
 		});
-		
+
 		MenuItem playAudio = new MenuItem("To Play AudioFiles");
 		playAudio.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
-		    public void handle(ActionEvent e) {
+			public void handle(ActionEvent e) {
 				hp.showCreateHelp("Double click on the AudioFiles\n"
 						+ "you have already saved from the list\n"
 						+ "on the right.");
-		    }
+			}
 		});
-		
-		contextMenu.getItems().addAll(playSaveText, playAudio);
+
+		MenuItem userManual = new MenuItem("To User Manual");
+		userManual.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				Task<Void> task = new Task<Void>() {
+					@Override public Void call() {
+						String cmd = "xdg-open VARpedia-User-Manual.pdf &> /dev/null";
+						ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+						try {
+							Process process = builder.start();
+							process.waitFor();
+						} catch (IOException ioe) {
+							ioe.printStackTrace();
+						} catch (InterruptedException ie) {
+							ie.printStackTrace();
+						}
+						return null;
+					}
+				};
+				new Thread(task).start();
+			}
+		});
+
+		contextMenu.getItems().addAll(playSaveText, playAudio, userManual);
 		return contextMenu;
 	}
 }
