@@ -25,7 +25,7 @@ public class Question {
 	 */
 	public Question(File video, String term) {
 		this.video = video;
-		correct = term;
+		correct = term.toLowerCase();
 		answers.add(correct);
 		
 		// Assign three distinct dummy answers randomly

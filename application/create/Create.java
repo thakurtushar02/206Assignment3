@@ -444,7 +444,7 @@ public class Create {
 			@Override
 			protected Void call() throws Exception {
 
-				String cmd = "if [ -d AudioFiles ]; then rm -r AudioFiles; fi; rm -f .*.jpg; ";
+				String cmd = "if [ -d AudioFiles ]; then rm -rf AudioFiles; fi; rm -f .*.jpg; ";
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 				try {
 					Process process = builder.start();
