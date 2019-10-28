@@ -7,28 +7,42 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
-
+/**
+ * This class handles the visual aspect of the creation process and makes the creation
+ * @author Jacinta
+ *
+ */
 public class VideoMaker {
 
+	/**
+	 * Creates a video consisting of pictures and the term as text and combines audio to make creation
+	 * @param term	term that was searched for
+	 * @param name	name for the video to be saved as
+	 * @param numberOfPictures number of images to be included
+	 */
 	public void makeVideo(String term, String name, int numberOfPictures) {
+		
 		String cmd;
 		File file = new File("./AudioFiles/temp.wav");
 		AudioInputStream audioInputStream = null;
+		
 		try {
 			audioInputStream = AudioSystem.getAudioInputStream(file);
 		} catch (UnsupportedAudioFileException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		
 		AudioFormat format = audioInputStream.getFormat();
+		
+		//Calculate the duration the video needs to be based on audio length
 		long audioFileLength = file.length();
 		int frameSize = format.getFrameSize();
 		float frameRate = format.getFrameRate();
 		float durationInSeconds = (audioFileLength / (frameSize * frameRate));
 
+		//Create video with images and text, combine with audio, delete supporting files
 		cmd = "rm -f out.mp4; mkdir -p Quizzes ; cat \"." + term + "\"?.jpg | ffmpeg -f image2pipe -framerate $((" + numberOfPictures + "))/"
 				+ durationInSeconds + " -i - -c:v libx264 -pix_fmt yuv420p -vf \""
 				+ "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2\""

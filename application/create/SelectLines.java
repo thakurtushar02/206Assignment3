@@ -31,7 +31,11 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import application.popup.Popup;
-
+/**
+ * This class sets the contents of the Create tab to continue after searching a term
+ * @author Jacinta, Lynette, Tushar
+ *
+ */
 public class SelectLines {
 	private final String FESTIVAL = "Human";
 	private final String ESPEAK = "Robot";
@@ -40,13 +44,27 @@ public class SelectLines {
 	private final String YELLOW = "Electronic";
 	private final String LIGHT = "Light";
 	private File _file;
+	/**
+	 * User selected background music
+	 */
 	private String _music;
-
+	/**
+	 * List view to display audio files
+	 */
+	private ListView<String> list = new ListView<String>();
+	
+	/**
+	 * Sets GUI components (TextArea, ListView of audio files, controls) to Create tab
+	 * @param tab
+	 * @param tabPane
+	 * @param create
+	 * @param pbCombine
+	 * @param pbSave
+	 * @param listLines
+	 * @param searchBar
+	 */
 	public void setScreen(Tab tab, TabPane tabPane, Create create, ProgressIndicator pbCombine, ProgressIndicator pbSave, ObservableList<String> listLines, HBox searchBar) {
 		_file = new File ("text.txt");
-		
-		ListView<String> list = new ListView<String>(); // List displaying audio files
-
 		list.setItems(listLines);
 
 		HBox views= new HBox();
@@ -88,7 +106,6 @@ public class SelectLines {
 		combobox.prefHeightProperty().bind(butPlay.prefHeightProperty());
 
 		Button butSave = new Button(" Save ✔");
-
 
 		Button butUp = new Button("Move ↑");
 		BooleanBinding upDownBinding = Bindings.size(listLines).lessThan(2).or(list.getSelectionModel().selectedItemProperty().isNull());
@@ -175,10 +192,10 @@ public class SelectLines {
 			try {
 				String fileName = _file.getName();
 				FileWriter fw = new FileWriter(fileName, false);
-				fw.write("");
+				fw.write(""); //Overwrite the contents of the file
 				fw.close();
 				fw = new FileWriter(fileName, true);
-				fw.write(selectedText);
+				fw.write(selectedText); //Write the selected text into the file
 				create.addCreation(combobox.getSelectionModel().getSelectedItem());
 				fw.close();
 			} catch (IOException ioex) {
@@ -211,7 +228,8 @@ public class SelectLines {
 				list.getItems().remove(list.getSelectionModel().getSelectedIndex());
 			}
 		});
-
+		
+		//Basic mode has music set classic 
 		butNext.setOnAction(e -> {
 			if (Home.MODE.getText().equals(Home.ADVANCED)) {
 				_music = musicComb.getSelectionModel().getSelectedItem();
@@ -241,6 +259,7 @@ public class SelectLines {
 			}
 		});
 
+		// Basic mode automatically creates and audio file and continues to the next step
 		if (Home.MODE.getText().equals(Home.ADVANCED)) {
 			butSave.disableProperty().bind(playSaveBinding);
 			BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0);
