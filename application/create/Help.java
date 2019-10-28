@@ -46,6 +46,7 @@ public class Help {
 			}
 		});
 
+		// Opens the user manual 
 		MenuItem userManual = new MenuItem("To User Manual");
 		userManual.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
