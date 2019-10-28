@@ -34,7 +34,8 @@ public class Main extends Application {
 	private QuestionSet set = new QuestionSet();
 
 	/**
-	 * Creates the four tabs, Home, View, Create, and Learn.
+	 * Creates the four tabs, Home, View, Create, and Learn. This method also
+	 * sets up the style of the whole application using application.css
 	 */
 	@Override
 	public void start(Stage primaryStage) {

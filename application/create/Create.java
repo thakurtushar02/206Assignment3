@@ -36,43 +36,45 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
 /**
- * Represents the Create tab of the WikiSpeak application
+ * Represents the Create tab of the WikiSpeak application. This class deals with the creation
+ * process of the application, specifically searching, editing, and finalising the creation.
  * 
  *@author Jacinta, Lynette, Tushar
  */
 public class Create {
-	
+
+	// GUI fields
 	private TabPane _tabPane;
 	private Tab _tab;
 	private View _view;
 	private Main _main;
-	
+
 	private ImageManager _imMan;
 	private SelectLines _selLines;
 	private Popup _popup;
-	
+
 	private BooleanBinding _searchBinding;
-	
+
 	private Button _helpButton;
 	private Button _searchButton;
-	
+
 	private HBox _searchBar;
 	private VBox _contents;
-	
+
 	private TextField _search = new TextField();
-	
+
 	private Label _message = new Label();
 	private Label _create = new Label();
-	
+
 	private ProgressIndicator _pbCombine = new ProgressIndicator();
 	private ProgressIndicator _pbSave = new ProgressIndicator();
 	private ProgressIndicator _pbSearch = new ProgressIndicator();
 	private File _file;
-	
+
 	private int _numberOfAudioFiles = 0;
 	private int _numberOfPictures;
 	private ObservableList<String> _listLines = FXCollections.observableArrayList();
-	
+
 	private String _term;
 	private String _name;
 	private String _music;
@@ -96,8 +98,7 @@ public class Create {
 	}
 
 	/**
-	 * Sets the contents of the Create tab
-	 * @param main
+	 * Sets the initial contents of the Create tab.
 	 */
 	public void setContents(Main main) {
 		if (_main == null) {
@@ -106,9 +107,9 @@ public class Create {
 		_create.setText("Enter word: ");
 
 		_searchBinding = _search.textProperty().isEmpty();
-    
-    // Safe search to prevent users from searching inappropriate terms
-    
+
+		// Safe search to prevent users from searching inappropriate terms.
+		// File retrieved from https://www.freewebheaders.com/full-list-of-bad-words-banned-by-google/
 		File file = new File(".resources/search/badWords.txt"); 
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file)); 
@@ -124,12 +125,13 @@ public class Create {
 		}
 
 		_searchButton = new Button("Search ↳");
-		_searchButton.disableProperty().bind(_searchBinding); // disable button if search field is empty/contains bad word
-		
+		// disable button if search field is empty/contains bad word
+		_searchButton.disableProperty().bind(_searchBinding); 
+
 		final Pane spacer = new Pane();
 		spacer.setMinSize(1, 1);
 		HBox.setHgrow(spacer, Priority.ALWAYS);
-		
+
 		_helpButton = new Button("?");
 		_helpButton.setVisible(true);
 		Help helpContents = new Help();
@@ -149,7 +151,7 @@ public class Create {
 			_searchButton.setDisable(true);
 			searchTerm(_search.getText());
 		});
-		
+
 		_helpButton.setOnAction(e -> {
 			cm.show(_helpButton, Side.BOTTOM, 0, 0);
 		});
@@ -216,20 +218,21 @@ public class Create {
 	}
 
 	/**
-	 * Displays images for user to choose
+	 * Displays images for user to choose. It also sets up the GUI for this section,
+	 * and lets the user enter a name for the final creation.
 	 */
 	public void displayImages() {
 		VBox chooseImages;
 		String potentialName = _term;
 		GridPane imgPane = _imMan.getImagePane(_term);
-		
+
 		Label prompt = new Label("Choose pictures you like!");
 		prompt.setFont(new Font("Arial", 20));
 		prompt.setPadding(new Insets(15,10,10,15));
 
 		TextField nameField = new TextField();
 		Button btnCreate = new Button("Create ↳");
-		
+
 		int count = 1;
 		// Generate new name if already in use
 		while (checkName(potentialName).equals(DUPLICATE)) {
@@ -237,7 +240,7 @@ public class Create {
 			count++;
 		}
 		nameField.setText(potentialName);
-		
+
 		// Does not allow characters to be typed into text field
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> {
 			String[] badCharacters = {"/", "?", "%", "*", ":", "|", "\"", "<", ">", "\0",
@@ -256,21 +259,21 @@ public class Create {
 		nameAndCreate.setSpacing(10);
 		chooseImages = new VBox(prompt, imgPane, nameAndCreate);
 		chooseImages.setPadding(new Insets(15,30,30,30));
-		
-		
+
+
 		ObservableList<File> oToDelete = _imMan.getToDelete();
 		// Enter shortcut-key to make creation
 		nameField.setOnKeyPressed(arg0 -> {if (arg0.getCode().equals(KeyCode.ENTER)) btnCreate.fire();});
 		// Disable create function until photos are selected
 		BooleanBinding combBinding = Bindings.size(oToDelete).isEqualTo(10).or(nameField.textProperty().isEmpty());
 		btnCreate.disableProperty().bind(combBinding);
-	
+
 		btnCreate.setOnAction(arg0 -> {
 			_numberOfPictures = 10 - oToDelete.size();
 			for(File imFile: oToDelete){
 				imFile.delete();
 			}
-			
+
 			//Error checking for creation name
 			String name = nameField.getText();
 			String validity = checkName(name);
@@ -334,12 +337,12 @@ public class Create {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
+
 				// Temporary audio file name
 				_numberOfAudioFiles++;
 				String nameOfFile = "AudioFile" + _numberOfAudioFiles;
-				
-				
+
+
 				// Build text-to-speech command based on voice selection
 				if (voice.equals(FESTIVAL)) {
 					cmd = "cat " + _file.toString() + " | text2wave -o \"./AudioFiles/" + nameOfFile + ".wav\"";
@@ -382,7 +385,7 @@ public class Create {
 	public void storeTabs(TabPane tabPane) {
 		_tabPane = tabPane;
 	}
-	
+
 	public void setMusic(String music) {
 		_music = music;
 	}
@@ -398,10 +401,10 @@ public class Create {
 			protected Void call() throws Exception {
 				AudioManager audMan = new AudioManager();
 				audMan.combineAudio(_music, _listLines);
-				
+
 				VideoMaker vidMaker = new VideoMaker();
 				vidMaker.makeVideo(_term, _name, _numberOfPictures);
-				
+
 				// Create question and add to the set
 				Question question = new Question(new File("Quizzes/"+ _term + ".mp4"), _term);
 				_set.addQuestion(question);

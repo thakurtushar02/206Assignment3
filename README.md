@@ -38,3 +38,5 @@ files &rarr; Apply and close &rarr; Make sure library is ticked &rarr; Finish
 - **.titleFont.otf:** Read .titleFontreadme.txt in the main package for more details  
 
 - **.myFont.ttf:** Read .myFontreadme.txt in main package for more details
+
+- **badWords.txt:** Retrieved from https://www.freewebheaders.com/full-list-of-bad-words-banned-by-google/
