@@ -44,6 +44,7 @@ public class Learn {
 	private Button start = new Button();
 	private Button playAgain = new Button();
 	private Button submit = new Button();
+	private Button back = new Button();
 	
 	private int current;
 	private int correct;
@@ -233,6 +234,8 @@ public class Learn {
 	public void endScreen() {
 		content.getChildren().removeAll(content.getChildren());
 		end.setText("You got "+correct+"/5!");
+		
+		HBox buttons = new HBox();
 
 		Image i = null;
 		try {
@@ -246,12 +249,18 @@ public class Learn {
 
 		playAgain.setText("Play Again");
 		playAgain.setOnAction(e -> quizStart());
+		back.setText("Back to Start");
+		back.setOnAction(e -> setContents());
+		back.setVisible(true);
+		
+		buttons.getChildren().addAll(playAgain, back);
+		buttons.setSpacing(10);
+		buttons.setAlignment(Pos.CENTER);
 
 		content.setTop(end);
 		content.setCenter(image);
-		content.setBottom(playAgain);
+		content.setBottom(buttons);
 		BorderPane.setAlignment(end, Pos.CENTER);
-		BorderPane.setAlignment(playAgain, Pos.CENTER);
 	}
 	
 	/**
@@ -268,6 +277,7 @@ public class Learn {
 		HBox check = new HBox();
 		VBox qNumbers = new VBox();
 		VBox main = new VBox();
+		HBox controls = new HBox();
 
 		Label quiz = new Label("What is being shown in the video? Choose the right answer!");
 		quiz.setFont(new Font("Arial", 16));
@@ -276,6 +286,10 @@ public class Learn {
 		
 		submit.setText("Check Answer");
 		submit.setVisible(false);
+		
+		back.setText("Finish Quiz");
+		back.setVisible(true);
+		back.setOnAction(e -> endScreen());
 		
 		// Generate question numbers to display
 		for (int i = 1; i < 6; i ++) {
@@ -316,7 +330,7 @@ public class Learn {
 		main.setAlignment(Pos.CENTER);
 		main.setSpacing(20);
 
-		check.getChildren().addAll(spacer, submit);
+		check.getChildren().addAll(back, spacer, submit);
 		
 		qNumbers.setAlignment(Pos.CENTER_LEFT);
 		qNumbers.setSpacing(10);

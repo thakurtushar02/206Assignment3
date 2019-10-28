@@ -24,6 +24,9 @@ import javafx.scene.layout.HBox;
  */
 public class ImageManager {
 
+	/**
+	 * List of unused image files
+	 */
 	ObservableList<File> oToDelete = FXCollections.observableArrayList();
 	
 	/**
@@ -64,6 +67,7 @@ public class ImageManager {
 
 			Flickr flickr = new Flickr(apiKey, sharedSecret, new REST());
 
+			// Define the search parameters
 			int resultsPerPage = 10;
 			int page = 0;
 
@@ -72,19 +76,21 @@ public class ImageManager {
 			params.setSort(SearchParameters.RELEVANCE);
 			params.setMedia("photos"); 
 			params.setText(query);
-
-			PhotoList<Photo> results = photos.search(params, resultsPerPage, page);
+			
+			PhotoList<Photo> results = photos.search(params, resultsPerPage, page); // get photo search results
 
 			for (Photo photo: results) {
 				int toPad = results.indexOf(photo);
 				//String padded = String.format("%02d", toPad);
 				try {
 					BufferedImage image = photos.getImage(photo,Size.LARGE);
+					// Resize image if it has odd dimensions
 					if(image.getWidth()%2 != 0) {
 						image = image.getSubimage(0, 0, image.getWidth()-1, image.getHeight());
 					} if(image.getHeight()%2 != 0) {
 						image = image.getSubimage(0, 0, image.getWidth(), image.getHeight()-1);
 					}
+					// Save image 
 					String filename = "." + query + toPad + ".jpg";
 					File outputfile = new File(System.getProperty("user.dir") 
 							+ System.getProperty("file.separator"),filename);
@@ -105,39 +111,52 @@ public class ImageManager {
 			File file = new File("." + term + i + ".jpg");
 			Image im = new Image(file.toURI().toString());
 			oToDelete.add(file);
+			
+			// GUI configuration
 			ImageView imv = new ImageView(im);
 			BorderPane bp = new BorderPane(imv);
 			HBox imBox = new HBox(bp);
+			
 			imBox.setMinHeight(220);
 			imBox.setMinWidth(220);
+			
 			imv.setPreserveRatio(true);
 			imv.setFitHeight(200);
 			imv.setFitWidth(200);
-			imv.setOnMouseEntered(arg0 -> {
+			
+			imv.setOnMouseEntered(arg0 -> { //Enlarges on hover
 				imv.setFitHeight(210);
 				imv.setFitWidth(210);
 			});
-			imv.setOnMouseExited(arg0 -> {
+			
+			imv.setOnMouseExited(arg0 -> { //Return to normal
 				imv.setFitHeight(200);
 				imv.setFitWidth(200);
 			});
-			imv.setOnMouseClicked(arg0 -> {
+			
+			imv.setOnMouseClicked(arg0 -> { //Apply a border around image to show it has been selected
 				if(oToDelete.contains(file)) {
 					bp.getStyleClass().add("border");
 					oToDelete.remove(file);
-				}else {
+				} else {
 					bp.getStyleClass().clear();
 					oToDelete.add(file);
 				}
 			});
+			
 			imgPane.add(imBox, i%5, i/5);
 		}
+		
 		imgPane.setPadding(new Insets(10,10,10,10));
 		imgPane.setHgap(10);
 		imgPane.setVgap(10);
+		
 		return imgPane;
 	}
-	
+	/**
+	 * Returns the list file paths of unselected images
+	 * @return oToDelete - List of unselected images to delete
+	 */
 	public ObservableList<File> getToDelete(){
 		return oToDelete;
 	}

@@ -63,15 +63,11 @@ public class Main extends Application {
 		learn = new Learn(learnTab, set);
 		learn.setContents();
 		
-		// When tab selection changes, update the list in Creations and reset Quiz tab if tab switches from/to
+		// When tab selection changes, update the list in Creations 
 		tabPane.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				view.setContents();
-				
-				if (newValue == (Number) 3) {
-					learn.setContents();
-				}
 			}
 		}); 
 
