@@ -88,6 +88,7 @@ public class SelectLines {
 		views.setPrefHeight(550);
 		views.setSpacing(10);
 
+		// combo box to select music
 		ObservableList<String> music = FXCollections.observableArrayList(NOMUSIC, CLASSICAL, YELLOW, LIGHT);
 		final ComboBox<String> musicComb = new ComboBox<String>(music);
 		musicComb.setValue(NOMUSIC);
