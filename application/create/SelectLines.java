@@ -52,7 +52,9 @@ public class SelectLines {
 	 * List view to display audio files
 	 */
 	private ListView<String> list = new ListView<String>();
-	
+	private TextArea textArea;
+	private Create _create;
+
 	/**
 	 * Sets GUI components (TextArea, ListView of audio files, controls) to Create tab
 	 * @param tab
@@ -64,11 +66,12 @@ public class SelectLines {
 	 * @param searchBar
 	 */
 	public void setScreen(Tab tab, TabPane tabPane, Create create, ProgressIndicator pbCombine, ProgressIndicator pbSave, ObservableList<String> listLines, HBox searchBar) {
+		_create = create;
 		_file = new File ("text.txt");
 		list.setItems(listLines);
 
 		HBox views= new HBox();
-		TextArea textArea = getText();
+		textArea = getText();
 
 		Label info = new Label("Reorder audio below!");
 
@@ -140,7 +143,127 @@ public class SelectLines {
 		layout.setPadding(new Insets(15,30,30,30));
 		layout.setSpacing(10);
 
+		playSave(butPlay, butSave, combobox);
 
+		customiseAudio(butUp, butDown, butDelete);
+
+		//Basic mode has music set classic 
+		butNext.setOnAction(e -> {
+			if (Home.MODE.getText().equals(Home.ADVANCED)) {
+				_music = musicComb.getSelectionModel().getSelectedItem();
+				create.setMusic(_music);
+			} else {
+				_music = CLASSICAL;
+				create.setMusic(_music);
+			}
+			pbCombine.setVisible(false);
+			create.displayImages();
+		});
+
+		// Basic mode automatically creates and audio file and continues to the next step
+		if (Home.MODE.getText().equals(Home.ADVANCED)) {
+			butSave.disableProperty().bind(playSaveBinding);
+			BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0);
+			butNext.disableProperty().bind(combBinding);
+
+			tab.setContent(layout);
+			tabPane.requestLayout();
+
+		} else {
+			butSave.fire();
+			butNext.fire();
+		}
+	}
+
+	/**
+	 * Create text area where the lines from the search are displayed
+	 * @return textArea - where the lines are displayed
+	 */
+	public TextArea getText() {
+		TextArea textArea= new TextArea();
+		textArea.setEditable(true);
+		textArea.setWrapText(true);
+
+		// Populate TextArea with text file contents
+		BufferedReader fileContent;
+		try {
+			fileContent = new BufferedReader(new FileReader(_file));
+			String line;
+			int numberOfLines = 0;
+			while (((line = fileContent.readLine()) != null) && (numberOfLines < 5)) {
+				textArea.appendText(line + "\n\n");
+				numberOfLines++;
+			}
+			fileContent.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		textArea.setText(textArea.getText().substring(2,textArea.getText().length()-3));
+		textArea.setStyle("-fx-font-size:30");
+		return textArea;
+	}
+
+	/**
+	 * Provides functionality to customise audio files
+	 * @param butUp
+	 * @param butDown
+	 * @param butDelete
+	 */
+	public void customiseAudio(Button butUp, Button butDown, Button butDelete) {
+		//Move audio files up listview
+		butUp.setOnAction(e -> {
+			int i = list.getSelectionModel().getSelectedIndex();
+			if (i > 0) {
+				String temp = list.getSelectionModel().getSelectedItem();
+				list.getItems().remove(i);
+				list.getItems().add(i-1, temp);
+				list.getSelectionModel().select(i-1);
+			}
+		});
+
+		//Move audio files down listview
+		butDown.setOnAction(e -> {
+			int i = list.getSelectionModel().getSelectedIndex();
+			if (i < list.getItems().size()-1) {
+				String temp = list.getSelectionModel().getSelectedItem();
+				list.getItems().remove(i);
+				list.getItems().add(i+1, temp);
+				list.getSelectionModel().select(i+1);
+			}
+		});
+
+		//Delete created audio file
+		butDelete.setOnAction(e -> {
+			if (list.getSelectionModel().getSelectedItem() != null) {
+				list.getItems().remove(list.getSelectionModel().getSelectedIndex());
+			}
+		});
+
+		// Plays the selected audio file on double-click
+		list.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent click) {
+				if (click.getClickCount() == 2) {
+					String audio = list.getSelectionModel().getSelectedItem();
+					String cmd = "aplay AudioFiles/" + audio +".wav";
+					ProcessBuilder pb = new ProcessBuilder("bash", "-c", cmd);
+					try {
+						pb.start();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+	}
+
+	/**
+	 * Provides functionality to play and save chunks of text in different voices
+	 * @param butPlay
+	 * @param butSave
+	 * @param combobox
+	 */
+	public void playSave(Button butPlay, Button butSave, ComboBox<String> combobox) {
 		butPlay.setOnAction(e -> {
 			String selectedText = textArea.getSelectedText();
 			// Display pop-up if number of highlighted words > 30
@@ -196,107 +319,13 @@ public class SelectLines {
 				fw.close();
 				fw = new FileWriter(fileName, true);
 				fw.write(selectedText); //Write the selected text into the file
-				create.addCreation(combobox.getSelectionModel().getSelectedItem());
+				_create.addCreation(combobox.getSelectionModel().getSelectedItem());
 				fw.close();
 			} catch (IOException ioex) {
 				ioex.getMessage();
 			}
 		});
-
-		butUp.setOnAction(e -> {
-			int i = list.getSelectionModel().getSelectedIndex();
-			if (i > 0) {
-				String temp = list.getSelectionModel().getSelectedItem();
-				list.getItems().remove(i);
-				list.getItems().add(i-1, temp);
-				list.getSelectionModel().select(i-1);
-			}
-		});
-
-		butDown.setOnAction(e -> {
-			int i = list.getSelectionModel().getSelectedIndex();
-			if (i < list.getItems().size()-1) {
-				String temp = list.getSelectionModel().getSelectedItem();
-				list.getItems().remove(i);
-				list.getItems().add(i+1, temp);
-				list.getSelectionModel().select(i+1);
-			}
-		});
-
-		butDelete.setOnAction(e -> {
-			if (list.getSelectionModel().getSelectedItem() != null) {
-				list.getItems().remove(list.getSelectionModel().getSelectedIndex());
-			}
-		});
-		
-		//Basic mode has music set classic 
-		butNext.setOnAction(e -> {
-			if (Home.MODE.getText().equals(Home.ADVANCED)) {
-				_music = musicComb.getSelectionModel().getSelectedItem();
-				create.setMusic(_music);
-			} else {
-				_music = CLASSICAL;
-				create.setMusic(_music);
-			}
-			pbCombine.setVisible(false);
-			create.displayImages();
-		});
-
-		// Plays the selected audio file on double-click
-		list.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent click) {
-				if (click.getClickCount() == 2) {
-					String audio = list.getSelectionModel().getSelectedItem();
-					String cmd = "aplay AudioFiles/" + audio +".wav";
-					ProcessBuilder pb = new ProcessBuilder("bash", "-c", cmd);
-					try {
-						pb.start();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-
-		// Basic mode automatically creates and audio file and continues to the next step
-		if (Home.MODE.getText().equals(Home.ADVANCED)) {
-			butSave.disableProperty().bind(playSaveBinding);
-			BooleanBinding combBinding = Bindings.size(listLines).isEqualTo(0);
-			butNext.disableProperty().bind(combBinding);
-
-			tab.setContent(layout);
-			tabPane.requestLayout();
-
-		} else {
-			butSave.fire();
-			butNext.fire();
-		}
 	}
 
-	public TextArea getText() {
-		TextArea textArea= new TextArea();
-		textArea.setEditable(true);
-		textArea.setWrapText(true);
-
-		// Populate TextArea with text file contents
-		BufferedReader fileContent;
-		try {
-			fileContent = new BufferedReader(new FileReader(_file));
-			String line;
-			int numberOfLines = 0;
-			while (((line = fileContent.readLine()) != null) && (numberOfLines < 5)) {
-				textArea.appendText(line + "\n\n");
-				numberOfLines++;
-			}
-			fileContent.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		textArea.setText(textArea.getText().substring(2,textArea.getText().length()-3));
-		textArea.setStyle("-fx-font-size:30");
-		return textArea;
-	}
-	
 
 }

@@ -104,6 +104,11 @@ public class ImageManager {
 		}
 	}
 	
+	/**
+	 * Makes gridpane of images for user to choose from
+	 * @param term
+	 * @return
+	 */
 	public GridPane getImagePane(String term) {
 		GridPane imgPane = new GridPane();
 		
