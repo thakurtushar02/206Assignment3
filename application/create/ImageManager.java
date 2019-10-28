@@ -61,6 +61,7 @@ public class ImageManager {
 	 * @param query
 	 */
 	public void getImages(String query) {
+		//Code sourced from 206_FlickrExample from ACP
 		try {
 			String apiKey = getAPIKey("apiKey");
 			String sharedSecret = getAPIKey("sharedSecret");
@@ -81,7 +82,6 @@ public class ImageManager {
 
 			for (Photo photo: results) {
 				int toPad = results.indexOf(photo);
-				//String padded = String.format("%02d", toPad);
 				try {
 					BufferedImage image = photos.getImage(photo,Size.LARGE);
 					// Resize image if it has odd dimensions

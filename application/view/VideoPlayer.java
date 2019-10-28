@@ -33,6 +33,7 @@ public class VideoPlayer {
 	 * @param name
 	 */
 	public void playVideo(String name) {
+		//Code partially sourced from 206_JavaFX_video_player from ACP
 		File fileURL = new File("Creations/" + name + ".mp4");
 
 		Stage vidStage = new Stage();
