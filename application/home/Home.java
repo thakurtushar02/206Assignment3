@@ -1,6 +1,6 @@
 package application.home;
 
-import application.create.Help;
+import application.main.Help;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;

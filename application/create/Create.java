@@ -9,6 +9,7 @@ import java.io.IOException;
 import application.home.Home;
 import application.learn.Question;
 import application.learn.QuestionSet;
+import application.main.Help;
 import application.main.Main;
 import application.popup.Popup;
 import application.view.View;
