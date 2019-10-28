@@ -77,7 +77,7 @@ public class Learn {
 		
 		// Quiz unable to start if there are no questions to display
 		if(qSet.numberOfQuestions() == 0) {
-			learn.setText("You don't have any quizzes! Head over to the Create tab"
+			learn.setText("You don't have any quizzes!\n\nHead over to the Create tab "
 					+ "and make some creations first");
 			content.setTop(learn);
 		}else {
